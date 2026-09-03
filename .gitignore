@@ -1,0 +1,42 @@
+# ─── Node.js / Next.js / NestJS ───────────────────────────
+node_modules/
+.npm/
+.pnpm-store/
+yarn.lock
+package-lock.json
+.next/
+out/
+dist/
+build/
+coverage/
+.turbo/
+.cache/
+*.tsbuildinfo
+
+# ─── محیط‌ها و اسرار (هرگز کامیت نشوند) ─────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+secrets/
+
+# ─── لاگ‌ها و موقت ────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+tmp/
+.tmp/
+
+# ─── ویرایشگرها و سیستم‌عامل ──────────────────────────────
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# ─── مستندات / Obsidian ───────────────────────────────────
+.trash/
+docs/.obsidian/workspace*
