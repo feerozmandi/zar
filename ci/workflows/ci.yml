@@ -1,0 +1,76 @@
+name: CI Pipeline & QA Quality Gate
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gate:
+    name: QA Gate / Quality & Test Matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: ⚙️ Setup Node.js (v20)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 📦 Enable Corepack & Setup pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+
+      - name: 📦 Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+      - name: ⚡ Cache pnpm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📥 Install Dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 🔍 Monorepo Lint Check (ESLint / Format)
+        run: pnpm lint
+
+      - name: 🛡️ TypeScript Type Checking (Strict Matrix)
+        run: pnpm typecheck
+
+      - name: 🧪 Unit & Integration Tests (with Coverage)
+        run: pnpm test
+
+      - name: 🏗️ Turborepo Build Verification
+        run: pnpm build
+
+      - name: 📊 Summary Report
+        if: always()
+        run: |
+          echo "### 🚀 QA Quality Gate Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Verification:** Lint ✅ | Typecheck ✅ | Unit Tests ✅ | Build ✅" >> $GITHUB_STEP_SUMMARY

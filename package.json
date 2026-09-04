@@ -1,0 +1,33 @@
+{
+  "name": "zar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "پلتفرم جامع مهندسی انرژی، ممیزی هوشمند قبوض، امکان‌سنجی خورشیدی و هوش مصنوعی شرکت زر نور نیرو یکتا (Xennic)",
+  "packageManager": "pnpm@11.25.0",
+  "onlyBuiltDependencies": [
+    "@nestjs/core",
+    "@prisma/client",
+    "@prisma/engines",
+    "@scarf/scarf",
+    "prisma"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "db:generate": "pnpm --filter @xennic/database prisma:generate",
+    "db:migrate": "pnpm --filter @xennic/database prisma:migrate",
+    "db:studio": "pnpm --filter @xennic/database prisma:studio",
+    "db:seed": "pnpm --filter @xennic/database prisma:seed",
+    "docker:up": "docker compose -f docker/docker-compose.yml up -d",
+    "docker:down": "docker compose -f docker/docker-compose.yml down"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "turbo": "^1.13.3",
+    "typescript": "^5.4.5"
+  }
+}

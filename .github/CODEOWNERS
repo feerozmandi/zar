@@ -1,0 +1,28 @@
+# CODEOWNERS for feerozmandi/zar (Xennic Platform)
+# Each line is a file pattern followed by one or more owners.
+
+# Default global owners for everything in the repository
+* @feerozmandi
+
+# Security and governance configurations
+.github/ @feerozmandi
+SECURITY.md @feerozmandi
+GITHUB_SETUP_GUIDE.md @feerozmandi
+
+# Core Backend Application (NestJS API & Gateway)
+apps/api/ @feerozmandi
+
+# Frontend Workspace & Next.js App
+apps/web/ @feerozmandi
+
+# Database schemas and Prisma migrations
+packages/database/ @feerozmandi
+
+# Shared libraries and contracts
+packages/shared/ @feerozmandi
+packages/config/ @feerozmandi
+packages/ui/ @feerozmandi
+
+# Infrastructure & Deployment
+docker/ @feerozmandi
+docker-compose*.yml @feerozmandi

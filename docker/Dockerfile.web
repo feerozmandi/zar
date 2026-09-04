@@ -1,0 +1,30 @@
+# Multi-stage Dockerfile for Next.js 14+ Frontend
+FROM node:20-alpine AS base
+RUN corepack enable && corepack prepare pnpm@latest --activate
+WORKDIR /app
+
+FROM base AS dependencies
+COPY pnpm-lock.yaml* pnpm-workspace.yaml package.json ./
+COPY packages/ ./packages/
+COPY apps/web/ ./apps/web/
+RUN pnpm install
+
+FROM dependencies AS build
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN pnpm --filter @xennic/shared build
+RUN pnpm --filter @xennic/ui build
+RUN pnpm --filter @xennic/web build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/packages ./packages
+COPY --from=build /app/apps/web/.next ./apps/web/.next
+COPY --from=build /app/apps/web/public ./apps/web/public
+COPY --from=build /app/apps/web/package.json ./apps/web/package.json
+
+EXPOSE 3000
+CMD ["pnpm", "--filter", "@xennic/web", "start"]

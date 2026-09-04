@@ -1,0 +1,192 @@
+// Prisma Schema for Xennic Platform
+// Zar Noor Niroo Yekta (زر نور نیرو یکتا)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  PRO_ENGINEER
+  EPC_PARTNER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum AIProvider {
+  GITHUB_MODELS
+  OPENAI
+  ANTHROPIC
+  GEMINI
+}
+
+enum BillStatus {
+  PENDING_OCR
+  PROCESSED
+  FAILED
+}
+
+enum SolarSubsidyPolicy {
+  ARTICLE_12
+  ARTICLE_16
+  GREEN_EXCHANGE
+  GUARANTEED_PURCHASE
+}
+
+enum ToolType {
+  CABLE_SIZING
+  VOLTAGE_DROP
+  CAPACITOR_BANK
+  GENERATOR_SIZE
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  phoneNumber  String?   @unique
+  passwordHash String
+  fullName     String
+  role         UserRole  @default(USER)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  profile      UserProfile?
+  aiSettings   UserAISetting?
+  auditBills   AuditBill[]
+  solarProjects SolarProject[]
+  calculations EngineeringCalculation[]
+  transactions Transaction[]
+
+  @@map("users")
+}
+
+model UserProfile {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  companyName  String?
+  economicCode String?
+  province     String?
+  city         String?
+  address      String?
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model UserAISetting {
+  id              String      @id @default(uuid())
+  userId          String      @unique
+  provider        AIProvider  @default(GITHUB_MODELS)
+  encryptedApiKey String?     // AES-256-GCM encrypted BYOK key
+  encryptionIv    String?
+  encryptionTag   String?
+  preferredModel  String      @default("gpt-4o")
+  isBYOKActive    Boolean     @default(false)
+  updatedAt       DateTime    @updatedAt
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_ai_settings")
+}
+
+model AuditBill {
+  id               String     @id @default(uuid())
+  userId           String
+  billIdentifier   String     // شناسه قبض
+  paymentId        String?    // شناسه پرداخت
+  billType         String     @default("INDUSTRIAL")
+  tariffCode       String?
+  billingPeriod    String?    // e.g. "1405-04"
+  contractDemandKW Float      @default(0)
+  peakMeasuredKW   Float      @default(0)
+  lowLoadKWh       Float      @default(0)
+  midLoadKWh       Float      @default(0)
+  peakLoadKWh      Float      @default(0)
+  reactiveKWh      Float      @default(0)
+  totalAmountRials Float      @default(0)
+  reactivePenalty  Float      @default(0)
+  demandPenalty    Float      @default(0)
+  powerFactor      Float      @default(0.9)
+  fileUrl          String?
+  ocrStatus        BillStatus @default(PENDING_OCR)
+  aiSummary        String?    @db.Text
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("audit_bills")
+}
+
+model SolarProject {
+  id                  String             @id @default(uuid())
+  userId              String
+  projectName         String
+  province            String
+  city                String
+  latitude            Float
+  longitude           Float
+  roofAreaSqM         Float
+  recommendedKW       Float
+  estimatedCapexRials Float
+  annualGenKWh        Float
+  annualRevenueRials  Float
+  paybackYears        Float
+  co2ReductionTons    Float
+  subsidyPolicy       SolarSubsidyPolicy @default(ARTICLE_16)
+  isEpcRequested      Boolean            @default(false)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("solar_projects")
+}
+
+model EngineeringCalculation {
+  id                String    @id @default(uuid())
+  userId            String
+  title             String
+  toolType          ToolType
+  inputJson         Json
+  resultJson        Json
+  standardReference String    @default("IEC 60364")
+  pdfReportUrl      String?
+  createdAt         DateTime  @default(now())
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("engineering_calculations")
+}
+
+model WikiArticle {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  titleFa     String
+  category    String   // مبحث ۱۳، نشریه ۱۱۰، آیین‌نامه توانیر
+  summaryFa   String   @db.Text
+  bodyMd      String   @db.Text
+  tags        String[]
+  viewCount   Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("wiki_articles")
+}
+
+model Transaction {
+  id            String   @id @default(uuid())
+  userId        String
+  moduleName    String   // AUDIT, SOLAR, ENGINEERING, AI_PREMIUM
+  amountRials   Float
+  trackingCode  String?  @unique
+  paymentGateway String  @default("ZARINPAL")
+  status        String   @default("COMPLETED")
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("transactions")
+}
