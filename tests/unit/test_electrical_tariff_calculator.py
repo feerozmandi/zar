@@ -190,7 +190,7 @@ def test_power_factor_penalty_applied(calculator):
     response = calculator.calculate_bill(tariff, consumption)
 
     expected_total_kwh = 200.0
-    expected_energy_cost = 200.0 * 0.10 = 20.0
+    expected_energy_cost = 200.0 * 0.10
     expected_fixed_charge = 100.0
     
     # Total kVARh for penalty calculation = 50 + 40 = 90

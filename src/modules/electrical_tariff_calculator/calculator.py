@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 from src.modules.electrical_tariff_calculator.models import (
     Tariff,
     ConsumptionDataPoint,
