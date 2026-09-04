@@ -6,7 +6,6 @@ on:
 
 jobs:
   ai-development:
-    # اجرا فقط در صورت وجود لیبل 'ai-task' برای مدیریت سقف رایگان
     if: contains(github.event.issue.labels.*.name, 'ai-task')
     runs-on: ubuntu-latest
 
@@ -16,32 +15,27 @@ jobs:
       pull-requests: write
 
     steps:
-      # ۱. دریافت کدها مستقیماً از شاخه پایه ai-dev
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           ref: ai-dev
           fetch-depth: 0
 
-      # ۲. آماده‌سازی محیط پایتون
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      # ۳. نصب ایجنت کدنویسی Aider
       - name: Install Aider
         run: |
           python -m pip install --upgrade pip
           pip install aider-chat
 
-      # ۴. تنظیم هویتی هوش مصنوعی برای ثبت Commitها
       - name: Configure Git
         run: |
           git config --global user.name "Xennic AI Bot"
           git config --global user.email "ai-bot@xennic.local"
 
-      # ۵. اجرای Aider و اعمال تغییرات هوش مصنوعی
       - name: Run Aider Agent
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -53,7 +47,6 @@ jobs:
                 --auto-commits \
                 --yes
 
-      # ۶. ساخت Pull Request جدید با مقصد شاخه ai-dev
       - name: Create Pull Request to ai-dev
         uses: peter-evans/create-pull-request@v6
         with:
@@ -62,4 +55,4 @@ jobs:
           title: "AI Work: ${{ github.event.issue.title }}"
           body: "تغییرات خودکار هوش مصنوعی برای Issue #${{ github.event.issue.number }}.\nلطفاً پس از بررسی، آن را در شاخه ai-dev ادغام کنید."
           branch: "ai-work-issue-${{ github.event.issue.number }}"
-          base: ai-dev # مقصد نهایی این تغییرات شاخه ai-dev است
+          base: ai-dev
