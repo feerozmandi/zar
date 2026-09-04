@@ -1,0 +1,59 @@
+name: AI Developer Agent
+
+on:
+  workflow_dispatch:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  ai-development:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'ai-task')
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ai-dev
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Aider
+        run: |
+          python -m pip install --upgrade pip
+          pip install aider-chat
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "Xennic AI Bot"
+          git config --global user.email "ai-bot@xennic.local"
+
+      - name: Run Aider Agent
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE_TITLE: ${{ github.event.issue.title || 'Manual Trigger Test' }}
+          ISSUE_BODY: ${{ github.event.issue.body || 'Testing workflow execution manually' }}
+        run: |
+          aider --model gemini/gemini-2.5-flash \
+                --message "Task: $ISSUE_TITLE \n Details: $ISSUE_BODY" \
+                --auto-commits \
+                --yes
+
+      - name: Create Pull Request to ai-dev
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "ai: automated task execution"
+          title: "AI Work: ${{ github.event.issue.title || 'Manual Trigger' }}"
+          body: "تغییرات خودکار هوش مصنوعی."
+          branch: "ai-work-${{ github.run_id }}"
+          base: ai-dev
