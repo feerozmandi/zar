@@ -1,0 +1,50 @@
+name: Pull Request & Commit Rules Validation
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pr-gate:
+    name: PR Gate / Conventional Commits & Rules
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 📝 Validate PR Title (Conventional Commits)
+        run: |
+          TITLE="${{ github.event.pull_request.title }}"
+          echo "Inspecting PR title: '$TITLE'"
+          
+          # Regex for Conventional Commits: type(optional-scope): description or type: description
+          PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9_\.\-]+\))?: .+"
+          
+          if [[ "$TITLE" =~ $PATTERN ]]; then
+            echo "✅ PR Title matches Conventional Commits format."
+          else
+            echo "::error::PR Title '$TITLE' does not follow Conventional Commits standard (e.g. 'feat(api): add auth module' or 'docs: update ruleset guide')."
+            exit 1
+          fi
+
+      - name: 🌿 Validate PR Target Branch Workflow
+        run: |
+          BASE_BRANCH="${{ github.base_ref }}"
+          HEAD_BRANCH="${{ github.head_ref }}"
+          
+          echo "PR Target Base: '$BASE_BRANCH', Head: '$HEAD_BRANCH'"
+          
+          # Rule: direct PR to main is only allowed from dev (release/hotfix exceptions)
+          if [ "$BASE_BRANCH" = "main" ]; then
+            if [ "$HEAD_BRANCH" != "dev" ] && [[ ! "$HEAD_BRANCH" =~ ^hotfix/ ]] && [[ ! "$HEAD_BRANCH" =~ ^release/ ]]; then
+              echo "::error::Direct PRs to 'main' must come from 'dev', 'release/*', or 'hotfix/*'. Feature branches must target 'dev'."
+              exit 1
+            fi
+          fi
+          echo "✅ PR branching strategy is valid."
