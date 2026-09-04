@@ -57,3 +57,5 @@ jobs:
           body: "تغییرات خودکار هوش مصنوعی."
           branch: "ai-work-${{ github.run_id }}"
           base: ai-dev
+          signoff: false
+          delete-branch: true
