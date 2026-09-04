@@ -1,0 +1,28 @@
+# Multi-stage Dockerfile for NestJS Core API Gateway
+FROM node:20-alpine AS base
+RUN corepack enable && corepack prepare pnpm@latest --activate
+WORKDIR /app
+
+FROM base AS dependencies
+COPY pnpm-lock.yaml* pnpm-workspace.yaml package.json ./
+COPY packages/ ./packages/
+COPY apps/api/ ./apps/api/
+RUN pnpm install
+
+FROM dependencies AS build
+RUN pnpm --filter @xennic/shared build
+RUN pnpm --filter @xennic/database prisma:generate
+RUN pnpm --filter @xennic/api build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=4000
+
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/packages ./packages
+COPY --from=build /app/apps/api/dist ./apps/api/dist
+COPY --from=build /app/apps/api/package.json ./apps/api/package.json
+
+EXPOSE 4000
+CMD ["node", "apps/api/dist/main"]

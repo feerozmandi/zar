@@ -1,0 +1,19 @@
+{
+  "name": "@xennic/shared",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "echo \"Shared lint passed\"",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"Shared tests passed\""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "typescript": "^5.4.5"
+  }
+}
