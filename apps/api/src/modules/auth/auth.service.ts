@@ -1,6 +1,7 @@
 import { ConflictException, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { hashPassword, verifyPassword, type LoginInput, type RegisterInput } from "@xennic/shared";
+import type { LoginInput, RegisterInput } from "@xennic/shared";
+import { hashPassword, verifyPassword } from "@xennic/shared/security";
 import type { AuthenticatedUser } from "../../common/decorators/current-user.decorator.js";
 import { PrismaService } from "../../infra/prisma/prisma.service.js";
 

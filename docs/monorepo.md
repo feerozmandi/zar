@@ -109,6 +109,22 @@ catalog:
 و `@import "@xennic/ui/styles.css"` کار می‌کند (از طریق `exports` بسته)، نه مسیر نسبی
 `../../../` — تا جابه‌جایی ساختار، بیلد را نشکند.
 
+### چه چیزی اجازه دارد به barrel مشترک (`packages/shared/src/index.ts`) اضافه شود؟
+
+هر export که در barrel باشد، وارد **باندل کلاینت** هم می‌شود (Turbopack ماژول‌های side-effect
+دار را بیرون نمی‌کشد). ماژول‌های وابسته به Node باید از barrel بیرون بمانند و با یک subpath
+در `exports` مصرف شوند:
+
+| subpath | محتوا | مصرف‌کننده |
+|:---|:---|:---|
+| `@xennic/shared` | zod schemaها، ثابت‌ها، فرمول‌ها، ابزار فارسی | وب، API، OCR-bridge، seed |
+| `@xennic/shared/security` | `hashPassword`/`verifyPassword` (scrypt روی `node:crypto`) | فقط `apps/api` و `packages/database/prisma/seed.ts` |
+
+این مرز به‌خاطر یک خطای واقعی گذاشته شده: وقتی `security` در barrel بود، صفحه‌ی `/login`
+در مرورگر با `TypeError: The "original" argument must be of type Function` (از
+`promisify(scrypt)` در `node:util` مرورگر) می‌ترکید. برای نگهبانی، در `apps/web/eslint.config.mjs`
+قاعده‌ی `no-restricted-imports` روی `@xennic/shared/security` فعال است.
+
 ---
 
 ## ۴. Prisma 7 (تغییرات مهم نسبت به نسل قبل)

@@ -2,7 +2,7 @@
  * Seed اولیه‌ی فاز ۱: نقش‌ها، نرخ‌های نمونه‌ی تعرفه، مدل‌های AI و چند مقاله‌ی دانشنامه.
  * اجرا: pnpm db:seed   (نیازمند DATABASE_URL معتبر)
  */
-import { hashPassword } from "@xennic/shared";
+import { hashPassword } from "@xennic/shared/security";
 import { createPrismaClient } from "../src/client.js";
 
 const prisma = createPrismaClient(["error"]);

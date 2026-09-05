@@ -2,7 +2,7 @@
   "name": "@xennic/shared",
   "version": "0.1.0",
   "private": true,
-  "description": "لایه‌ی مشترک: اسکیمای ورودی/محیطی (zod)، ثابیت‌ها، فرمول‌های مهندسی و ابزارهای فارسی",
+  "description": "لایه‌ی مشترک: zod schema، ثابت‌ها، فرمول‌های مهندسی/خورشیدی و ابزار فارسی",
   "license": "UNLICENSED",
   "type": "module",
   "main": "./dist/index.js",
@@ -11,6 +11,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./security": {
+      "types": "./dist/security/password.d.ts",
+      "import": "./dist/security/password.js"
     },
     "./package.json": "./package.json"
   },
