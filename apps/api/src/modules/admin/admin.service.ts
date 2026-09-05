@@ -15,11 +15,12 @@ export class AdminService {
       this.prisma.client.wikiArticle.count({ where: { status: "PUBLISHED" } }),
       this.prisma.client.epcRequest.count({ where: { status: "NEW" } }),
     ]);
-    // aggregate/groupBy در Prisma خروجی ساخت‌یافته می‌دهد؛ تایپ صریح، خوانایی گزارش را بالا می‌برد
-    const wallet = (await this.prisma.client.transaction.aggregate({
+    // aggregate/groupBy در Prisma خروجی ساخت‌یافته (و تایپ‌شده) می‌دهد؛ پس اینجا
+    // assertion اضافه لازم نیست — با تایپ واقعی کلاینت، ESLint آن را زائد می‌داند.
+    const wallet = await this.prisma.client.transaction.aggregate({
       _sum: { amount: true },
       where: { status: "SETTLED" },
-    })) as { _sum?: { amount?: number | null } };
+    });
 
     const byRole = (await this.prisma.client.user.groupBy({
       by: ["role"],
