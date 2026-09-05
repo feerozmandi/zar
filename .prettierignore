@@ -19,3 +19,6 @@ apps/api/var
 # (GitHub workflow editor / actionlint). بدون این خط، `pnpm format:check` روی
 # ai-developer.yml موجود در مخزن شکست می‌خورد چون آن فایل با نقل‌قول تک‌گیوه نوشته شده است.
 .github/**
+
+# فایل موقت انتقال Workflow (رجوع: infra/ci/README.md)
+infra/ci/**
