@@ -9,6 +9,12 @@
     "emitDecoratorMetadata": true,
     "useDefineForClassFields": false,
     "strictPropertyInitialization": false,
+    // apps/api کتابخانه نیست و هیچ بسته‌ی دیگری تایپ‌های آن را مصرف نمی‌کند؛
+    // با declaration:true تsc برای هر متد سرویس که نوعش به PrismaPromise می‌رسد
+    // خطای TS2742 («cannot be named without a reference to .../prismaNamespace»)
+    // می‌دهد، چون آن نوع از پشت re-export بسته‌ی @xennic/database قابل نامیدن نیست.
+    "declaration": false,
+    "declarationMap": false,
     "types": ["node"]
   }
 }
