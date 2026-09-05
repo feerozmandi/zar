@@ -66,6 +66,8 @@ export class AdminService {
   /** CMS دانشنامه — ایجاد/ویرایش مقاله */
   public async upsertArticle(input: ArticleUpsertInput, authorId: string) {
     const data = {
+      // slug در schema یکتاست و برای شاخه‌ی create الزامی؛ در update مقدارش تغییر نمی‌کند
+      slug: input.slug,
       title: input.title,
       excerpt: input.excerpt ?? null,
       contentMdx: input.contentMdx,

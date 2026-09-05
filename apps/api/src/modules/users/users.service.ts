@@ -38,7 +38,10 @@ export class UsersService {
     const saved = await this.prisma.client.aiProviderCredential.upsert({
       where: { userId_provider_label: { userId, provider: input.provider, label } },
       update: {
-        ...encrypted,
+        // EncryptedPayload (خروجی CryptoService) با نام‌های ستون‌های schema یکی نیست
+        encryptedKey: encrypted.ciphertext,
+        iv: encrypted.iv,
+        authTag: encrypted.authTag,
         last4: input.apiKey.slice(-4),
         defaultModel: input.defaultModel ?? null,
         isActive: true,
@@ -49,7 +52,9 @@ export class UsersService {
         label,
         defaultModel: input.defaultModel ?? null,
         last4: input.apiKey.slice(-4),
-        ...encrypted,
+        encryptedKey: encrypted.ciphertext,
+        iv: encrypted.iv,
+        authTag: encrypted.authTag,
       },
       select: { id: true, last4: true },
     });
