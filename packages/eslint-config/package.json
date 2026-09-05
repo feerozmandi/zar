@@ -1,0 +1,28 @@
+{
+  "name": "@xennic/eslint-config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "پیکربندی مرکزی ESLint (flat config) برای همه‌ی بخش‌های مونورپو",
+  "license": "UNLICENSED",
+  "type": "module",
+  "exports": {
+    "./base": "./src/base.mjs",
+    "./node": "./src/node.mjs",
+    "./react": "./src/react.mjs",
+    "./ignores": "./src/ignores.mjs"
+  },
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "peerDependencies": {
+    "eslint": ">=9",
+    "globals": "^17",
+    "typescript-eslint": "^8",
+    "@eslint/js": ">=9",
+    "eslint-config-prettier": "^10"
+  },
+  "files": [
+    "src",
+    "package.json"
+  ]
+}

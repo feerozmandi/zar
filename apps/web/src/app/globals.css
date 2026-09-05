@@ -1,0 +1,56 @@
+/*
+ * ورودی استایل apps/web — Tailwind CSS v4 (CSS-first).
+ * توکن‌های رنگ/فونت از بسته‌ی @xennic/design-tokens می‌آیند تا پالت سازمانی
+ * (نوت ۴) در لندینگ، پنل‌ها و PDF یکسان بماند.
+ */
+@import "tailwindcss";
+/* ارجاع از طریق exports خودِ بسته‌ها (به‌جای مسیر نسبی شکننده) */
+@import "@xennic/design-tokens/theme.css";
+@import "@xennic/ui/styles.css";
+
+/* اسکن کلاس‌های کامپوننت‌های مشترک مونورپو */
+@source "../";
+@source "../../../../packages/ui/src";
+@source "../../../../packages/design-tokens/src";
+
+@layer theme {
+  /* انیمیشن‌های Accordion (بخش سؤالات متداول لندینگ) */
+  @theme {
+    --animate-accordion-down: accordion-down 0.2s ease-out;
+    --animate-accordion-up: accordion-up 0.2s ease-out;
+  }
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: dark light;
+  }
+
+  body {
+    background-color: var(--xennic-background);
+    color: var(--xennic-foreground);
+  }
+
+  ::selection {
+    background-color: var(--xennic-primary);
+    color: var(--xennic-primary-foreground);
+  }
+}

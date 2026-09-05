@@ -1,0 +1,13 @@
+# قفل وابستگی‌ها برای ایمیج داکر (تولید با: pip-compile pyproject.toml)
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+pydantic-settings>=2.4
+pdf2image>=1.17
+PyMuPDF>=1.24
+pytesseract>=0.3.10
+opencv-python-headless>=4.10
+numpy>=1.26
+pillow>=10.3
+httpx>=0.27
+redis>=5.0

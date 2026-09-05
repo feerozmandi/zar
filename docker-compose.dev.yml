@@ -1,0 +1,21 @@
+# لایه‌ی توسعه: پورت‌های مستقیم + هاست‌فایلِ سرویس‌ها (اجرا: pnpm infra:up)
+services:
+  xennic-postgres:
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+  xennic-redis:
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+
+  # در حالت توسعه، فقط زیرساخت داده بالا می‌آید؛ وب/API/OCR با pnpm dev اجرا می‌شوند
+  xennic-web:
+    profiles: ["full"]
+  xennic-api:
+    profiles: ["full"]
+  xennic-worker:
+    profiles: ["full"]
+  xennic-ocr:
+    profiles: ["full"]
+  xennic-nginx:
+    profiles: ["full"]

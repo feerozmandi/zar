@@ -1,0 +1,16 @@
+node_modules
+dist
+.next
+out
+coverage
+.turbo
+.cache
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+apps/web/next-env.d.ts
+packages/database/src/generated
+apps/api/var
+**/*.md
+**/*.prisma
+**/requirements*.txt

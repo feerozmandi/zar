@@ -1,0 +1,728 @@
+// ═══════════════════════════════════════════════════════════════════════════
+//  Xennic — Prisma Schema (فاز ۱)
+//  مرجع: «نوت ۳ — معماری فنی، تک‌استک و ساختار API» بخش‌های ۲ و ۵
+//        «نوت ۵ — گام اول: طراحی و پیاده‌سازی Prisma Schema جامع»
+//
+//  نکات سبک (Prisma ORM 7):
+//   • generator = "prisma-client" و output الزامی است (کلاینت داخل src/generated).
+//   • datasource دیگر `url` نمی‌گیرد؛ اتصال در prisma.config.ts تعریف شده است.
+//   • مبالغ فعلاً Float (تومان) ذخیره می‌شوند؛ در فاز «درگاه پرداخت» به
+//     numeric/BigInt مهاجرت خواهد کرد (رجوع: مستند فاز ۱).
+//   • فایل تولیدشده کامیت نمی‌شود؛ CI با `pnpm db:generate` بازتولید می‌کند.
+// ═══════════════════════════════════════════════════════════════════════════
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────── ENUM ───────────────────────────────────────
+
+/// نقش‌های RBAC (نوت ۳ §۵-۳)
+enum Role {
+  USER
+  PRO_ENGINEER
+  EPC_PARTNER
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+/// وضعیت پردازش‌های سنگین که از صف BullMQ عبور می‌کنند
+enum JobStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+/// انواع تعرفه‌های مشترکین (توانیر)
+enum TariffType {
+  RESIDENTIAL
+  COMMERCIAL
+  INDUSTRIAL
+  AGRICULTURAL
+  GOVERNMENTAL
+  HOSPITALS
+}
+
+/// ماژول‌های دارای کیف‌پول مستقل (نوت ۳ — Unified Auth & Billing Layer)
+enum WalletModule {
+  AUDIT
+  SOLAR
+  ENGINEERING
+  WIKI
+  AI
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAW
+  CHARGE
+  REFUND
+  BONUS
+}
+
+enum TransactionStatus {
+  PENDING
+  SETTLED
+  FAILED
+  REVERSED
+}
+
+enum PaymentProvider {
+  ZARINPAL
+  SAMAN
+  IDPAY
+  MANUAL
+}
+
+/// دروازه‌ی چندمدلی هوش مصنوعی (System Level + Pro BYOK)
+enum AiProvider {
+  GITHUB_MODELS
+  OPENAI
+  ANTHROPIC
+  GEMINI
+}
+
+enum AiTier {
+  SYSTEM
+  BYOK
+}
+
+enum AiCallStatus {
+  OK
+  ERROR
+  RATE_LIMITED
+  TIMEOUT
+}
+
+enum EngineeringTool {
+  VOLTAGE_DROP
+  CABLE_SIZING
+  CAPACITOR_BANK
+  GENERATOR_SIZE
+}
+
+/// منابع محتوایی دانشنامه
+enum WikiSource {
+  NATIONAL_REGULATION_13
+  PUBLICATION_110
+  TAVANIR_RULES
+  IEC
+  COMPANY_BLOG
+}
+
+enum PublishStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  RETIRED
+}
+
+enum FindingSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+enum EpcRequestStatus {
+  NEW
+  ASSIGNED
+  QUOTED
+  REJECTED
+  SIGNED
+}
+
+enum ContactRequestStatus {
+  NEW
+  IN_PROGRESS
+  ANSWERED
+  CLOSED
+}
+
+enum OcrEngine {
+  TESSERACT
+  PADDLE
+  CLOUD_VISION
+}
+
+// ───────────────────────── کاربر و احراز هویت ─────────────────────────
+
+model User {
+  id               String     @id @default(uuid(4))
+  email            String     @unique
+  emailVerifiedAt  DateTime?
+  passwordHash     String
+  fullName         String
+  nationalId       String?    @unique
+  phone            String?
+  company          String?
+  avatarUrl        String?
+  role             Role       @default(USER)
+  status           UserStatus @default(PENDING_VERIFICATION)
+  preferredTheme   String     @default("dark")
+  locale           String     @default("fa-IR")
+  lastLoginAt      DateTime?
+  failedLoginCount Int        @default(0)
+  lockedUntil      DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  sessions          Session[]
+  wallets           Wallet[]
+  transactions      Transaction[]        @relation("UserTransactions")
+  aiCredentials     AiProviderCredential[]
+  aiLogs            AiRequestLog[]
+  bills             Bill[]
+  solarSites        SolarSite[]
+  calculations      EngineeringCalculation[]
+  pdfExports        EngineeringPdfExport[]
+  contactRequests   ContactRequest[]
+  telegramLinks     TelegramAccount[]
+  authoredArticles  WikiArticle[]        @relation("ArticleAuthor")
+  articleRevisions  WikiArticleRevision[] @relation("RevisionAuthor")
+  adminLogs         AdminAuditLog[]      @relation("AdminActor")
+  settingsEdits     SiteSetting[]        @relation("SettingEditor")
+
+  @@index([role, status])
+  @@index([createdAt])
+  @@map("users")
+}
+
+/// توکن‌های refresh به‌صورت hash ذخیره می‌شوند (نوت ۳ §۵ — امنیت ازبدو طراحی)
+model Session {
+  id           String   @id @default(uuid(4))
+  userId       String
+  refreshToken String   @unique
+  userAgent    String?
+  ip           String?
+  revokedAt    DateTime?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  id        String   @id @default(uuid(4))
+  purpose   String
+  value     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([purpose, expiresAt])
+  @@map("verification_tokens")
+}
+
+// ──────────────────────── کیف‌پول و تراکنش‌ها ────────────────────────
+
+model Wallet {
+  id        String       @id @default(uuid(4))
+  userId    String
+  module    WalletModule
+  balance   Float        @default(0)
+  currency  String       @default("IRT")
+  updatedAt DateTime     @updatedAt
+  createdAt DateTime     @default(now())
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@unique([userId, module])
+  @@map("wallets")
+}
+
+model Transaction {
+  id           String            @id @default(uuid(4))
+  walletId     String
+  userId       String
+  type         TransactionType
+  status       TransactionStatus @default(PENDING)
+  amount       Float
+  fee          Float             @default(0)
+  provider     PaymentProvider   @default(MANUAL)
+  providerRef  String?
+  description  String?
+  metadata     Json?
+  settledAt    DateTime?
+  createdAt    DateTime          @default(now())
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  user   User   @relation("UserTransactions", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([walletId, status])
+  @@index([providerRef])
+  @@index([createdAt])
+  @@map("transactions")
+}
+
+// ─────────────────────── دروازه‌ی هوش مصنوعی و BYOK ───────────────────────
+
+/// کلید اختصاصی کاربر — پیش از ذخیره با AES-256-GCM رمزنگاری می‌شود (نوت ۳ §۵-۱)
+model AiProviderCredential {
+  id             String     @id @default(uuid(4))
+  userId         String
+  provider       AiProvider
+  label          String     @default("default")
+  defaultModel   String?
+  encryptedKey   String
+  iv             String
+  authTag        String
+  /// ۴ نویسه‌ی آخر کلید، فقط برای نمایش در پنل (بدون رمزگشایی)
+  last4          String?
+  keyVersion     Int          @default(1)
+  isActive       Boolean      @default(true)
+  lastUsedAt     DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs AiRequestLog[]
+
+  @@unique([userId, provider, label])
+  @@index([userId, isActive])
+  @@map("ai_provider_credentials")
+}
+
+model AiRequestLog {
+  id               String       @id @default(uuid(4))
+  userId           String?
+  credentialId     String?
+  tier             AiTier
+  provider         AiProvider
+  model            String
+  purpose          String
+  status           AiCallStatus @default(OK)
+  promptTokens     Int          @default(0)
+  completionTokens Int          @default(0)
+  latencyMs        Int          @default(0)
+  costEstimate     Float        @default(0)
+  billId           String?
+  errorMessage     String?
+  createdAt        DateTime     @default(now())
+
+  user       User?                   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  credential AiProviderCredential?   @relation(fields: [credentialId], references: [id], onDelete: SetNull)
+  bill       Bill?                   @relation(fields: [billId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([userId, purpose])
+  @@index([billId])
+  @@map("ai_request_logs")
+}
+
+/// مدل‌های فعال در دروازه (مدیریت از پنل ادمین)
+model AiModelCatalog {
+  id            String     @id @default(uuid(4))
+  slug          String     @unique
+  provider      AiProvider
+  displayName   String
+  supportsVision  Boolean  @default(false)
+  inputPrice    Float      @default(0)
+  outputPrice   Float      @default(0)
+  maxTokens     Int        @default(8192)
+  freeTierOnly  Boolean    @default(false)
+  isActive      Boolean    @default(true)
+  updatedAt     DateTime   @updatedAt
+
+  @@index([provider, isActive])
+  @@map("ai_model_catalog")
+}
+
+// ────────────────────── ماژول ممیزی و تحلیل قبض ──────────────────────
+
+model Bill {
+  id             String      @id @default(uuid(4))
+  userId         String
+  subscriptionId String?
+  tariffType     TariffType  @default(INDUSTRIAL)
+  region         String?
+  periodLabel    String?
+  fileName       String
+  mimeType       String
+  sizeBytes      Int
+  storageKey     String
+  ocrEngine      OcrEngine   @default(TESSERACT)
+  status         JobStatus   @default(QUEUED)
+  uploadedAt     DateTime    @default(now())
+  processedAt    DateTime?
+  rawText        String?     @db.Text
+  metrics        Json?
+  errorMessage   String?
+
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analysis BillAnalysis?
+  aiLogs   AiRequestLog[]
+  files    BillFile[]
+
+  @@index([userId, status])
+  @@index([uploadedAt])
+  @@map("bills")
+}
+
+/// فایل‌های پیوست یک قبض (تصویر، PDF، خروجی OCR)
+model BillFile {
+  id         String   @id @default(uuid(4))
+  billId     String
+  kind       String
+  storageKey String
+  mimeType   String
+  sizeBytes  Int
+  createdAt  DateTime @default(now())
+
+  bill Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
+
+  @@index([billId, kind])
+  @@map("bill_files")
+}
+
+model BillAnalysis {
+  id           String     @id @default(uuid(4))
+  billId       String     @unique
+  status       JobStatus  @default(QUEUED)
+  summaryFa    String?    @db.Text
+  reportJson   Json?
+  aiModel      String?
+  aiTier       AiTier?
+  pdfStorageKey String?
+  totalAmount  Float?
+  penaltyAmount Float?
+  demandPenalty Float?
+  reactivePenalty Float?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  bill     Bill          @relation(fields: [billId], references: [id], onDelete: Cascade)
+  findings BillFinding[]
+
+  @@map("bill_analyses")
+}
+
+model BillFinding {
+  id            String          @id @default(uuid(4))
+  analysisId    String
+  code          String
+  severity      FindingSeverity @default(INFO)
+  titleFa       String
+  descriptionFa String          @db.Text
+  amountToman   Float?
+  recommendationFa String?      @db.Text
+  sourceRef     String?
+
+  analysis BillAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@unique([analysisId, code])
+  @@index([severity])
+  @@map("bill_findings")
+}
+
+/// جدول نرخ‌های تعرفه/جریمه — تا محاسبات در کد hard-code نشود
+model TariffRate {
+  id                  String     @id @default(uuid(4))
+  tariffType          TariffType
+  segmentName         String
+  minUnits            Int        @default(0)
+  maxUnits            Int?
+  unitPrice           Float
+  penaltyPercent      Float      @default(0)
+  demandPrice         Float?
+  reactiveThreshold   Float?
+  effectiveFrom       DateTime
+  effectiveTo         DateTime?
+  sourceRef           String?
+  isActive            Boolean    @default(true)
+  updatedAt           DateTime   @updatedAt
+
+  @@index([tariffType, isActive, effectiveFrom])
+  @@map("tariff_rates")
+}
+
+// ──────────────────── ماژول امکان‌سنجی خورشیدی ────────────────────
+
+model SolarSite {
+  id             String   @id @default(uuid(4))
+  userId         String
+  name           String
+  province       String
+  city           String?
+  lat            Float?
+  lon            Float?
+  address        String?
+  roofAreaM2     Float
+  roofTiltDeg    Float    @default(30)
+  azimuthDeg     Float    @default(180)
+  shadingFactor  Float    @default(0.08)
+  monthlyConsumptionKwh Float?
+  currentMonthlyBillToman Float?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assessments  SolarAssessment[]
+
+  @@index([userId])
+  @@index([province])
+  @@map("solar_sites")
+}
+
+model SolarAssessment {
+  id             String    @id @default(uuid(4))
+  siteId         String
+  status         JobStatus @default(SUCCEEDED)
+  engineVersion  String    @default("v1")
+  inputs         Json
+  peakSunHours   Float
+  capacityKwp    Float
+  annualGenerationKwh Float?
+  performanceRatio Float?
+  outputs        Json?
+  errorMessage   String?
+  createdAt      DateTime  @default(now())
+
+  site       SolarSite      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  roi        SolarRoiResult?
+  epcRequests EpcRequest[]
+
+  @@index([siteId, createdAt])
+  @@map("solar_assessments")
+}
+
+model SolarRoiResult {
+  id             String   @id @default(uuid(4))
+  assessmentId   String   @unique
+  capex          Float
+  annualRevenue  Float
+  annualNet      Float
+  paybackYears   Float
+  npv            Float
+  discountRate   Float
+  lifetimeGenerationKwh Float
+  co2AvoidedTons Float
+  currency       String   @default("IRT")
+  createdAt      DateTime @default(now())
+
+  assessment SolarAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@map("solar_roi_results")
+}
+
+/// پیمانکاران EPC که پروژه‌ها به آن‌ها ارجاع می‌شود
+model EpcPartner {
+  id               String   @id @default(uuid(4))
+  legalName        String
+  contactName      String
+  contactPhone     String
+  website          String?
+  coverageProvinces String[]
+  maxCapacityKwp   Float?
+  rating           Float    @default(0)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+
+  requests EpcRequest[]
+
+  @@unique([legalName])
+  @@map("epc_partners")
+}
+
+model EpcRequest {
+  id            String           @id @default(uuid(4))
+  assessmentId  String
+  partnerId     String?
+  status        EpcRequestStatus @default(NEW)
+  contactName   String
+  contactPhone  String
+  notes         String?          @db.Text
+  preferredSchedule String       @default("quarter")
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  assessment SolarAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  partner    EpcPartner?     @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@map("epc_requests")
+}
+
+// ──────────────────── جعبه‌ابزار محاسبات مهندسی ────────────────────
+
+model EngineeringCalculation {
+  id          String          @id @default(uuid(4))
+  userId      String
+  tool        EngineeringTool
+  title       String?
+  standardRef String          @default("IEC 60364 / نشریه ۱۱۰")
+  inputs      Json
+  outputs     Json
+  archivedAt  DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  user     User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exports  EngineeringPdfExport[] @relation("ExportCalculations")
+
+  @@index([userId, tool, createdAt])
+  @@map("engineering_calculations")
+}
+
+/// دفترچه محاسبات رسمی قابل چاپ (خروجی PDF)
+model EngineeringPdfExport {
+  id            String    @id @default(uuid(4))
+  userId        String
+  status        JobStatus @default(QUEUED)
+  projectTitle  String
+  clientName    String
+  engineerName  String?
+  includeCover  Boolean   @default(true)
+  storageKey    String?
+  pages         Int?
+  fileBytes     Int?
+  errorMessage  String?
+  createdAt     DateTime  @default(now())
+
+  user          User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  calculations  EngineeringCalculation[] @relation("ExportCalculations")
+
+  @@index([userId, status])
+  @@map("engineering_pdf_exports")
+}
+
+// ─────────────────────── دانشنامه و مرجع قوانین ───────────────────────
+
+model WikiCategory {
+  id       String  @id @default(uuid(4))
+  slug     String  @unique
+  title    String
+  order    Int     @default(0)
+  parentId String?
+
+  parent   WikiCategory?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children WikiCategory[] @relation("CategoryTree")
+  articles WikiArticle[]
+
+  @@index([order])
+  @@map("wiki_categories")
+}
+
+model WikiArticle {
+  id          String       @id @default(uuid(4))
+  slug        String       @unique
+  title       String
+  excerpt     String?
+  contentMdx  String       @db.Text
+  source      WikiSource   @default(COMPANY_BLOG)
+  status      PublishStatus @default(DRAFT)
+  tags        String[]
+  viewCount   Int          @default(0)
+  categoryId  String?
+  authorId    String?
+  publishedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  category  WikiCategory?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  author    User?                 @relation("ArticleAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  revisions WikiArticleRevision[]
+
+  @@index([status, publishedAt])
+  @@index([source])
+  @@map("wiki_articles")
+}
+
+model WikiArticleRevision {
+  id         String   @id @default(uuid(4))
+  articleId  String
+  contentMdx String   @db.Text
+  note       String?
+  editedById String?
+  createdAt  DateTime @default(now())
+
+  article  WikiArticle @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  editor   User?       @relation("RevisionAuthor", fields: [editedById], references: [id], onDelete: SetNull)
+
+  @@index([articleId, createdAt])
+  @@map("wiki_article_revisions")
+}
+
+// ────────────────────────── پنل ادمین و تنظیمات ──────────────────────────
+
+model AdminAuditLog {
+  id       String   @id @default(uuid(4))
+  actorId  String?
+  action   String
+  target   String?
+  ip       String?
+  payload  Json?
+  createdAt DateTime @default(now())
+
+  actor User? @relation("AdminActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([action, createdAt])
+  @@map("admin_audit_logs")
+}
+
+model SiteSetting {
+  id         String   @id @default(uuid(4))
+  key        String   @unique
+  value      Json
+  label      String?
+  editedById String?
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+
+  editedBy User? @relation("SettingEditor", fields: [editedById], references: [id], onDelete: SetNull)
+
+  @@map("site_settings")
+}
+
+// ───────────────────────── کانال‌های ارتباطی ─────────────────────────
+
+/// درخواست مشاوره از لندینگ پیج (نوت ۴ §۶)
+model ContactRequest {
+  id        String             @id @default(uuid(4))
+  userId    String?
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  topic     String?
+  message   String             @db.Text
+  status    ContactRequestStatus @default(NEW)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@map("contact_requests")
+}
+
+/// پیوند ربات تلگرام به حساب کاربری (فاز ۵)
+model TelegramAccount {
+  id             String   @id @default(uuid(4))
+  userId         String?
+  telegramUserId BigInt   @unique
+  chatId         BigInt?
+  username       String?
+  isActive       Boolean  @default(true)
+  startedAt      DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("telegram_accounts")
+}
