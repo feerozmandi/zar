@@ -149,4 +149,14 @@ allowBuilds:
   "@scarf/scarf": false # هرگونه گزارش تله‌متری به بیرون ممنوع
   msgpackr-extract: false
 
+# ── تنظیمات شبکه (pnpm 11 این کلیدها را از همین فایل می‌خواند، نه از .npmrc) ────
+# مقدار پیش‌فرض fetchTimeout برابر ۶۰ ثانیه است و برای تاربال‌های بزرگ روی لینک‌های
+# کُند کافی نیست (next ≈ ۴۲MB، @next/swc-linux-x64-gnu ≈ ۳۴MB) و با خطای
+# «The operation was aborted due to timeout» نصب نصفه‌کاره می‌ماند.
+# networkConcurrency را می‌توان موقتاً با فلگ هم تنظیم کرد: pnpm install --network-concurrency 2
+fetchTimeout: 900000
+fetchRetries: 6
+fetchRetryMintimeout: 20000
+fetchRetryMaxtimeout: 300000
+
 # در صورت لزوم، قفل‌شدن نسخه‌ی pnpm فقط در package.json (فیلد packageManager) انجام می‌شود.
