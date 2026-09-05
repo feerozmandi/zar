@@ -14,3 +14,8 @@ apps/api/var
 **/*.md
 **/*.prisma
 **/requirements*.txt
+
+# فایل‌های زیر پوشه‌ی .github را همان ابزاری که تولیدشان می‌کند ویرایش می‌کند
+# (GitHub workflow editor / actionlint). بدون این خط، `pnpm format:check` روی
+# ai-developer.yml موجود در مخزن شکست می‌خورد چون آن فایل با نقل‌قول تک‌گیوه نوشته شده است.
+.github/**
