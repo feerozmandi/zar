@@ -22,10 +22,10 @@ export class AdminService {
       where: { status: "SETTLED" },
     });
 
-    const byRole = (await this.prisma.client.user.groupBy({
+    const byRole = await this.prisma.client.user.groupBy({
       by: ["role"],
       _count: { _all: true },
-    })) as Array<{ role: string; _count: { _all: number } }>;
+    });
 
     return {
       totals: {
