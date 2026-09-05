@@ -16,7 +16,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:cov": "vitest run --coverage",
-    "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
+    "test:e2e": "pnpm --filter @xennic/shared --filter @xennic/database build && vitest run --config ./vitest.config.e2e.ts",
     "clean": "rm -rf dist coverage .turbo *.tsbuildinfo"
   },
   "dependencies": {
