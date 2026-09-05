@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ROLES, type ArticleUpsertInput } from "@xennic/shared";
+import { ROLES, WIKI_SOURCE_BY_SLUG, type ArticleUpsertInput } from "@xennic/shared";
 import { PrismaService } from "../../infra/prisma/prisma.service.js";
 
 /** مسیرهای SUPER_ADMIN (نوت ۳ §۴ — Super Admin API) */
