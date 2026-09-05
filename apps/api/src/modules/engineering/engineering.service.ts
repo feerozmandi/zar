@@ -14,6 +14,7 @@ import {
   type VoltageDropInputDto,
 } from "@xennic/shared";
 import { PrismaService } from "../../infra/prisma/prisma.service.js";
+import type { Prisma } from "@xennic/database";
 
 type Tool = "VOLTAGE_DROP" | "CABLE_SIZING" | "CAPACITOR_BANK" | "GENERATOR_SIZE";
 
@@ -30,6 +31,15 @@ const TOOL_BY_SLUG: Record<string, Tool> = {
  * جعبه‌ابزار مهندسی برق (نوت ۳ §۴). هر محاسبه در همان لحظه در دیتابیس ثبت می‌شود
  * تا «دفترچه محاسبات» بعداً بتواند مستند و قابل استناد باشد.
  */
+/**
+ * ستون‌های `inputs`/`outputs` از نوع Json هستند و Prisma برای آن‌ها `InputJsonValue`
+ * می‌خواهد؛ داده‌ی خروجی zod `unknown` است، پس با یک round-trip سریال‌سازی هم نوع
+ * قطعی می‌شود هم مقادیر غیرقابل‌سریال‌سازی حذف می‌گردند.
+ */
+function toJson(value: unknown): Prisma.InputJsonValue {
+  return JSON.parse(JSON.stringify(value ?? null)) as Prisma.InputJsonValue;
+}
+
 @Injectable()
 export class EngineeringService {
   public constructor(
@@ -112,7 +122,7 @@ export class EngineeringService {
 
   private async persist(userId: string, tool: Tool, inputs: unknown, outputs: unknown): Promise<void> {
     await this.prisma.client.engineeringCalculation.create({
-      data: { userId, tool, inputs, outputs },
+      data: { userId, tool, inputs: toJson(inputs), outputs: toJson(outputs) },
     });
   }
 }

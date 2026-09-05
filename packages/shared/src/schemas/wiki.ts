@@ -39,6 +39,20 @@ export const askAiSchema = z.object({
 });
 
 export type WikiSources = (typeof wikiSources)[number];
+
+/**
+ * اسلاگ‌های عمومی (`blog`) با نام عضو enum در Prisma (`COMPANY_BLOG`) فرق دارند؛
+ * این نگاشت تنها پل رسمی بین قرارداد API و دیتابیس است (نوت ۳ §۴).
+ */
+export const WIKI_SOURCE_BY_SLUG = {
+  "national-building-regulation-13": "NATIONAL_REGULATION_13",
+  "publication-110": "PUBLICATION_110",
+  "tavanir-rules": "TAVANIR_RULES",
+  iec: "IEC",
+  blog: "COMPANY_BLOG",
+} as const satisfies Record<WikiSources, string>;
+
+export type WikiSourceEnum = (typeof WIKI_SOURCE_BY_SLUG)[keyof typeof WIKI_SOURCE_BY_SLUG];
 export type WikiSearchInput = z.infer<typeof articleSearchSchema>;
 export type AskAiInput = z.infer<typeof askAiSchema>;
 export type ArticleUpsertInput = z.infer<typeof articleUpsertSchema>;

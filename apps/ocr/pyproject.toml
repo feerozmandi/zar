@@ -42,6 +42,10 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+# پکیج app باید بدون نصب‌شدن هم import شود؛ با اجرای «pytest» (برخلاف
+# «python -m pytest») پوشه‌ی ریشه به sys.path اضافه نمی‌شود و جمع‌آوری آزمون
+# با ModuleNotFoundError: No module named 'app' و خروجی ۲ شکست می‌خورد.
+pythonpath = ["."]
 
 [tool.mypy]
 python_version = "3.11"

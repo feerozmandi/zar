@@ -40,14 +40,14 @@ export class UsersService {
       update: {
         ...encrypted,
         last4: input.apiKey.slice(-4),
-        defaultModel: input.defaultModel,
+        defaultModel: input.defaultModel ?? null,
         isActive: true,
       },
       create: {
         userId,
         provider: input.provider,
         label,
-        defaultModel: input.defaultModel,
+        defaultModel: input.defaultModel ?? null,
         last4: input.apiKey.slice(-4),
         ...encrypted,
       },

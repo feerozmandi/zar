@@ -150,7 +150,7 @@ export class AiService {
 
   private async logCall(
     userId: string,
-    provider: string,
+    provider: "GITHUB_MODELS" | "OPENAI" | "ANTHROPIC" | "GEMINI",
     input: AiGenerateInput,
     status: number,
     latencyMs: number,

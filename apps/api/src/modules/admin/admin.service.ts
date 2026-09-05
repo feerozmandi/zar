@@ -67,9 +67,9 @@ export class AdminService {
   public async upsertArticle(input: ArticleUpsertInput, authorId: string) {
     const data = {
       title: input.title,
-      excerpt: input.excerpt,
+      excerpt: input.excerpt ?? null,
       contentMdx: input.contentMdx,
-      source: input.source,
+      source: WIKI_SOURCE_BY_SLUG[input.source],
       status: input.published ? ("PUBLISHED" as const) : ("DRAFT" as const),
       tags: input.tags,
       authorId,
