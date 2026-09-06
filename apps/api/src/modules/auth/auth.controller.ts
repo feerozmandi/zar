@@ -22,7 +22,12 @@ export class AuthController {
   @Public()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "ورود و دریافت JWT Token" })
-  public login(@Body(new ZodValidationPipe(loginSchema)) input: LoginInput): Promise<AuthTokens> {
-    return this.auth.login(input);
+  public async login(
+    @Body(new ZodValidationPipe(loginSchema)) input: LoginInput,
+  ): Promise<AuthTokens & { user: { id: string; email: string; role: string } }> {
+    const tokens = await this.auth.login(input);
+    const user = await this.auth.findUserByEmail(input.email);
+    if (!user) throw new UnauthorizedException("کاربر یافت نشد");
+    return { ...tokens, user: { id: user.id, email: user.email, role: user.role } };
   }
 }

@@ -13,7 +13,7 @@ import { JwtStrategy } from "./jwt.strategy.js";
     JwtModule.registerAsync({
       inject: [AppConfigService],
       useFactory: (config: AppConfigService): JwtModuleOptions => ({
-        secretOrPrivateKey: config.jwtSecret,
+        secret: config.jwtSecret,
         // JWT_SIGN_OPTIONS در Nest 12 تایپ سخت‌گیرانه‌ای برای مدت‌زمان دارد
         signOptions: { expiresIn: config.jwtAccessTtl as JwtSignOptions["expiresIn"] },
       }),

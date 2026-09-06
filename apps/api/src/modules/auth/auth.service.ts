@@ -74,4 +74,14 @@ export class AuthService {
     if (!user || user.status !== "ACTIVE") return null;
     return { id: user.id, email: user.email, role: user.role };
   }
+
+  /** یافتن کاربر از روی ایمیل برای بازگشت در پاسخ لاگین */
+  public async findUserByEmail(email: string): Promise<AuthenticatedUser | null> {
+    const user = await this.prisma.client.user.findUnique({
+      where: { email },
+      select: { id: true, email: true, role: true, status: true },
+    });
+    if (!user) return null;
+    return { id: user.id, email: user.email, role: user.role };
+  }
 }

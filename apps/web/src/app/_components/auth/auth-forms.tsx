@@ -33,12 +33,20 @@ export function LoginForm({ mode }: { mode: "login" | "register" }) {
     setPending(true);
     try {
       if (isLogin) {
-        const tokens = await apiFetch(
+        const result = await apiFetch(
           "auth/login",
-          z.object({ accessToken: z.string(), refreshToken: z.string(), expiresIn: z.string() }),
+          z.object({
+            accessToken: z.string(),
+            refreshToken: z.string(),
+            expiresIn: z.string(),
+            user: z.object({ id: z.string(), email: z.string(), role: z.string() }),
+          }),
           { method: "POST", body: values },
         );
-        signIn({ id: "", email: values.email, role: "USER" }, tokens.accessToken);
+        signIn(
+          { id: result.user.id, email: result.user.email, role: result.user.role },
+          result.accessToken,
+        );
         toast.success("ورود موفق");
         router.push("/audit");
       } else {
