@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post, UnauthorizedException } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { loginSchema, registerSchema, type LoginInput, type RegisterInput } from "@xennic/shared";
 import { Public } from "../../common/decorators/roles.decorator.js";
