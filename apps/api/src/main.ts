@@ -30,7 +30,7 @@ async function bootstrap(): Promise<void> {
     }),
   );
   app.enableCors({
-    origin: [config.corsOrigins, `http://localhost:${config.port}`].filter(Boolean),
+    origin: [...config.corsOrigins, `http://localhost:${config.port}`],
     credentials: true,
     maxAge: 86_400,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
