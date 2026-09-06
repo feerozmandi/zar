@@ -1,0 +1,47 @@
+{
+  "name": "@xennic/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "لایه‌ی مشترک: zod schema، ثابت‌ها، فرمول‌های مهندسی/خورشیدی و ابزار فارسی",
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./security": {
+      "types": "./dist/security/password.d.ts",
+      "import": "./dist/security/password.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage",
+    "clean": "rm -rf dist coverage .turbo *.tsbuildinfo"
+  },
+  "dependencies": {
+    "dayjs": "catalog:",
+    "jalaali-js": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "@xennic/eslint-config": "workspace:*",
+    "@xennic/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

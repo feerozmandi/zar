@@ -1,0 +1,111 @@
+/*
+ * Xennic Design System — پالت سازمانی مطابق «نوت ۴ — ساختار و محتوای لندینگ پیج»
+ * این فایل تنها منبع رنگ‌ها/فونت‌هاست؛ هیچ بسته‌ای نباید رنگ خام تعریف کند.
+ * با Tailwind CSS v4 (CSS-first) خوانده می‌شود: @import "@xennic/design-tokens/theme.css";
+ */
+
+@theme inline {
+  /* ── Dark mode (تم اصلی) ── */
+  --color-xennic-bg: #061d24; /* پس‌زمینه اصلی — سبزسیان بسیار تیره */
+  --color-xennic-surface: #0a2830; /* کارت‌ها و پنل‌ها */
+  --color-xennic-gold: #f3a812; /* زرین — رنگ برند / Primary Accent */
+  --color-xennic-power: #e51923; /* قرمز انرژی — Action / Alert */
+  --color-xennic-cyan: #00a8b5; /* فیروزه‌ای — داده و تکنولوژی */
+  --color-xennic-fg: #ffffff; /* متن اصلی */
+  --color-xennic-muted: #a3c2c8; /* متن ثانویه */
+
+  /* ── Light mode ── */
+  --color-xennic-bg-light: #f4f8f9;
+  --color-xennic-surface-light: #ffffff;
+  --color-xennic-gold-light: #d98a00;
+  --color-xennic-power-light: #d0121b;
+  --color-xennic-petrol: #0b303a;
+  --color-xennic-fg-light: #0a2128;
+  --color-xennic-muted-light: #4a6971;
+
+  /* ── نگاشت به نام‌های معنایی Tailwind ── */
+  --color-background: var(--xennic-background);
+  --color-foreground: var(--xennic-foreground);
+  --color-card: var(--xennic-card);
+  --color-card-foreground: var(--xennic-card-foreground);
+  --color-muted: var(--xennic-muted);
+  --color-muted-foreground: var(--xennic-muted-foreground);
+  --color-primary: var(--xennic-primary);
+  --color-primary-foreground: var(--xennic-primary-foreground);
+  --color-secondary: var(--xennic-secondary);
+  --color-secondary-foreground: var(--xennic-secondary-foreground);
+  --color-accent: var(--xennic-accent);
+  --color-accent-foreground: var(--xennic-accent-foreground);
+  --color-destructive: var(--xennic-destructive);
+  --color-destructive-foreground: var(--xennic-destructive-foreground);
+  --color-border: var(--xennic-border);
+  --color-input: var(--xennic-input);
+  --color-ring: var(--xennic-ring);
+
+  /* ── تایپوگرافی (فونت وزیرمتن از پکیج vazirmatn) ── */
+  --font-sans: var(--xennic-font-sans), "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", monospace;
+
+  /* ── شعاع و سایه ── */
+  --radius-card: 1rem;
+  --radius-button: 0.75rem;
+  --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.28);
+}
+
+:root {
+  /* مقادیر پیش‌فرض = تم تیره (استاندارد پلتفرم) */
+  --xennic-background: #061d24;
+  --xennic-foreground: #ffffff;
+  --xennic-card: #0a2830;
+  --xennic-card-foreground: #ffffff;
+  --xennic-muted: #a3c2c8;
+  --xennic-muted-foreground: #a3c2c8;
+  --xennic-primary: #f3a812;
+  --xennic-primary-foreground: #061d24;
+  --xennic-secondary: #00a8b5;
+  --xennic-secondary-foreground: #061d24;
+  --xennic-accent: #00a8b5;
+  --xennic-accent-foreground: #ffffff;
+  --xennic-destructive: #e51923;
+  --xennic-destructive-foreground: #ffffff;
+  --xennic-border: rgb(163 194 200 / 0.18);
+  --xennic-input: rgb(163 194 200 / 0.24);
+  --xennic-ring: #f3a812;
+}
+
+[data-theme="light"],
+.light {
+  --xennic-background: #f4f8f9;
+  --xennic-foreground: #0a2128;
+  --xennic-card: #ffffff;
+  --xennic-card-foreground: #0a2128;
+  --xennic-muted: #4a6971;
+  --xennic-muted-foreground: #4a6971;
+  --xennic-primary: #d98a00;
+  --xennic-primary-foreground: #ffffff;
+  --xennic-secondary: #0b303a;
+  --xennic-secondary-foreground: #ffffff;
+  --xennic-accent: #0b303a;
+  --xennic-accent-foreground: #ffffff;
+  --xennic-destructive: #d0121b;
+  --xennic-destructive-foreground: #ffffff;
+  --xennic-border: rgb(11 48 58 / 0.12);
+  --xennic-input: rgb(11 48 58 / 0.18);
+  --xennic-ring: #d98a00;
+}
+
+/* پایه‌های عمومی که همه‌ی رابط‌های Xennic از آن‌ها بهره می‌برند */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--xennic-border);
+  }
+
+  body {
+    background-color: var(--xennic-background);
+    color: var(--xennic-foreground);
+    font-family: var(--xennic-font-sans, "Vazirmatn"), ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}

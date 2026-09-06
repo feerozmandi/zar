@@ -1,0 +1,162 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# pnpm workspaces + Version Catalog
+# مطابق نوت ۳ (معماری فنی، تک‌استک) و نوت ۵ (گام اول: راه‌اندازی مونورپو)
+#
+# «تک‌منبع حقیقت» برای نسخه‌ی کتابخانه‌ها: هر نسخه فقط و فقط در همین فایل
+# تعریف می‌شود و بسته‌های پروژه با ارجاع `catalog:` از آن استفاده می‌کنند.
+# در نتیجه هیچ وابستگی‌ای در دو بخش با دو نسخه‌ی متفاوت ظاهر نمی‌شود و
+# pnpm نیز هر پکیج را یک‌بار در store نصب می‌کند.
+# ─────────────────────────────────────────────────────────────────────────────
+packages:
+  - "apps/*"
+  - "packages/*"
+
+catalog:
+  # ── هسته‌ی زبان و تایپ ──────────────────────────────────────────────────
+  # typescript-eslint تا TS <6.1 پشتیبانی می‌کند؛ پس محدوده سخت است
+  typescript: ~6.0.3
+  "@types/node": ^24.0.0
+  tsx: ^4.23.13
+  dotenv: ^17.4.2
+  dotenv-cli: ^11.0.0
+
+  # ── ابزار یکپارچه (root toolchain) ─────────────────────────────────────
+  turbo: ^2.10.12
+  # eslint 10 با eslint-plugin-react (وابستگی eslint-config-next) سازگار نیست → نسخه‌ی ۹ مستقر است
+  eslint: ^9.39.5
+  "@eslint/js": ^9.39.5
+  typescript-eslint: ^8.69.0
+  eslint-config-prettier: ^10.1.8
+  globals: ^17.0.0
+  prettier: ^3.9.6
+  husky: ^9.1.7
+  lint-staged: ^17.4.1
+  "@commitlint/cli": ^21.2.2
+  "@commitlint/config-conventional": ^21.2.0
+
+  # ── تست (تک‌ runner برای کل مونورپو) ───────────────────────────────────
+  vitest: ^4.1.11
+  "@vitest/coverage-v8": ^4.1.11
+  vite-tsconfig-paths: ^6.1.1
+  "@vitejs/plugin-react": ^6.1.1
+  jsdom: ^30.0.1
+  "@testing-library/react": ^16.3.3
+  "@testing-library/dom": ^10.4.1
+  supertest: ^7.2.2
+  "@types/supertest": ^7.2.1
+
+  # ── بک‌اند: NestJS 12 (ESM) ─────────────────────────────────────────────
+  "@nestjs/common": ^12.0.1
+  "@nestjs/core": ^12.0.1
+  "@nestjs/platform-express": ^12.0.1
+  "@nestjs/config": ^12.0.0
+  "@nestjs/jwt": ^12.0.1
+  "@nestjs/passport": ^12.0.0
+  "@nestjs/swagger": ^12.0.1
+  "@nestjs/terminus": ^12.0.0
+  "@nestjs/bullmq": ^12.0.0
+  "@nestjs/testing": ^12.0.1
+  "@nestjs/cli": ^12.0.0
+  "@nestjs/schematics": ^12.0.0
+  reflect-metadata: ^0.2.2
+  rxjs: ^7.8.2
+  class-transformer: ^0.5.1
+  class-validator: ^0.15.1
+  passport: ^0.7.0
+  passport-jwt: ^4.0.1
+  "@types/express": ^5.0.6
+  "@types/multer": ^2.2.0
+  "@types/passport-jwt": ^4.0.1
+  helmet: ^8.3.0
+  multer: ^2.3.0
+  bcryptjs: ^3.0.3
+  bullmq: ^6.3.4
+  ioredis: ^6.0.0
+  pdfkit: ^0.20.2
+  "@types/pdfkit": ^0.17.6
+
+  # ── داده: Prisma 7 + PostgreSQL ────────────────────────────────────────
+  prisma: ^7.10.0
+  "@prisma/client": ^7.10.0
+  "@prisma/adapter-pg": ^7.10.0
+  pg: ^8.23.0
+  "@types/pg": ^8.23.1
+
+  # ── اعتبارسنجی مشترک (یک کتابخانه برای همه) ────────────────────────────
+  zod: ^4.5.4
+
+  # ── فرانت‌اند: Next 16 + React 19 + Tailwind 4 ──────────────────────────
+  next: ^16.3.4
+  eslint-config-next: ^16.3.4
+  react: ^19.2.8
+  react-dom: ^19.2.8
+  "@types/react": ^19.0.0
+  "@types/react-dom": ^19.0.0
+  tailwindcss: ^4.3.3
+  "@tailwindcss/postcss": ^4.3.3
+  postcss: ^8.5.28
+  tw-animate-css: ^1.4.0
+  "@tanstack/react-query": ^5.102.8
+  zustand: ^5.0.15
+  next-themes: ^0.4.6
+  react-hook-form: ^7.87.0
+  "@hookform/resolvers": ^5.9.1
+  lucide-react: ^1.41.0
+  recharts: ^3.10.1
+  sonner: ^2.0.8
+  clsx: ^2.1.1
+  tailwind-merge: ^3.6.0
+  class-variance-authority: ^0.7.1
+  "@radix-ui/react-slot": ^1.3.3
+  "@radix-ui/react-accordion": ^1.2.20
+  "@radix-ui/react-dialog": ^1.1.23
+  "@radix-ui/react-dropdown-menu": ^2.1.24
+  "@radix-ui/react-label": ^2.1.15
+  "@radix-ui/react-separator": ^1.1.15
+  "@radix-ui/react-tabs": ^1.1.21
+  "@radix-ui/react-tooltip": ^1.2.16
+  vazirmatn: ^33.0.3
+  dayjs: ^1.11.23
+  jalaali-js: ^2.0.1
+
+# بسته‌هایی که تازه‌تر از minimumReleaseAge هستند و صراحتاً پذیرفته شده‌اند
+# ── یکپارچه‌سازی نسخه در کل درخت (جلوگیری از دو نسخه‌ی eslint در pnpm store) ──
+# بدون این override، eslint-config-next نسخه‌ی خودش از eslint را نصب می‌کند و
+# دو نمونه‌ی فیزیکی typescript-eslint باعث «Cannot redefine plugin @typescript-eslint» می‌شود.
+overrides:
+  eslint: "^9.39.5"
+  "@eslint/js": "^9.39.5"
+
+peerDependencyRules:
+  allowedVersions:
+    # tsconfck (وابستگی ترنزیتیوف eslint-config-next) هنوز peer را به TS ۵ محدود کرده است؛
+    # کار آن فقط خواندن tsconfig.json است و با TS ۶ هم درست کار می‌کند.
+    "tsconfck>typescript": ">=5 <7"
+
+minimumReleaseAgeExclude:
+  - lucide-react@1.41.0
+
+# ── سیاست اجرای اسکریپت install ──────────────────────────────────────────────
+# pnpm به‌صورت پیش‌فرض اسکریپت‌های postinstall بسته‌ها را اجرا نمی‌کند؛
+# آنچه واقعاً لازم است صریحاً مجاز شده و بقیه (شامل تله‌متری) خاموش می‌ماند.
+allowBuilds:
+  esbuild: true # موتور اجرایی vitest
+  "@tailwindcss/oxide": true
+  sharp: true # بهینه‌سازی تصاویر Next.js
+  unrs-resolver: true # تحلیل مسیر در پلاگین‌های TS
+  prisma: false # Prisma 7 بدون دانلود engine کار می‌کند
+  "@prisma/engines": false
+  "@scarf/scarf": false # هرگونه گزارش تله‌متری به بیرون ممنوع
+  msgpackr-extract: false
+
+# ── تنظیمات شبکه (pnpm 11 این کلیدها را از همین فایل می‌خواند، نه از .npmrc) ────
+# مقدار پیش‌فرض fetchTimeout برابر ۶۰ ثانیه است و برای تاربال‌های بزرگ روی لینک‌های
+# کُند کافی نیست (next ≈ ۴۲MB، @next/swc-linux-x64-gnu ≈ ۳۴MB) و با خطای
+# «The operation was aborted due to timeout» نصب نصفه‌کاره می‌ماند.
+# networkConcurrency را می‌توان موقتاً با فلگ هم تنظیم کرد: pnpm install --network-concurrency 2
+fetchTimeout: 900000
+fetchRetries: 6
+fetchRetryMintimeout: 20000
+fetchRetryMaxtimeout: 300000
+
+# در صورت لزوم، قفل‌شدن نسخه‌ی pnpm فقط در package.json (فیلد packageManager) انجام می‌شود.

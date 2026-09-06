@@ -1,0 +1,53 @@
+{
+  "name": "@xennic/ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "کتابخانه‌ی کامپوننت‌های مشترک Xennic (سبک shadcn/ui روی Tailwind v4 + Radix)",
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./src/styles/globals.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "clean": "rm -rf dist .turbo *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@radix-ui/react-accordion": "catalog:",
+    "@radix-ui/react-label": "catalog:",
+    "@radix-ui/react-separator": "catalog:",
+    "@radix-ui/react-slot": "catalog:",
+    "class-variance-authority": "catalog:",
+    "clsx": "catalog:",
+    "lucide-react": "catalog:",
+    "tailwind-merge": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@xennic/design-tokens": "workspace:*",
+    "@xennic/eslint-config": "workspace:*",
+    "@xennic/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "react": "catalog:",
+    "typescript": "catalog:"
+  }
+}
