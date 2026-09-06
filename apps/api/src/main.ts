@@ -51,13 +51,22 @@ async function bootstrap(): Promise<void> {
         .setTitle(`${XENNIC_BRAND.name} — Core API`)
         .setDescription(`سند ${XENNIC_BRAND.name} (${XENNIC_BRAND.legalName}) — مطابق نوت ۳`)
         .setVersion("1.0")
+        .addServer(`${config.globalPrefix}/v1`, "Production API v1")
+        .addServer("/api/v1", "Local Development v1")
         .addBearerAuth({ type: "http", scheme: "bearer", bearerFormat: "JWT" }, "access-token")
         .build(),
     );
     SwaggerModule.setup(`${config.globalPrefix}/docs`, app, document, {
-      swaggerOptions: { persistAuthorization: true },
+      swaggerOptions: {
+        persistAuthorization: true,
+        docExpansion: "list",
+        filter: true,
+        showRequestDuration: true,
+      },
+      customCss: ".swagger-ui .topbar { display: none; }",
+      customSiteTitle: `${XENNIC_BRAND.name} API Docs`,
     });
-    logger.log(`Swagger UI: ${config.globalPrefix}/docs`);
+    logger.log(`Swagger UI: http://${config.host}:${config.port}${config.globalPrefix}/docs`);
   }
 
   await app.listen(config.port, config.host);
