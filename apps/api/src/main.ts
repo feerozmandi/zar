@@ -29,7 +29,13 @@ async function bootstrap(): Promise<void> {
       crossOriginEmbedderPolicy: false,
     }),
   );
-  app.enableCors({ origin: config.corsOrigins, credentials: true, maxAge: 86_400 });
+  app.enableCors({
+    origin: [config.corsOrigins, `http://localhost:${config.port}`].filter(Boolean),
+    credentials: true,
+    maxAge: 86_400,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    allowedHeaders: "Content-Type,Authorization",
+  });
   if (config.isProd) app.set("trust proxy", 1);
 
   app.useGlobalPipes(
@@ -51,8 +57,8 @@ async function bootstrap(): Promise<void> {
         .setTitle(`${XENNIC_BRAND.name} — Core API`)
         .setDescription(`سند ${XENNIC_BRAND.name} (${XENNIC_BRAND.legalName}) — مطابق نوت ۳`)
         .setVersion("1.0")
-        .addServer(`${config.globalPrefix}/v1`, "Production API v1")
-        .addServer("/api/v1", "Local Development v1")
+        .addServer(`http://localhost:${config.port}${config.globalPrefix}/v1`, "Local Development")
+        .addServer(`${config.globalPrefix}/v1`, "Production")
         .addBearerAuth({ type: "http", scheme: "bearer", bearerFormat: "JWT" }, "access-token")
         .build(),
     );
