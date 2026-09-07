@@ -1,0 +1,11 @@
+# بازبینان پیش‌فرض — مطابق نقش‌های CONTRIBUTING.md §۶
+# توجه: تا زمانی که همکاران به مخزن اضافه نشده‌اند، Owner همه‌ی بازبینی‌ها را انجام می‌دهد.
+
+*                                       @feerozmandi
+/docs/                                  @feerozmandi
+/apps/api/                              @feerozmandi
+/apps/web/                              @feerozmandi
+/apps/ocr/                              @feerozmandi
+/packages/database/                       @feerozmandi
+/infra/                                   @feerozmandi
+/.github/workflows/                       @feerozmandi

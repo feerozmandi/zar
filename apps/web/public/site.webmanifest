@@ -1,0 +1,12 @@
+{
+  "name": "Xennic — زر نور نیرو یکتا",
+  "short_name": "Xennic",
+  "description": "پلتفرم جامع انرژی، مهندسی برق و هوش مصنوعی",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#061D24",
+  "theme_color": "#F3A812",
+  "dir": "rtl",
+  "lang": "fa",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

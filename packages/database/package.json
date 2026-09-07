@@ -1,0 +1,60 @@
+{
+  "name": "@xennic/database",
+  "version": "0.1.0",
+  "private": true,
+  "description": "لایه‌ی داده: Prisma 7 Schema، کلاینت نوع‌ایمن و مایگریشن‌ها (PostgreSQL + driver adapter)",
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./generated": {
+      "types": "./src/generated/prisma/client.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "prisma",
+    "src",
+    "prisma.config.ts"
+  ],
+  "scripts": {
+    "build": "node scripts/ensure-client.mjs && tsc -p tsconfig.build.json",
+    "generate": "prisma generate --no-hints",
+    "postgenerate": "node scripts/strip-generated-lint.mjs",
+    "validate": "prisma validate",
+    "format": "prisma format",
+    "db:push": "prisma db push",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "seed": "prisma db seed",
+    "studio": "prisma studio",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "clean": "rm -rf dist src/generated coverage .turbo *.tsbuildinfo"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "catalog:",
+    "@prisma/client": "catalog:",
+    "pg": "catalog:",
+    "@xennic/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "dotenv": "catalog:",
+    "eslint": "catalog:",
+    "prisma": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "@xennic/eslint-config": "workspace:*",
+    "@xennic/typescript-config": "workspace:*"
+  }
+}
