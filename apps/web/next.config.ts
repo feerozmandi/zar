@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@xennic/ui", "@xennic/design-tokens", "@xennic/shared"],
   reactStrictMode: true,
   poweredByHeader: false,
+  // در توسعه، دسترسی از میزبان‌های غیرِ localhost (تونل/پیش‌نمایش ابری) مجاز است
+  ...(isDev ? { allowedDevOrigins: ["*.e2b.app", "*.ngrok-free.app", "localhost"] } : {}),
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60,
