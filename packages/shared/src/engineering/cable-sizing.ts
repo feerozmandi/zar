@@ -1,4 +1,5 @@
 import { calculateVoltageDrop } from "./voltage-drop.js";
+import { refs, type StandardNote } from "./standards.js";
 
 /**
  * سایزینگ کابل: انتخاب کوچک‌ترین مقطع استاندارد که هم حد جریان (ampacity) و
@@ -60,6 +61,10 @@ export interface CableSizingResult {
   candidates: Array<{ crossSectionMm2: number; ampacity: number; dropPercent: number }>;
   /** اگر هیچ مقطع استانداردی پاسخگو نبود، پیشنهاد تقسیم بار یا افزایش مقطع */
   adviceFa: string | null;
+  /** رنج‌های جریان مجاز (آمپریسیتی) بازبینی‌شده به‌ازای مقطع — جدول مرجع */
+  ampacityRanges: Array<{ crossSectionMm2: number; minA: number; maxA: number }>;
+  /** پیوست استانداردهای معتبر (ایرانی و بین‌المللی) — انتهای محاسبه */
+  standards: StandardNote[];
 }
 
 /** ضریب اصلاح دما برای عایق PVC — k = √((70 − Tamb) / (70 − 30)) */
@@ -98,6 +103,12 @@ export function sizeCable(input: CableSizingInput): CableSizingResult {
     (candidate) => candidate.ampacity >= input.current && candidate.dropPercent <= maxDrop,
   );
 
+  const ampacityRanges = STANDARD_CROSS_SECTIONS_MM2.map((section) => ({
+    crossSectionMm2: section,
+    minA: Math.round((COPPER_AIR_A[String(section)] ?? 0) * 0.8 * kT * kI),
+    maxA: Math.round((COPPER_AIR_A[String(section)] ?? 0) * 1.0 * kT * kI),
+  }));
+
   return {
     selectedCrossSectionMm2: chosen?.crossSectionMm2 ?? null,
     ampacityAfterCorrections: chosen?.ampacity ?? 0,
@@ -110,5 +121,7 @@ export function sizeCable(input: CableSizingInput): CableSizingResult {
     adviceFa: chosen
       ? null
       : `هیچ مقطع استانداردی با حدود داده‌شده پاسخگو نیست؛ مسیر را کوتاه/تقسیم کنید یا حد افت ولتاژ را بازبینی نمایید.`,
+    ampacityRanges,
+    standards: refs(["IEC60364", "IEC60287", "PUB110", "TAVANIR_NET"]),
   };
 }

@@ -1,13 +1,35 @@
 import type { Queue as BullQueue } from "bullmq";
 import { InjectQueue } from "@nestjs/bullmq";
 import { BadRequestException, Injectable } from "@nestjs/common";
-import type { CapacitorBankInputDto, GeneratorInputDto } from "@xennic/shared";
+import type {
+  CapacitorBankInputDto,
+  GeneratorInputDto,
+  DemandInputDto,
+  ShortCircuitInputDto,
+  TransformerInputDto,
+  SwitchgearInputDto,
+  BusbarInputDto,
+  VoltageClassInputDto,
+  EarthingInputDto,
+  LightingInputDto,
+} from "@xennic/shared";
 import {
+  calculateDemand,
+  calculateShortCircuit,
   calculateVoltageDrop,
   CONDUCTIVITY,
+  earthElectrodeResistance,
+  interiorLighting,
+  sizeBusbar,
   sizeCable,
   sizeCapacitorBank,
   sizeGenerator,
+  sizeTransformer,
+  selectSwitchgear,
+  voltageClassInfo,
+  ENGINEERING_TOOLS,
+  ENGINEERING_CATEGORY_LABEL,
+  STANDARD_LIBRARY,
   QUEUES,
   type CableSizingInputDto,
   type PdfExportInputDto,
@@ -77,6 +99,69 @@ export class EngineeringService {
     const result = sizeGenerator(input);
     await this.persist(userId, "GENERATOR_SIZE", input, result);
     return result;
+  }
+
+  // ───────────────────────── ابزارهای گسترده (بدون ثبت دفترچه) ─────────────────────────
+  // ابزارهای پایین هنوز عضو enum دیتابیس نیستند؛ پس «محاسبه‌ی بی‌وضعیت» هستند و نتیجه را
+  // به‌همراه پیوست استاندارد برمی‌گردانند. ثبت در دفترچه پس از افزودن enum در مهاجرت بعدی فعال می‌شود.
+
+  /** محاسبه‌ی بار و دیماند */
+  public demand(input: DemandInputDto) {
+    return calculateDemand(input);
+  }
+
+  /** جریان اتصال کوتاه و تعیین قدرت قطع (IEC 60909) */
+  public shortCircuit(input: ShortCircuitInputDto) {
+    return calculateShortCircuit(input);
+  }
+
+  /** انتخاب ترانسفورماتور توزیع */
+  public transformer(input: TransformerInputDto) {
+    return sizeTransformer(input);
+  }
+
+  /** انتخاب کلید/بریکر */
+  public switchgear(input: SwitchgearInputDto) {
+    return selectSwitchgear(input);
+  }
+
+  /** سایزینگ شینه */
+  public busbar(input: BusbarInputDto) {
+    return sizeBusbar(input);
+  }
+
+  /** طبقه‌بندی ولتاژ و رنج تجهیز */
+  public voltageClass(input: VoltageClassInputDto) {
+    return voltageClassInfo(input.nominalKv);
+  }
+
+  /** مقاومت الکترود زمین */
+  public earthing(input: EarthingInputDto) {
+    return earthElectrodeResistance({
+      soil: { rhoOhmM: input.rhoOhmM, soilId: input.soilId },
+      rodLengthM: input.rodLengthM,
+      rodDiameterM: input.rodDiameterM,
+      rodCount: input.rodCount,
+      targetOhm: input.targetOhm,
+    });
+  }
+
+  /** روشنایی داخلی */
+  public lighting(input: LightingInputDto) {
+    return interiorLighting(input);
+  }
+
+  /** فهرست ابزارهای جعبه‌ابزار (برای فرانت‌اند و مستندات) */
+  public toolCatalog() {
+    return {
+      categories: ENGINEERING_TOOLS,
+      categoryLabels: ENGINEERING_CATEGORY_LABEL,
+    };
+  }
+
+  /** کتابخانه‌ی استانداردهای مرجع (ایرانی و بین‌المللی) */
+  public standardLibrary() {
+    return Object.values(STANDARD_LIBRARY);
   }
 
   /** POST /engineering/export-pdf — صدور دفترچه محاسبات (پردازش در صف) */

@@ -1,15 +1,31 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
+  busbarSchema,
   capacitorBankSchema,
   cableSizingSchema,
+  demandSchema,
+  earthingSchema,
   generatorSchema,
+  lightingSchema,
   pdfExportSchema,
+  shortCircuitSchema,
+  switchgearSchema,
+  transformerSchema,
+  voltageClassSchema,
   voltageDropSchema,
+  type BusbarInputDto,
   type CableSizingInputDto,
   type CapacitorBankInputDto,
+  type DemandInputDto,
+  type EarthingInputDto,
   type GeneratorInputDto,
+  type LightingInputDto,
   type PdfExportInputDto,
+  type ShortCircuitInputDto,
+  type SwitchgearInputDto,
+  type TransformerInputDto,
+  type VoltageClassInputDto,
   type VoltageDropInputDto,
 } from "@xennic/shared";
 import { CurrentUser, type AuthenticatedUser } from "../../common/decorators/current-user.decorator.js";
@@ -61,6 +77,98 @@ export class EngineeringController {
     @Body(new ZodValidationPipe(generatorSchema)) body: GeneratorInputDto,
   ) {
     return this.engineering.generator(user.id, body);
+  }
+
+  @Post("demand")
+  @ApiOperation({ summary: "محاسبه‌ی بار و دیماند (مبحث ۱۳ / IEEE 141)" })
+  @ApiBodyZod(demandSchema)
+  public demand(
+    @CurrentUser() _user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(demandSchema)) body: DemandInputDto,
+  ) {
+    return this.engineering.demand(body);
+  }
+
+  @Post("short-circuit")
+  @ApiOperation({ summary: "جریان اتصال کوتاه و قدرت قطع (IEC 60909)" })
+  @ApiBodyZod(shortCircuitSchema)
+  public shortCircuit(
+    @CurrentUser() _user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(shortCircuitSchema)) body: ShortCircuitInputDto,
+  ) {
+    return this.engineering.shortCircuit(body);
+  }
+
+  @Post("transformer")
+  @ApiOperation({ summary: "انتخاب ترانسفورماتور توزیع (IEC 60076)" })
+  @ApiBodyZod(transformerSchema)
+  public transformer(
+    @CurrentUser() _user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(transformerSchema)) body: TransformerInputDto,
+  ) {
+    return this.engineering.transformer(body);
+  }
+
+  @Post("switchgear")
+  @ApiOperation({ summary: "انتخاب کلید/بریکر بر پایه‌ی ولتاژ، بار و سطح اتصال کوتاه" })
+  @ApiBodyZod(switchgearSchema)
+  public switchgear(
+    @CurrentUser() _user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(switchgearSchema)) body: SwitchgearInputDto,
+  ) {
+    return this.engineering.switchgear(body);
+  }
+
+  @Post("busbar")
+  @ApiOperation({ summary: "سایزینگ شینه (باس‌بار) بر پایه‌ی جریان بار" })
+  @ApiBodyZod(busbarSchema)
+  public busbar(
+    @CurrentUser() _user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(busbarSchema)) body: BusbarInputDto,
+  ) {
+    return this.engineering.busbar(body);
+  }
+
+  @Post("voltage-class")
+  @ApiOperation({ summary: "طبقه‌بندی ولتاژ و رنج نامی تجهیز (IEC 60038)" })
+  @ApiBodyZod(voltageClassSchema)
+  public voltageClass(
+    @CurrentUser() _user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(voltageClassSchema)) body: VoltageClassInputDto,
+  ) {
+    return this.engineering.voltageClass(body);
+  }
+
+  @Post("earthing")
+  @ApiOperation({ summary: "مقاومت الکترود زمین (IEEE 80 / مبحث ۱۳)" })
+  @ApiBodyZod(earthingSchema)
+  public earthing(
+    @CurrentUser() _user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(earthingSchema)) body: EarthingInputDto,
+  ) {
+    return this.engineering.earthing(body);
+  }
+
+  @Post("lighting")
+  @ApiOperation({ summary: "محاسبه‌ی روشنایی داخلی به روش لومن (مبحث ۱۳ / CIE)" })
+  @ApiBodyZod(lightingSchema)
+  public lighting(
+    @CurrentUser() _user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(lightingSchema)) body: LightingInputDto,
+  ) {
+    return this.engineering.lighting(body);
+  }
+
+  @Get("tools")
+  @ApiOperation({ summary: "فهرست ابزارهای جعبه‌ابزار مهندسی برق" })
+  public tools() {
+    return this.engineering.toolCatalog();
+  }
+
+  @Get("standards")
+  @ApiOperation({ summary: "کتابخانه‌ی استانداردهای مرجع (ایرانی و بین‌المللی)" })
+  public standards() {
+    return this.engineering.standardLibrary();
   }
 
   @Post("export-pdf")
