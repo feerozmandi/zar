@@ -40,3 +40,35 @@ Thumbs.db
 # ─── مستندات / Obsidian ───────────────────────────────────
 .trash/
 docs/.obsidian/workspace*
+
+# ─── pnpm / مونورپو ────────────────────────────────────────────
+.pnpm-store/
+.pnpm/
+.turbo/
+.var/
+var/
+apps/api/var/
+apps/*/tsconfig.tsbuildinfo
+
+# کلاینت تولیدشده‌ی Prisma (در CI با `pnpm db:generate` بازتولید می‌شود)
+packages/database/src/generated/
+
+# فایل‌های محیطی محلی بخش‌ها
+apps/*/.env
+apps/*/.env.*
+!apps/*/.env.example
+
+# پایتون (apps/ocr)
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# خروجی‌های محلی استقرار
+infra/nginx/certs/
+*.sqlite
+
+# ─── ابزار توسعه‌ی آفلاین (شبیه‌ساز کلاینت Prisma؛ در CI لازم نیست) ───
+.xennic-dev/

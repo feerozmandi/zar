@@ -39,7 +39,6 @@
     "server-only": "^0.0.1",
     "sonner": "catalog:",
     "tailwind-merge": "catalog:",
-    "three": "catalog:",
     "vazirmatn": "catalog:",
     "zod": "catalog:",
     "zustand": "catalog:"
@@ -51,7 +50,6 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@types/three": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@xennic/eslint-config": "workspace:*",
     "@xennic/typescript-config": "workspace:*",

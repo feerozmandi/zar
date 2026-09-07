@@ -10,31 +10,21 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { memoryStorage } from "multer";
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { auditAnalyzeSchema, MAX_UPLOAD_MB, paginationSchema, type Pagination } from "@xennic/shared";
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { auditAnalyzeSchema, paginationSchema, type Pagination } from "@xennic/shared";
 import { CurrentUser, type AuthenticatedUser } from "../../common/decorators/current-user.decorator.js";
 import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe.js";
-import { ApiBodyZod } from "../../common/utils/zod-openapi.js";
 import { AuditService, type UploadedBillFile } from "./audit.service.js";
 import { UploadBillDto } from "./dto/upload-bill.dto.js";
 
 @ApiTags("audit")
-@ApiBearerAuth("access-token")
 @Controller("audit")
 export class AuditController {
   public constructor(private readonly audit: AuditService) {}
 
   @Post("upload")
   @HttpCode(HttpStatus.ACCEPTED)
-  @UseInterceptors(
-    FileInterceptor("file", {
-      // پیش‌فرض multer دیسک است و `file.buffer` همیشه undefined می‌شد؛
-      // حافظه برای ذخیره‌سازی مستقیم سرویس و رسیدن به سقف حجم با خطای 413.
-      storage: memoryStorage(),
-      limits: { fileSize: MAX_UPLOAD_MB * 1024 * 1024 },
-    }),
-  )
+  @UseInterceptors(FileInterceptor("file"))
   @ApiConsumes("multipart/form-data")
   @ApiOperation({ summary: "آپلود فایل/تصویر قبض" })
   @ApiBody({ schema: { type: "object", properties: { file: { type: "string", format: "binary" } } } })
@@ -49,7 +39,6 @@ export class AuditController {
   @Post("analyze")
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({ summary: "استخراج داده با OCR و تحلیل جریمه راکتیو/دیماند" })
-  @ApiBodyZod(auditAnalyzeSchema)
   public analyze(
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(auditAnalyzeSchema))

@@ -12,7 +12,7 @@ const links = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <PanelNav accent="#1FE0D3" links={links} title="پنل مدیریت ارشد Xennic" />
+      <PanelNav accent="#0B303A" links={links} title="پنل مدیریت ارشد Xennic" />
       {children}
     </>
   );

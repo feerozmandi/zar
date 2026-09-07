@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { ExtractJwt, type SecretOrKeyProvider, Strategy } from "passport-jwt";
+import { ExtractJwt, Strategy } from "passport-jwt";
 import { AppConfigService } from "../../config/app-config.service.js";
 import { AuthService } from "./auth.service.js";
 
@@ -16,13 +16,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
     config: AppConfigService,
     private readonly auth: AuthService,
   ) {
-    const secretProvider: SecretOrKeyProvider = (_request, _rawJwtToken, done) => done(null, config.jwtSecret);
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      // passport-jwt 4 با `done` صدا زده می‌شود؛ یک تابع `() => secret` بازگشتی
-      // هرگز callback را اجرا نمی‌کند و هر مسیر محافظت‌شده برای همیشه می‌ماند.
-      secretOrKeyProvider: secretProvider,
+      secretOrKeyProvider: () => config.jwtSecret,
     });
   }
 
