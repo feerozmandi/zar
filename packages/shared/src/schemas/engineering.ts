@@ -6,8 +6,12 @@ export const voltageDropSchema = z.object({
   current: z.number().positive(),
   length: z.number().positive(),
   conductor: z.enum(["copper", "aluminium"]).default("copper"),
+  /** مقطع هادی (mm²)؛ اگر داده نشود خروجی به‌ازای مقطع ۱mm² است */
+  crossSectionMm2: z.number().positive().optional(),
   reactancePerKm: z.number().min(0).max(1).optional(),
   powerFactor: z.number().min(0.1).max(1).default(0.85),
+  /** مدار روشنایی → آستانه‌ی افت ۳٪ به‌جای ۴٪ */
+  lightingCircuit: z.boolean().default(false),
 });
 
 export const cableSizingSchema = z.object({
