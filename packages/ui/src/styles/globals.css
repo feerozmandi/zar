@@ -1,0 +1,27 @@
+/*
+ * استایل پایه‌ی کامپوننت‌های مشترک.
+ * توجه: توکن‌های رنگ در @xennic/design-tokens/src/theme.css تعریف شده‌اند و
+ * apps/web همان فایل را import می‌کند؛ این فایل فقط قواعد ساختاری کامپوننت‌هاست.
+ */
+@layer components {
+  .xennic-glass {
+    background-color: color-mix(in oklab, var(--xennic-card) 82%, transparent);
+    border: 1px solid var(--xennic-border);
+    box-shadow: var(--shadow-glass);
+    backdrop-filter: blur(10px);
+  }
+
+  .xennic-grid-lines {
+    background-image:
+      linear-gradient(to right, rgb(0 168 181 / 0.09) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(0 168 181 / 0.09) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* اعداد در جداول مهندسی همیشه چپ‌به‌راست و با فونت تک‌فاصله */
+  .xennic-numeric {
+    direction: ltr;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono);
+  }
+}
