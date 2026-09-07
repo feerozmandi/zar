@@ -1,0 +1,15 @@
+{
+  "name": "@xennic/typescript-config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "پیکربندی مرکزی TypeScript برای تمام بخش‌های مونورپوی Xennic (تک‌منبع تنظیمات کامپایلر)",
+  "license": "UNLICENSED",
+  "files": [
+    "base.json",
+    "node.json",
+    "lib.json",
+    "next.json",
+    "react-lib.json",
+    "test.json"
+  ]
+}
