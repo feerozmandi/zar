@@ -14,6 +14,13 @@ export class HealthController {
     private readonly queues: QueueService,
   ) {}
 
+  /** مسیر ریشه‌ی سلامت — معادل /live تا دفترچه‌ی API ساده بماند */
+  @Get()
+  @HealthCheck()
+  public root() {
+    return this.liveness();
+  }
+
   @Get("live")
   @HealthCheck()
   public liveness() {

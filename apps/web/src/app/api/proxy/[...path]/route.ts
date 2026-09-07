@@ -12,7 +12,9 @@ async function proxy(request: NextRequest): Promise<Response> {
   const url = new URL(`${UPSTREAM}/${target}${incoming.search}`);
 
   const headers = new Headers(request.headers);
-  for (const hop of ["host", "cookie", "connection", "content-length"]) headers.delete(hop);
+  // `cookie` نگهداری می‌شود تا کوکی رفرش httpOnly (توسط همین پروکسی دریافت‌شده)
+  // برای نوسازی نشست به Core API برسد؛ فقط hop headers استاندارد حذف می‌شوند.
+  for (const hop of ["host", "connection", "content-length"]) headers.delete(hop);
 
   const isBodyless = request.method === "GET" || request.method === "HEAD";
   const body = isBodyless ? undefined : await request.arrayBuffer();

@@ -1,20 +1,22 @@
 import { routes } from "@xennic/design-tokens";
-import { ArrowLeft, Zap } from "lucide-react";
+import { ArrowLeft, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@xennic/ui";
 
-/** هیرو لندینگ — تیتر، زیرتیتر و دو CTA مطابق نوت ۴ §۲ */
+/** هیرو لندینگ — تیتر، زیرتیتر و دو CTA با تم «هسته انرژی × بلوپرینت» */
 export function Hero() {
   return (
-    <section className="xennic-grid-lines relative overflow-hidden border-b border-border/60">
+    <section className="relative overflow-hidden border-b border-border/60">
       <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-20 lg:grid-cols-[1.15fr_1fr] lg:px-8 lg:py-28">
         <div>
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground">
+          <p className="pulse-spark mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground">
             <Zap className="size-3.5 text-primary" />
             موتور تحلیل اسناد انرژی با هوش مصنوعی
           </p>
           <h1 className="text-3xl leading-tight font-black sm:text-4xl lg:text-5xl lg:leading-[1.2]">
-            مهندسی، نوآوری برای آینده انرژی با قدرت هوش مصنوعی
+            مهندسی، نوآوری برای{" "}
+            <span className="energy-text">آینده‌ی انرژی</span> با قدرت هوش
+            مصنوعی
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
             پلتفرم جامع <strong className="text-foreground">Xennic</strong> (محصول شرکت زر نور نیرو یکتا)؛
@@ -34,7 +36,14 @@ export function Hero() {
           </div>
         </div>
 
-        <aside className="xennic-glass rounded-(--radius-card) p-6" aria-label="مراحل کار پلتفرم">
+        <aside
+          className="bp-inlay bp-corner rounded-(--radius-card) bg-card/60 p-6 backdrop-blur-md"
+          aria-label="مراحل کار پلتفرم"
+        >
+          <div className="mb-4 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+            <Sparkles className="size-3.5 text-primary" />
+            گردش‌کار پلتفرم — XN-01
+          </div>
           <ol className="space-y-4 text-sm">
             {[
               "آپلود تصویر یا PDF قبض برق",

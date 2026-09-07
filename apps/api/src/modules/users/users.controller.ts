@@ -1,11 +1,13 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { aiKeySchema, aiSettingsSchema, type AiKeyInput, type AiSettingsInput } from "@xennic/shared";
 import { CurrentUser, type AuthenticatedUser } from "../../common/decorators/current-user.decorator.js";
 import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe.js";
+import { ApiBodyZod } from "../../common/utils/zod-openapi.js";
 import { UsersService } from "./users.service.js";
 
 @ApiTags("users")
+@ApiBearerAuth("access-token")
 @Controller("user")
 export class UsersController {
   public constructor(private readonly users: UsersService) {}
@@ -18,6 +20,7 @@ export class UsersController {
 
   @Post("ai-settings")
   @ApiOperation({ summary: "ذخیره‌ی کلید اختصاصی API (BYOK) با رمزنگاری AES-256-GCM" })
+  @ApiBodyZod(aiKeySchema)
   public saveKey(
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(aiKeySchema)) input: AiKeyInput,
@@ -27,6 +30,7 @@ export class UsersController {
 
   @Put("ai-settings")
   @ApiOperation({ summary: "تنظیم مدل پیش‌فرض و وضعیت فعال‌بودن کلید" })
+  @ApiBodyZod(aiSettingsSchema)
   public updateSettings(
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(aiSettingsSchema)) input: AiSettingsInput,

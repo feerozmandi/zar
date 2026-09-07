@@ -1,26 +1,29 @@
 /*
- * Xennic Design System — پالت سازمانی مطابق «نوت ۴ — ساختار و محتوای لندینگ پیج»
- * این فایل تنها منبع رنگ‌ها/فونت‌هاست؛ هیچ بسته‌ای نباید رنگ خام تعریف کند.
+ * Xennic Design System — هویت بصری «هسته انرژی × بلوپرینت فنی» (نسخه ۲)
+ * تم تیره: فضای عمیق با انرژی فیروزه‌ای (برق) و جرقه‌های کهربایی.
+ * تم روشن: کاغذ بلوپرینت فنی با شبکه خط‌کشی و جوهر فیروزه‌ای.
+ * این فایل تنها منبع رنگ‌هاست؛ هیچ بسته‌ای نباید رنگ خام تعریف کند.
  * با Tailwind CSS v4 (CSS-first) خوانده می‌شود: @import "@xennic/design-tokens/theme.css";
  */
 
 @theme inline {
-  /* ── Dark mode (تم اصلی) ── */
-  --color-xennic-bg: #061d24; /* پس‌زمینه اصلی — سبزسیان بسیار تیره */
-  --color-xennic-surface: #0a2830; /* کارت‌ها و پنل‌ها */
-  --color-xennic-gold: #f3a812; /* زرین — رنگ برند / Primary Accent */
-  --color-xennic-power: #e51923; /* قرمز انرژی — Action / Alert */
-  --color-xennic-cyan: #00a8b5; /* فیروزه‌ای — داده و تکنولوژی */
-  --color-xennic-fg: #ffffff; /* متن اصلی */
-  --color-xennic-muted: #a3c2c8; /* متن ثانویه */
+  /* ── Dark mode (هسته انرژی — تم اصلی) ── */
+  --color-xennic-bg: #04070e; /* فضای عمیق نیلی-مشکی */
+  --color-xennic-surface: #0a1422; /* کارت‌ها و پنل‌ها */
+  --color-xennic-gold: #ffb224; /* جرقه کهربایی — Spark Accent */
+  --color-xennic-power: #ff4d5e; /* قرمز انرژی — Action / Alert */
+  --color-xennic-cyan: #1fe0d3; /* فیروزه برق — Primary Accent */
+  --color-xennic-blue: #3aa0ff; /* آبی الکتریکی — لینک/داده */
+  --color-xennic-fg: #e7f4f6; /* متن اصلی */
+  --color-xennic-muted: #87b6be; /* متن ثانویه */
 
-  /* ── Light mode ── */
-  --color-xennic-bg-light: #f4f8f9;
+  /* ── Light mode (کاغذ بلوپرینت) ── */
+  --color-xennic-bg-light: #edf2f4;
   --color-xennic-surface-light: #ffffff;
-  --color-xennic-gold-light: #d98a00;
+  --color-xennic-gold-light: #a06000;
   --color-xennic-power-light: #d0121b;
-  --color-xennic-petrol: #0b303a;
-  --color-xennic-fg-light: #0a2128;
+  --color-xennic-petrol: #0b3a47;
+  --color-xennic-fg-light: #0b2630;
   --color-xennic-muted-light: #4a6971;
 
   /* ── نگاشت به نام‌های معنایی Tailwind ── */
@@ -53,45 +56,46 @@
 }
 
 :root {
-  /* مقادیر پیش‌فرض = تم تیره (استاندارد پلتفرم) */
-  --xennic-background: #061d24;
-  --xennic-foreground: #ffffff;
-  --xennic-card: #0a2830;
-  --xennic-card-foreground: #ffffff;
-  --xennic-muted: #a3c2c8;
-  --xennic-muted-foreground: #a3c2c8;
-  --xennic-primary: #f3a812;
-  --xennic-primary-foreground: #061d24;
-  --xennic-secondary: #00a8b5;
-  --xennic-secondary-foreground: #061d24;
-  --xennic-accent: #00a8b5;
-  --xennic-accent-foreground: #ffffff;
-  --xennic-destructive: #e51923;
+  /* مقادیر پیش‌فرض = تم تیره «هسته انرژی» (استاندارد پلتفرم) */
+  --xennic-background: #04070e;
+  --xennic-foreground: #e7f4f6;
+  --xennic-card: #0a1422;
+  --xennic-card-foreground: #e7f4f6;
+  --xennic-muted: #87b6be;
+  --xennic-muted-foreground: #8bb6bf;
+  --xennic-primary: #1fe0d3;
+  --xennic-primary-foreground: #042522;
+  --xennic-secondary: #ffb224;
+  --xennic-secondary-foreground: #261500;
+  --xennic-accent: #3aa0ff;
+  --xennic-accent-foreground: #eaf6ff;
+  --xennic-destructive: #ff4d5e;
   --xennic-destructive-foreground: #ffffff;
-  --xennic-border: rgb(163 194 200 / 0.18);
-  --xennic-input: rgb(163 194 200 / 0.24);
-  --xennic-ring: #f3a812;
+  --xennic-border: rgb(120 192 200 / 0.16);
+  --xennic-input: rgb(120 192 200 / 0.22);
+  --xennic-ring: #1fe0d3;
 }
 
 [data-theme="light"],
 .light {
-  --xennic-background: #f4f8f9;
-  --xennic-foreground: #0a2128;
+  /* کاغذ بلوپرینت: پس‌زمینه روشن خنثی + جوهر فیروزه‌ای پررنگ */
+  --xennic-background: #edf2f4;
+  --xennic-foreground: #0b2630;
   --xennic-card: #ffffff;
-  --xennic-card-foreground: #0a2128;
+  --xennic-card-foreground: #0b2630;
   --xennic-muted: #4a6971;
-  --xennic-muted-foreground: #4a6971;
-  --xennic-primary: #d98a00;
+  --xennic-muted-foreground: #55676d;
+  --xennic-primary: #0f7f7a;
   --xennic-primary-foreground: #ffffff;
-  --xennic-secondary: #0b303a;
+  --xennic-secondary: #a06000;
   --xennic-secondary-foreground: #ffffff;
-  --xennic-accent: #0b303a;
+  --xennic-accent: #0b3a47;
   --xennic-accent-foreground: #ffffff;
   --xennic-destructive: #d0121b;
   --xennic-destructive-foreground: #ffffff;
-  --xennic-border: rgb(11 48 58 / 0.12);
-  --xennic-input: rgb(11 48 58 / 0.18);
-  --xennic-ring: #d98a00;
+  --xennic-border: rgb(11 58 71 / 0.16);
+  --xennic-input: rgb(11 58 71 / 0.2);
+  --xennic-ring: #0f7f7a;
 }
 
 /* پایه‌های عمومی که همه‌ی رابط‌های Xennic از آن‌ها بهره می‌برند */

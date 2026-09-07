@@ -7,3 +7,13 @@ export const authenticatedUserSchema = z.object({
 });
 
 export type AuthenticatedUser = z.infer<typeof authenticatedUserSchema>;
+
+/** پاسخ login/refresh: توکن‌ها + کاربر (به‌صورت envelope در `data`) */
+export const authTokensSchema = z.object({
+  accessToken: z.string(),
+  refreshToken: z.string(),
+  expiresIn: z.string(),
+  user: authenticatedUserSchema,
+});
+
+export type AuthTokens = z.infer<typeof authTokensSchema>;

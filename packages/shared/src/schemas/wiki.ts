@@ -9,7 +9,7 @@ export const wikiSources = [
 ] as const;
 
 export const articleSearchSchema = z.object({
-  q: z.string().min(1).max(200),
+  q: z.string().min(1).max(200).optional(),
   source: z.enum(wikiSources).optional(),
   ...paginationLike(),
 });
