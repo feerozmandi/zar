@@ -4,7 +4,7 @@
  * (نوت ۴) در لندینگ، پنل‌ها و PDF یکسان بماند.
  */
 @import "tailwindcss";
-/* ارجاع از طریق exports خودِ بسته‌ها (به‌جای مسیر نسبی شکننده) */
+/* ارجاع از طریق exports خودِ بسته‌ها (به‌جاین مسیر نسبی شکننده) */
 @import "@xennic/design-tokens/theme.css";
 @import "@xennic/ui/styles.css";
 
@@ -18,23 +18,96 @@
   @theme {
     --animate-accordion-down: accordion-down 0.2s ease-out;
     --animate-accordion-up: accordion-up 0.2s ease-out;
+    --animate-fade-in: fade-in 0.4s ease-out forwards;
+    --animate-fade-in-up: fade-in-up 0.5s ease-out forwards;
+    --animate-slide-in-right: slide-in-right 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    --animate-slide-in-left: slide-in-left 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    --animate-scale-in: scale-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    --animate-pulse-glow: pulse-glow 2.3s ease-in-out infinite;
+    --animate-shine: shine 1.6s ease-in-out infinite;
+    --animate-stagger-in: stagger-in 0.4s ease-out forwards;
   }
 
-  @keyframes accordion-down {
+  @keyframes fade-in {
     from {
-      height: 0;
+      opacity: 0;
     }
     to {
-      height: var(--radix-accordion-content-height);
+      opacity: 1;
     }
   }
 
-  @keyframes accordion-up {
+  @keyframes fade-in-up {
     from {
-      height: var(--radix-accordion-content-height);
+      opacity: 0;
+      transform: translateY(18px);
     }
     to {
-      height: 0;
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 var(--xennic-primary) inset;
+    }
+    50% {
+      box-shadow: 0 0 0 6px var(--xennic-primary) inset;
+    }
+  }
+
+  @keyframes shine {
+    0% {
+      background-position: 200% center;
+    }
+    100% {
+      background-position: -200% center;
+    }
+  }
+
+  @keyframes stagger-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }
@@ -49,8 +122,197 @@
     color: var(--xennic-foreground);
   }
 
+  /* بستن زمینه‌ی رسم: فرزندان fixed با z-index منفی بالای بک‌گراند body
+     اما زیر محتوا رندر می‌شوند (پیش‌نیاز دیدن پس‌زمینه‌ی WebGL) */
+  body {
+    isolation: isolate;
+  }
+
+  /* انتخاب متنی با رنگ برند */
   ::selection {
     background-color: var(--xennic-primary);
     color: var(--xennic-primary-foreground);
+  }
+
+  /* لینک‌ها با آندو subtle */
+  a {
+    transition: color 0.2s ease;
+  }
+
+  /* دکمه‌های اصلی با glow ملایم هنگام هاور */
+  button.bg-primary {
+    transition:
+      box-shadow 0.25s ease,
+      transform 0.12s ease;
+  }
+  button.bg-primary:hover {
+    box-shadow:
+      0 0 0 4px var(--xennic-primary-foreground) inset,
+      0 8px 24px -8px var(--xennic-primary);
+  }
+  button.bg-primary:active {
+    transform: scale(0.97);
+  }
+
+  /*ENTAL دکمه‌های پیوند با hover glow */
+  a.group:hover ~ div,
+  .group:hover .group-hover\:opacity-100 {
+    opacity: 1;
+  }
+
+  /* استایل پیش‌فرض کانتینر */
+  .container {
+    @apply mx-auto px-4;
+  }
+
+  /* اولین اسلات سعی 서버는 없거나 실패했습니다 */
+  .animate-in {
+    animation: fade-in 0.4s ease-out forwards;
+  }
+  .animate-in-up {
+    animation: fade-in-up 0.5s ease-out forwards;
+  }
+  .animate-slide-in {
+    animation: slide-in-right 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .animate-scale-in {
+    animation: scale-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .animate-stagger-1 {
+    animation-delay: 0.05s;
+  }
+  .animate-stagger-2 {
+    animation-delay: 0.1s;
+  }
+  .animate-stagger-3 {
+    animation-delay: 0.15s;
+  }
+  .animate-stagger-4 {
+    animation-delay: 0.2s;
+  }
+  .animate-stagger-5 {
+    animation-delay: 0.25s;
+  }
+  .animate-stagger-6 {
+    animation-delay: 0.3s;
+  }
+
+  /* کریستال glow برای پشت‌زمینه کاربری */
+  .glass-panel {
+    background: var(--xennic-card);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid var(--xennic-border);
+    box-shadow: 0 12px 48px -12px rgb(0 0 0 / 0.5);
+    border-radius: 1rem;
+  }
+
+  /* ── میدان انرژی + شبکه بلوپرینت ── */
+  .energy-field {
+    background:
+      radial-gradient(ellipse 55% 42% at 80% 8%, rgb(31 224 211 / 0.14) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 38% at 10% 78%, rgb(255 178 36 / 0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 45% at 45% 110%, rgb(58 160 255 / 0.12) 0%, transparent 65%),
+      linear-gradient(180deg, #04070e 0%, #05080f 55%, #04070e 100%);
+    mask-image: radial-gradient(circle at 50% 40%, #000 55%, transparent 100%);
+    -webkit-mask-image: radial-gradient(circle at 50% 40%, #000 55%, transparent 100%);
+  }
+
+  .light .energy-field {
+    background:
+      radial-gradient(ellipse 55% 42% at 80% 8%, rgb(15 127 122 / 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 38% at 10% 78%, rgb(160 96 0 / 0.06) 0%, transparent 60%),
+      linear-gradient(180deg, #edf2f4 0%, #e3eaee 100%);
+  }
+
+  /* شبکه خط‌کشی فنی (بلوپرینت) */
+  .blueprint-grid {
+    background-image:
+      linear-gradient(var(--xennic-border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--xennic-border) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  .light .blueprint-grid {
+    background-size: 44px 44px;
+  }
+
+  /* قاب فنی دور کارت‌ها: گوشه‌ی خط‌کشی + لایه داخلی */
+  .bp-corner {
+    position: relative;
+  }
+  .bp-corner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0.55;
+    transition: opacity 0.25s ease;
+    background:
+      linear-gradient(135deg, var(--xennic-primary) 0 1.5px, transparent 2.5px) top left / 16px 16px,
+      linear-gradient(-135deg, var(--xennic-primary) 0 1.5px, transparent 2.5px) top right / 16px 16px,
+      linear-gradient(45deg, var(--xennic-primary) 0 1.5px, transparent 2.5px) bottom left / 16px 16px,
+      linear-gradient(-45deg, var(--xennic-primary) 0 1.5px, transparent 2.5px) bottom right / 16px 16px;
+    background-repeat: no-repeat;
+  }
+  .bp-corner:hover::before {
+    opacity: 1;
+  }
+
+  /* فریم داخلی ثانویه روی پنل‌هایی که باید حس نقشه‌ی فنی بدهند */
+  .bp-inlay {
+    position: relative;
+    border: 1px solid var(--xennic-border);
+  }
+  .bp-inlay::after {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    pointer-events: none;
+    border: 1px dashed rgb(120 192 200 / 0.22);
+    border-radius: calc(var(--radius-card) - 6px);
+  }
+
+  /* متن با انرژی گرادیانی */
+  .energy-text {
+    background: linear-gradient(110deg, #1fe0d3 5%, #3aa0ff 45%, #ffb224 85%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* حلقه‌ی ضربان برای نشان‌گرهای زنده */
+  .pulse-spark {
+    position: relative;
+  }
+  .pulse-spark::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    border: 1px solid var(--xennic-primary);
+    opacity: 0.6;
+    animation: pulse-glow 2.3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  /* برای spa workspace: پس‌زمینه متحرک (Three.js) همیشه پشت محتوا */
+  .webgl-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .webgl-backdrop canvas {
+    display: block;
+    position: absolute;
+    inset: 0;
+  } /* کاری از راست‌به‌چپ همیشه */
+  body[dir="rtl"].animate-slide-in {
+    animation-name: slide-in-right;
+  }
+  body[dir="ltr"] .animate-slide-in {
+    animation-name: slide-in-left;
   }
 }

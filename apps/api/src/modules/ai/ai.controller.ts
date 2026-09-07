@@ -1,9 +1,10 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { aiGenerateSchema, type AiGenerateInput } from "@xennic/shared";
 import { CurrentUser, type AuthenticatedUser } from "../../common/decorators/current-user.decorator.js";
 import { Public } from "../../common/decorators/roles.decorator.js";
 import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe.js";
+import { ApiBodyZod } from "../../common/utils/zod-openapi.js";
 import { AiService } from "./ai.service.js";
 
 @ApiTags("ai")
@@ -19,7 +20,9 @@ export class AiController {
   }
 
   @Post("generate")
+  @ApiBearerAuth("access-token")
   @ApiOperation({ summary: "ارسال پرامپت به مدل انتخابی (GitHub Models یا کلید کاربر)" })
+  @ApiBodyZod(aiGenerateSchema)
   public generate(
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(aiGenerateSchema)) body: AiGenerateInput & { async: boolean },

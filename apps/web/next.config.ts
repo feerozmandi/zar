@@ -4,6 +4,8 @@ import type { NextConfig } from "next";
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
+const isDev = process.env.NODE_ENV !== "production";
+
 const nextConfig: NextConfig = {
   // بیلد در محیط کانتینری/CI فقط به خروجی build نیاز دارد
   outputFileTracingRoot: repositoryRoot,
@@ -32,7 +34,11 @@ const nextConfig: NextConfig = {
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://localhost:4000 ws://localhost:4000; font-src 'self'; object-src 'none';",
+            // در حالت توسعه Next.js اسکریپت/استایل‌های inline (بوت‌استرپ webpack، React Refresh و گزارش‌های dev) تزریق می‌کند.
+            // بدون 'unsafe-inline' در dev، هیدریشن ریکت انجام نمی‌شود و فرم‌ها بی‌عکس‌العمل می‌مانند.
+            value: isDev
+              ? "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://localhost:4000 ws://localhost:4000; font-src 'self'; object-src 'none';"
+              : "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://localhost:4000 ws://localhost:4000; font-src 'self'; object-src 'none';",
           },
         ],
       },

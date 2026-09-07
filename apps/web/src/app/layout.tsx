@@ -3,6 +3,9 @@ import { XENNIC_BRAND } from "@xennic/design-tokens";
 import { vazirmatn } from "@/lib/fonts";
 import { siteUrl } from "@/lib/env";
 import { Providers } from "@/providers/providers";
+import { AuthBootstrap } from "@/providers/auth-bootstrap";
+import { WorkspaceSplash } from "@/app/_components/layout/workspace-splash";
+import { EnergyField } from "@/app/_components/layout/energy-field";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -41,7 +44,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fa" dir="rtl" className={vazirmatn.variable} suppressHydrationWarning>
       <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
-        <Providers>{children}</Providers>
+        <Providers>
+          <AuthBootstrap />
+          {/* پس‌زمینه‌ی WebGL «میدان انرژی» + گرید بلوپرینت پشت محتوا */}
+          <EnergyField />
+          {children}
+          {/* خوش‌آمدگویی لاگین‌شده — فقط صفحه‌ی نخست */}
+          <WorkspaceSplash />
+        </Providers>
       </body>
     </html>
   );
