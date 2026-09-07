@@ -10,7 +10,7 @@ const links = [
 export default function AuditLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <PanelNav accent="#FF4D5E" links={links} title="ممیزی و تحلیل هوشمند قبض" />
+      <PanelNav accent="#E51923" links={links} title="ممیزی و تحلیل هوشمند قبض" />
       {children}
     </>
   );

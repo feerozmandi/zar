@@ -1,10 +1,9 @@
 import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { articleSearchSchema, askAiSchema, type AskAiInput, type WikiSearchInput } from "@xennic/shared";
 import { CurrentUser, type AuthenticatedUser } from "../../common/decorators/current-user.decorator.js";
 import { Public } from "../../common/decorators/roles.decorator.js";
 import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe.js";
-import { ApiBodyZod } from "../../common/utils/zod-openapi.js";
 import { WikiService } from "./wiki.service.js";
 
 @ApiTags("wiki")
@@ -34,9 +33,7 @@ export class WikiController {
   }
 
   @Post("ask-ai")
-  @ApiBearerAuth("access-token")
   @ApiOperation({ summary: "پرسش و پاسخ تخصصی مبتنی بر AI روی قوانین" })
-  @ApiBodyZod(askAiSchema)
   public ask(
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(askAiSchema)) body: AskAiInput,

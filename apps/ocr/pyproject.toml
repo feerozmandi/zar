@@ -1,0 +1,53 @@
+# پیکربندی مایکروسرویس OCR — تنها فایل تنظیمات این بخش (ریشه‌ی مونورپو Node را مدیریت می‌کند)
+[project]
+name = "xennic-ocr"
+version = "0.1.0"
+description = "Xennic OCR microservice — استخراج داده از تصویر/PDF قبض برق (Tesseract + OpenCV)"
+requires-python = ">=3.11"
+license = { text = "UNLICENSED" }
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "python-multipart>=0.0.9",
+  "pydantic-settings>=2.4",
+  "pdf2image>=1.17",
+  "PyMuPDF>=1.24",
+  "pytesseract>=0.3.10",
+  "opencv-python-headless>=4.10",
+  "numpy>=1.26",
+  "pillow>=10.3",
+  "httpx>=0.27",
+  "redis>=5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2",
+  "pytest-asyncio>=0.23",
+  "ruff>=0.6",
+  "mypy>=1.11",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# File(...)/Form(...) در امضای endpoint الگوی رسمی FastAPI است، نه سرریز فراخوان
+"app/main.py" = ["B008"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+# پکیج app باید بدون نصب‌شدن هم import شود؛ با اجرای «pytest» (برخلاف
+# «python -m pytest») پوشه‌ی ریشه به sys.path اضافه نمی‌شود و جمع‌آوری آزمون
+# با ModuleNotFoundError: No module named 'app' و خروجی ۲ شکست می‌خورد.
+pythonpath = ["."]
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+ignore_missing_imports = true

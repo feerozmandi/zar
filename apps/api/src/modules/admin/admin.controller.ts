@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
   articleUpsertSchema,
   paginationSchema,
@@ -10,11 +10,9 @@ import { CurrentUser, type AuthenticatedUser } from "../../common/decorators/cur
 import { Roles } from "../../common/decorators/roles.decorator.js";
 import { RolesGuard } from "../../common/guards/roles.guard.js";
 import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe.js";
-import { ApiBodyZod } from "../../common/utils/zod-openapi.js";
 import { AdminService } from "./admin.service.js";
 
 @ApiTags("admin")
-@ApiBearerAuth("access-token")
 @Controller("admin")
 @UseGuards(RolesGuard)
 @Roles("SUPER_ADMIN")
@@ -35,7 +33,6 @@ export class AdminController {
 
   @Post("wiki")
   @ApiOperation({ summary: "ایجاد و ویرایش اسناد دانشنامه" })
-  @ApiBodyZod(articleUpsertSchema)
   public upsertArticle(
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(articleUpsertSchema)) input: ArticleUpsertInput,

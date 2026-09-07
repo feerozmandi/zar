@@ -12,7 +12,7 @@ const links = [
 export default function EngineeringLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <PanelNav accent="#3AA0FF" links={links} title="جعبه‌ابزار محاسبات مهندسی برق" />
+      <PanelNav accent="#00A8B5" links={links} title="جعبه‌ابزار محاسبات مهندسی برق" />
       {children}
     </>
   );

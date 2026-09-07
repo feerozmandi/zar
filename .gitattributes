@@ -1,0 +1,19 @@
+* text=auto eol=lf
+
+*.ts    text
+*.tsx   text
+*.mjs   text
+*.css   text
+*.md    text
+*.json  text
+
+*.woff2 binary
+*.png   binary
+*.jpg   binary
+*.webp  binary
+*.pdf   binary
+*.ico   binary
+*.svg   text
+
+# مستندات فارسی پروژه نباید با تبدیل خط ویرایش شوند
+docs/** text eol=lf

@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
   capacitorBankSchema,
   cableSizingSchema,
@@ -14,18 +14,15 @@ import {
 } from "@xennic/shared";
 import { CurrentUser, type AuthenticatedUser } from "../../common/decorators/current-user.decorator.js";
 import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe.js";
-import { ApiBodyZod } from "../../common/utils/zod-openapi.js";
 import { EngineeringService } from "./engineering.service.js";
 
 @ApiTags("engineering")
-@ApiBearerAuth("access-token")
 @Controller("engineering")
 export class EngineeringController {
   public constructor(private readonly engineering: EngineeringService) {}
 
   @Post("voltage-drop")
   @ApiOperation({ summary: "محاسبه افت ولتاژ (IEC 60364-5-52 / نشریه ۱۱۰)" })
-  @ApiBodyZod(voltageDropSchema)
   public voltageDrop(
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(voltageDropSchema)) body: VoltageDropInputDto,
@@ -35,7 +32,6 @@ export class EngineeringController {
 
   @Post("cable-sizing")
   @ApiOperation({ summary: "سایزینگ کابل بر پایه حد جریان و حد افت ولتاژ" })
-  @ApiBodyZod(cableSizingSchema)
   public cable(
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(cableSizingSchema)) body: CableSizingInputDto,
@@ -45,7 +41,6 @@ export class EngineeringController {
 
   @Post("capacitor-bank")
   @ApiOperation({ summary: "محاسبه ظرفیت بانک خازنی و اصلاح ضریب قدرت" })
-  @ApiBodyZod(capacitorBankSchema)
   public capacitor(
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(capacitorBankSchema)) body: CapacitorBankInputDto,
@@ -55,7 +50,6 @@ export class EngineeringController {
 
   @Post("generator-size")
   @ApiOperation({ summary: "انتخاب ظرفیت ژنراتور/دیزل‌ژنراتور اضطراری" })
-  @ApiBodyZod(generatorSchema)
   public generator(
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(generatorSchema)) body: GeneratorInputDto,
@@ -66,7 +60,6 @@ export class EngineeringController {
   @Post("export-pdf")
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({ summary: "صدور دفترچه محاسبات رسمی (PDF) — پردازش در صف" })
-  @ApiBodyZod(pdfExportSchema)
   public exportPdf(
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(pdfExportSchema)) body: PdfExportInputDto,

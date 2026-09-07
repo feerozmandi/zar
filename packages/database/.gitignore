@@ -1,0 +1,5 @@
+# خروجی تولید Prisma Client در V7 داخل درخت منبع قرار می‌گیرد اما کامیت نمی‌شود؛
+# در CI با `pnpm db:generate` بازتولید می‌گردد.
+src/generated/
+dist/
+.env

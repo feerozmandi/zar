@@ -10,7 +10,7 @@ const links = [
 export default function SolarLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <PanelNav accent="#FFB224" links={links} title="امکان‌سنجی نیروگاه خورشیدی" />
+      <PanelNav accent="#F3A812" links={links} title="امکان‌سنجی نیروگاه خورشیدی" />
       {children}
     </>
   );
