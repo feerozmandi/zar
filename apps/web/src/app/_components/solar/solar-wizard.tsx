@@ -9,6 +9,7 @@ import { apiFetch } from "@/lib/api-client";
 import { z } from "zod";
 import { MONTH_LABELS_SHORT, compactNumber, compactToman, years } from "@/lib/solar/format";
 import { runFeasibility, saveAssessmentId, updateDraft, useSolarDraft } from "@/lib/solar/draft";
+import { useAuthStore } from "@/store/auth-store";
 
 const TARIFFS: Array<{ id: TariffKind; label: string; hint: string }> = [
   { id: "residential", label: "خانگی", hint: "الگوی مصرف عصر و شب" },
@@ -34,6 +35,8 @@ export function SolarWizard() {
   const draft = draftSnapshot.input;
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const authStatus = useAuthStore((state) => state.status);
+  const setPostLoginRedirect = useAuthStore((state) => state.setPostLoginRedirect);
 
   // مصرفِ سالانه از پیش‌نویس استخراج می‌شود (تنها منبعِ حقیقت همان پیش‌نویس است)
   const annualKwh = useMemo(
@@ -69,6 +72,11 @@ export function SolarWizard() {
   }
 
   async function persist(): Promise<void> {
+    if (authStatus !== "authenticated") {
+      setPostLoginRedirect("/solar");
+      router.push("/login?next=/solar");
+      return;
+    }
     setSaveState("saving");
     setSaveMessage(null);
     try {
@@ -79,11 +87,7 @@ export function SolarWizard() {
       setSaveMessage("پروژه در حساب شما ذخیره شد.");
     } catch (error) {
       setSaveState("error");
-      setSaveMessage(
-        error instanceof Error
-          ? `${error.message} — برای ذخیره در تاریخچه باید وارد حساب شوید.`
-          : "ذخیره ناموفق بود",
-      );
+      setSaveMessage(error instanceof Error ? error.message : "ذخیره ناموفق بود");
     }
   }
 
@@ -229,7 +233,7 @@ export function SolarWizard() {
 
           <div className="flex flex-wrap gap-2">
             <Button onClick={() => void persist()} type="button" variant="outline">
-              {saveState === "saving" ? "در حال ذخیره…" : "ذخیره در تاریخچه"}
+              {saveState === "saving" ? "در حال ذخیره…" : "ذخیره در حساب من"}
             </Button>
             <Button
               onClick={() => {

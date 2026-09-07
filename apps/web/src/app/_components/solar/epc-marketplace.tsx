@@ -15,6 +15,8 @@ import { apiFetch } from "@/lib/api-client";
 import { z } from "zod";
 import { compactNumber, compactToman } from "@/lib/solar/format";
 import { loadAssessmentId, loadDraft } from "@/lib/solar/draft";
+import { useAuthStore } from "@/store/auth-store";
+import { useRouter } from "next/navigation";
 
 const epcResponseSchema = z.object({
   id: z.string(),
@@ -43,7 +45,10 @@ const EMPTY_BID: EpcBidInput = {
  * گارانتی، رتبه‌ی کارفرمایان و زمان تحویل را هم وزن می‌دهد.
  */
 export function EpcMarketplace() {
+  const router = useRouter();
   const draft = useMemo(() => loadDraft(), []);
+  const authStatus = useAuthStore((state) => state.status);
+  const setPostLoginRedirect = useAuthStore((state) => state.setPostLoginRedirect);
   const [bids, setBids] = useState<EpcBidInput[]>([
     {
       ...EMPTY_BID,
@@ -89,6 +94,11 @@ export function EpcMarketplace() {
   }
 
   async function submitRequest(): Promise<void> {
+    if (authStatus !== "authenticated") {
+      setPostLoginRedirect("/solar/marketplace");
+      router.push("/login?next=/solar/marketplace");
+      return;
+    }
     setSubmitState("sending");
     setMessage(null);
     const assessmentId = loadAssessmentId();
