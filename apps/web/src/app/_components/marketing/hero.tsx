@@ -14,9 +14,7 @@ export function Hero() {
             موتور تحلیل اسناد انرژی با هوش مصنوعی
           </p>
           <h1 className="text-3xl leading-tight font-black sm:text-4xl lg:text-5xl lg:leading-[1.2]">
-            مهندسی، نوآوری برای{" "}
-            <span className="energy-text">آینده‌ی انرژی</span> با قدرت هوش
-            مصنوعی
+            مهندسی، نوآوری برای <span className="energy-text">آینده‌ی انرژی</span> با قدرت هوش مصنوعی
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
             پلتفرم جامع <strong className="text-foreground">Xennic</strong> (محصول شرکت زر نور نیرو یکتا)؛

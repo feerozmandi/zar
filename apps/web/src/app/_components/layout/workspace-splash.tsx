@@ -120,9 +120,7 @@ export function WorkspaceSplash() {
   const Icon = cfg.icon;
 
   return (
-    <div
-      className="bp-corner mx-auto mb-6 w-full max-w-2xl rounded-2xl border border-border/60 bg-card/40 px-5 py-4 shadow-lg animate-fade-in-up backdrop-blur-md"
-    >
+    <div className="bp-corner mx-auto mb-6 w-full max-w-2xl rounded-2xl border border-border/60 bg-card/40 px-5 py-4 shadow-lg animate-fade-in-up backdrop-blur-md">
       <div className="flex flex-wrap items-center justify-between gap-4">
         {/* چپ: آیکون + عنوان */}
         <div className="flex items-center gap-3">
@@ -131,8 +129,7 @@ export function WorkspaceSplash() {
           </div>
           <div>
             <p className="text-sm font-semibold text-foreground">
-              خوش آمدید،{" "}
-              <span className="font-bold text-primary">{user.email.split("@")[0]}</span>
+              خوش آمدید، <span className="font-bold text-primary">{user.email.split("@")[0]}</span>
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {cfg.label}

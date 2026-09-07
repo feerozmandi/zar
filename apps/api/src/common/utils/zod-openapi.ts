@@ -16,10 +16,7 @@ export function zodToOpenApiSchema(schema: z.ZodType): Record<string, unknown> {
  * دکوراتور `@ApiBody` بر پایه‌ی اسکیمای zod — همان اسکیمایی که ZodValidationPipe
  * در همان مسیر اعمال می‌کند تا سند و Validation همیشه هم‌راستا بمانند.
  */
-export function ApiBodyZod(
-  schema: z.ZodType,
-  options: Omit<ApiBodyOptions, "schema"> = {},
-): MethodDecorator {
+export function ApiBodyZod(schema: z.ZodType, options: Omit<ApiBodyOptions, "schema"> = {}): MethodDecorator {
   return (target, propertyKey, descriptor) => {
     ApiBody({
       schema: zodToOpenApiSchema(schema),

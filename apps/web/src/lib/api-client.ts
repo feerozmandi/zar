@@ -22,7 +22,11 @@ function baseUrl(): string {
   return (process.env.NEXT_PUBLIC_API_URL ?? "/api/proxy").replace(/\/$/, "");
 }
 
-async function fetchText(path: string, init: RequestInitLike, withAuth: boolean): Promise<{ status: number; text: string }> {
+async function fetchText(
+  path: string,
+  init: RequestInitLike,
+  withAuth: boolean,
+): Promise<{ status: number; text: string }> {
   const { timeoutMs = 20_000, headers, body, ...rest } = init;
   const token = withAuth ? accessTokenStore.get() : null;
   const controller = new AbortController();

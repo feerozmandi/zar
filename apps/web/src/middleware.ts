@@ -23,11 +23,5 @@ export function middleware(request: NextRequest): NextResponse {
 }
 
 export const config = {
-  matcher: [
-    "/audit/:path*",
-    "/admin/:path*",
-    "/engineering/:path*",
-    "/solar/:path*",
-    "/ai/:path*",
-  ],
+  matcher: ["/audit/:path*", "/admin/:path*", "/engineering/:path*", "/solar/:path*", "/ai/:path*"],
 };

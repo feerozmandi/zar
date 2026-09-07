@@ -13,7 +13,11 @@ export function PanelNav({ title, accent, links }: PanelNavProps) {
     <div className="bp-inlay border-b border-border/60 bg-card/30">
       <SiteHeader />
       <div className="mx-auto flex w-full max-w-7xl items-center gap-4 overflow-x-auto border-dashed border-border/40 px-4 pb-3 lg:px-8">
-        <span aria-hidden className="pulse-spark size-2.5 shrink-0 rounded-full" style={{ backgroundColor: accent }} />
+        <span
+          aria-hidden
+          className="pulse-spark size-2.5 shrink-0 rounded-full"
+          style={{ backgroundColor: accent }}
+        />
         <h1 className="shrink-0 text-sm font-bold text-foreground">{title}</h1>
         <nav aria-label="بخش‌های پنل" className="flex gap-1 text-sm">
           {links.map((link) => (
@@ -27,7 +31,10 @@ export function PanelNav({ title, accent, links }: PanelNavProps) {
           ))}
         </nav>
         {/* حاشیه‌گذاری فنی شبه‌بعد (بلوپرینت) */}
-        <span aria-hidden className="mr-auto hidden shrink-0 font-mono text-[10px] tracking-widest text-muted-foreground/70 md:inline">
+        <span
+          aria-hidden
+          className="mr-auto hidden shrink-0 font-mono text-[10px] tracking-widest text-muted-foreground/70 md:inline"
+        >
           XN-{links.length.toString().padStart(2, "0")} · EEC
         </span>
       </div>

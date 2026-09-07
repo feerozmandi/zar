@@ -16,11 +16,7 @@ import { CurrentUser, type AuthenticatedUser } from "../../common/decorators/cur
 import { Public } from "../../common/decorators/roles.decorator.js";
 import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe.js";
 import { ApiBodyZod } from "../../common/utils/zod-openapi.js";
-import {
-  AuthService,
-  REFRESH_COOKIE_NAME,
-  type AuthTokens,
-} from "./auth.service.js";
+import { AuthService, REFRESH_COOKIE_NAME, type AuthTokens } from "./auth.service.js";
 
 interface RefreshInput {
   refreshToken?: string;

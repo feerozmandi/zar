@@ -40,11 +40,7 @@ export const useAuthStore = create<AuthState>()(
       },
       signOut: async () => {
         try {
-          await apiFetch(
-            "auth/logout",
-            zRevoked,
-            { method: "POST", body: {}, timeoutMs: 8_000 },
-          );
+          await apiFetch("auth/logout", zRevoked, { method: "POST", body: {}, timeoutMs: 8_000 });
         } catch {
           // حتی اگر API در دسترس نباشد، نشست محلی باید پاک شود
         }

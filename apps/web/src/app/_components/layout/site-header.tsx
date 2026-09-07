@@ -7,16 +7,7 @@ import { modules, routes } from "@xennic/design-tokens";
 import { ThemeToggle } from "@/app/_components/layout/theme-toggle";
 import { ROLES } from "@xennic/shared";
 import { useCallback, useEffect, useState } from "react";
-import {
-  LogIn,
-  UserCheck,
-  ChevronDown,
-  X,
-  Shield,
-  Sun,
-  BarChart3,
-  Zap,
-} from "lucide-react";
+import { LogIn, UserCheck, ChevronDown, X, Shield, Sun, BarChart3, Zap } from "lucide-react";
 
 const ROLE_ICONS: Record<string, React.ElementType> = {
   [ROLES.superAdmin]: Shield,
@@ -136,20 +127,13 @@ export function SiteHeader() {
             X
           </span>
           <span className="flex flex-col leading-tight">
-            <span className="text-base font-bold tracking-tight text-foreground">
-              Xennic
-            </span>
-            <span className="text-[11px] text-muted-foreground">
-              زر نور نیرو یکتا
-            </span>
+            <span className="text-base font-bold tracking-tight text-foreground">Xennic</span>
+            <span className="text-[11px] text-muted-foreground">زر نور نیرو یکتا</span>
           </span>
         </Link>
 
         {/* ناوبری ماژول‌ها */}
-        <nav
-          aria-label="ناوبری اصلی"
-          className="hidden flex-wrap items-center gap-1.5 lg:flex"
-        >
+        <nav aria-label="ناوبری اصلی" className="hidden flex-wrap items-center gap-1.5 lg:flex">
           {modules.map((module) => {
             const active = pathname === module.route || pathname.startsWith(`${module.route}/`);
             return (
