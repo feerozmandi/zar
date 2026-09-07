@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   LOAD_PROFILES,
+  monthlyFromAnnual,
   monthlyPoa,
   selfConsumptionSplit,
   simulateProduction,
@@ -164,5 +165,23 @@ describe("انطباق بار و تولید", () => {
       expect(profile).toHaveLength(24);
       expect(profile.reduce((sum, value) => sum + value, 0)).toBeCloseTo(1, 2);
     }
+  });
+});
+
+describe("تبدیل مصرف سالانه به ماهانه", () => {
+  it("مجموعِ ۱۲ ماه برابرِ مصرف سالانه است", () => {
+    for (const profile of ["residential", "commercial", "industrial", "agricultural"] as const) {
+      const monthly = monthlyFromAnnual(120_000, profile);
+      expect(monthly).toHaveLength(12);
+      expect(monthly.reduce((sum, value) => sum + value, 0)).toBeCloseTo(120_000, 6);
+    }
+  });
+
+  it("صنعتی یکنواخت و خانگی تابستان‌پیک است", () => {
+    const industrial = monthlyFromAnnual(120_000, "industrial");
+    const residential = monthlyFromAnnual(120_000, "residential");
+    expect(Math.max(...industrial) - Math.min(...industrial)).toBeLessThan(1);
+    // تیر (اندیس ۳) از دی (اندیس ۹) پرمصرف‌تر است
+    expect(residential[3] ?? 0).toBeGreaterThan(residential[9] ?? 0);
   });
 });

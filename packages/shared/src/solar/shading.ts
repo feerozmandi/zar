@@ -57,7 +57,10 @@ function distanceToBox(pointX: number, pointY: number, box: ObstacleBox): number
  * ساخت افق محلی برای یک نقطه از سقف.
  * هر مانع به‌صورت یک بازه‌ی زاویه‌ای (سمت) با ارتفاع ثابت روی افق می‌نشیند.
  */
-export function buildHorizon(focus: { x: number; y: number }, obstacles: readonly ObstacleBox[]): HorizonProfile {
+export function buildHorizon(
+  focus: { x: number; y: number },
+  obstacles: readonly ObstacleBox[],
+): HorizonProfile {
   const horizon = new Array<number>(HORIZON_BINS).fill(0);
 
   for (const box of obstacles) {
@@ -220,7 +223,8 @@ export function minimumRowPitchM(options: {
   // ارتفاع خورشید در ساعت ۹ صبحِ انقلاب زمستانی (مبنای متداولِ طراحی ردیف)
   const morning = sunPosition(latDeg, 355, 9);
   const designAltitude = Math.max(8, Math.min(noonAltitude, morning.altitudeDeg));
-  const shadowLength = (moduleLengthM * Math.sin((tiltDeg * Math.PI) / 180)) / Math.tan((designAltitude * Math.PI) / 180);
+  const shadowLength =
+    (moduleLengthM * Math.sin((tiltDeg * Math.PI) / 180)) / Math.tan((designAltitude * Math.PI) / 180);
   return moduleLengthM * Math.cos((tiltDeg * Math.PI) / 180) + shadowLength;
 }
 

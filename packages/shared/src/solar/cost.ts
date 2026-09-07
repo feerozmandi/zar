@@ -24,7 +24,12 @@ export interface CapexBand {
 }
 
 export const CAPEX_BANDS: readonly CapexBand[] = [
-  { minKwp: 0, maxKwp: 10, capexPerKwpToman: 34_000_000, note: "خانگی و بسیار کوچک — صرفه‌جوییِ مقیاس ندارد" },
+  {
+    minKwp: 0,
+    maxKwp: 10,
+    capexPerKwpToman: 34_000_000,
+    note: "خانگی و بسیار کوچک — صرفه‌جوییِ مقیاس ندارد",
+  },
   { minKwp: 10, maxKwp: 50, capexPerKwpToman: 29_000_000, note: "تجاری کوچک" },
   { minKwp: 50, maxKwp: 200, capexPerKwpToman: 26_000_000, note: "تجاری و صنعتی متوسط" },
   { minKwp: 200, maxKwp: 500, capexPerKwpToman: 23_000_000, note: "صنعتی بزرگ" },
@@ -85,7 +90,9 @@ const INSURANCE_SHARE = 0.0025; // ۰٫۲۵٪ سرمایه در سال
 const INVERTER_REPLACEMENT_SHARE = 0.1; // ۱۰٪ سرمایه در سال یازدهم
 
 export function capexBandFor(capacityKwp: number): CapexBand {
-  const band = CAPEX_BANDS.find((b) => capacityKwp >= b.minKwp && (b.maxKwp === null || capacityKwp < b.maxKwp));
+  const band = CAPEX_BANDS.find(
+    (b) => capacityKwp >= b.minKwp && (b.maxKwp === null || capacityKwp < b.maxKwp),
+  );
   return band ?? CAPEX_BANDS[CAPEX_BANDS.length - 1]!;
 }
 
@@ -110,7 +117,9 @@ export function estimateCost(input: CostInput): CostEstimate {
 
   const assumptions = [
     `هزینه‌ی احداث ${Math.round(capexPerKwp).toLocaleString("fa-IR")} تومان به ازای هر کیلووات (بازه‌ی «${band.note}»)`,
-    input.module ? `ضریب فناوری ${input.module.technology}: ${technologyFactor.toFixed(2)}×` : "فناوری: مبنای mono-PERC",
+    input.module
+      ? `ضریب فناوری ${input.module.technology}: ${technologyFactor.toFixed(2)}×`
+      : "فناوری: مبنای mono-PERC",
     `هزینه‌ی بهره‌برداری ${opexPerKwp.toLocaleString("fa-IR")} تومان/kWp در سال (نظافت، پایش، تعمیرات)`,
     `بیمه ${(INSURANCE_SHARE * 100).toFixed(2)}٪ سرمایه در سال`,
     `تعویض اینورتر در سال ${replacementYear} معادل ${Math.round(INVERTER_REPLACEMENT_SHARE * 100)}٪ سرمایه`,

@@ -145,6 +145,15 @@ enum EpcRequestStatus {
   SIGNED
 }
 
+/// وضعیتِ پیشنهادِ پیمانکار در مارکت‌پلیس مناقصه
+enum EpcBidStatus {
+  SUBMITTED
+  SHORTLISTED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
 enum ContactRequestStatus {
   NEW
   IN_PROGRESS
@@ -452,6 +461,62 @@ model TariffRate {
   @@map("tariff_rates")
 }
 
+/// نرخ‌های سیاستیِ خورشیدی (ماده ۱۲، ماده ۱۶، بورس سبز) — جایگزین ثابت‌های کد
+model SolarPolicyPreset {
+  id                     String    @id @default(uuid(4))
+  scenarioId             String
+  label                  String
+  legalRef               String?
+  exportPriceTomanPerKwh Float
+  offsetPriceTomanPerKwh Float?
+  effectiveFrom          DateTime  @default(now())
+  effectiveTo            DateTime?
+  isActive               Boolean   @default(true)
+
+  @@index([scenarioId, isActive, effectiveFrom])
+  @@map("solar_policy_presets")
+}
+
+/// بنچمارکِ هزینه‌ی احداث و بهره‌برداری به ازای هر کیلووات (به‌روزرسانی دوره‌ای)
+model SolarCostBenchmark {
+  id               String    @id @default(uuid(4))
+  minKwp           Float
+  maxKwp           Float?
+  capexPerKwpToman Float
+  opexPerKwpToman  Float?
+  note             String?
+  currency         String    @default("IRT")
+  effectiveFrom    DateTime  @default(now())
+  effectiveTo      DateTime?
+  isActive         Boolean   @default(true)
+
+  @@index([isActive, effectiveFrom])
+  @@map("solar_cost_benchmarks")
+}
+
+/// ایستگاه‌های تابش‌سنجی/اقلیمی — منبعِ معتبر جایگزینِ برآوردِ داخلی
+model ClimateStation {
+  id                 String    @id @default(uuid(4))
+  province           String
+  name               String
+  lat                Float
+  lon                Float
+  elevationM         Float     @default(0)
+  annualGhiKwhM2Day  Float
+  monthlyGhiKwhM2Day Json?
+  annualTempC        Float?
+  /// estimated = برآورد مهندسی، measured = داده‌ی اندازه‌گیری‌شده
+  source             String    @default("estimated")
+  measuredFrom       DateTime?
+  measuredTo         DateTime?
+  isActive           Boolean   @default(true)
+  updatedAt          DateTime  @updatedAt
+
+  @@unique([name, lat, lon])
+  @@index([province, isActive])
+  @@map("climate_stations")
+}
+
 // ──────────────────── ماژول امکان‌سنجی خورشیدی ────────────────────
 
 model SolarSite {
@@ -490,6 +555,7 @@ model SolarAssessment {
   capacityKwp    Float
   annualGenerationKwh Float?
   performanceRatio Float?
+  /// کلِ گزارشِ امکان‌سنجی: تولید، قبوض، سناریوها، حساسیت، ریسک‌ها و مفروضات
   outputs        Json?
   errorMessage   String?
   createdAt      DateTime  @default(now())
@@ -497,9 +563,113 @@ model SolarAssessment {
   site       SolarSite      @relation(fields: [siteId], references: [id], onDelete: Cascade)
   roi        SolarRoiResult?
   epcRequests EpcRequest[]
+  planes     SolarRoofPlane[]
+  design     SolarDesign?
+  production SolarProductionProfile?
+  scenarios  SolarScenario[]
 
   @@index([siteId, createdAt])
   @@map("solar_assessments")
+}
+
+/// صفحه‌ی ترسیم‌شده‌ی سقف (چندضلعی، شیب، سمت و موانع) — خروجیِ طراحِ سقف
+model SolarRoofPlane {
+  id             String   @id @default(uuid(4))
+  assessmentId   String
+  label          String   @default("سقف اصلی")
+  polygon        Json
+  tiltDeg        Float    @default(30)
+  azimuthDeg     Float    @default(180)
+  obstacles      Json?
+  setbackM       Float    @default(0.5)
+  grossAreaM2    Float    @default(0)
+  usableAreaM2   Float    @default(0)
+  panelCount     Int      @default(0)
+  capacityKwp    Float    @default(0)
+  solarAccess    Float?
+  /// چیدمانِ پنل‌به‌پنل (مختصات و دسترسی خورشیدیِ هر پنل)
+  layout         Json?
+
+  assessment SolarAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@map("solar_roof_planes")
+}
+
+/// طراحی سیستم: انتخاب تجهیزات، رشته‌بندی و تراز تلفات
+model SolarDesign {
+  id              String   @id @default(uuid(4))
+  assessmentId    String   @unique
+  moduleModel     String
+  moduleWatt      Int
+  panelCount      Int
+  capacityKwp     Float
+  inverterModel   String
+  inverterCount   Int      @default(1)
+  acKw            Float
+  dcAcRatio       Float
+  modulesPerString Int
+  stringCount     Int
+  unusedModules   Int      @default(0)
+  performanceRatio Float
+  /// فهرستِ تلفات (نام، مقدار) برای نمایشِ آبشاری در گزارش
+  losses          Json?
+  monthlyCellTempC Json?
+
+  assessment SolarAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@map("solar_designs")
+}
+
+/// تولید انرژی و ترازِ ماهانه
+model SolarProductionProfile {
+  id                String   @id @default(uuid(4))
+  assessmentId      String   @unique
+  monthlyAcKwh      Json
+  monthlyPoaKwhM2Day Json
+  monthlyAccess     Json?
+  monthlyPeakKw     Json?
+  annualAcKwh       Float
+  specificYieldKwhPerKwp Float
+  capacityFactor    Float
+  clippingLoss      Float
+  /// شکلِ ساعتیِ نرمال‌شده‌ی هر ماه (برای تطبیق با بار)
+  monthlyHourlyShape Json?
+
+  assessment SolarAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@map("solar_production_profiles")
+}
+
+/// نتیجه‌ی مالی هر سناریوی نظارتی (خودتأمین، ماده ۱۲، بورس سبز، ترکیبی)
+model SolarScenario {
+  id                String   @id @default(uuid(4))
+  assessmentId      String
+  scenarioId        String
+  label             String
+  offsetPriceTomanPerKwh Float
+  exportPriceTomanPerKwh Float
+  selfConsumptionShare Float
+  annualSavingToman Float    @default(0)
+  annualExportRevenueToman Float @default(0)
+  capexToman        Float
+  npvToman          Float
+  irr               Float?
+  mirr              Float?
+  lcoeTomanPerKwh   Float
+  paybackYears      Float?
+  discountedPaybackYears Float?
+  lifetimeGenerationKwh Float
+  co2AvoidedTons    Float
+  /// ردیف‌های جریان نقدی برای نمودارِ انباشته
+  cashflow          Json?
+  isRecommended     Boolean  @default(false)
+
+  assessment SolarAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@unique([assessmentId, scenarioId])
+  @@index([scenarioId, npvToman])
+  @@map("solar_scenarios")
 }
 
 model SolarRoiResult {
@@ -535,6 +705,7 @@ model EpcPartner {
   createdAt        DateTime @default(now())
 
   requests EpcRequest[]
+  bids     EpcBid[]
 
   @@unique([legalName])
   @@map("epc_partners")
@@ -554,9 +725,44 @@ model EpcRequest {
 
   assessment SolarAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   partner    EpcPartner?     @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+  bids       EpcBid[]
 
   @@index([status, createdAt])
   @@map("epc_requests")
+}
+
+/// پیشنهادِ پیمانکار در پاسخ به یک درخواست (مناقصه معکوس)
+model EpcBid {
+  id            String       @id @default(uuid(4))
+  requestId     String
+  partnerId     String?
+  partnerName   String
+  totalPriceToman Float
+  capacityKwp   Float
+  pricePerWattToman Float
+  moduleBrand   String?
+  /// رده‌ی تولیدکننده پنل (Tier-1 … Tier-3)
+  moduleTier    Int?
+  inverterBrand String?
+  productWarrantyYears Int?
+  performanceWarrantyPercent Float?
+  rating        Float?
+  leadTimeDays  Int?
+  oAndMYears    Int?
+  notes         String?      @db.Text
+  /// امتیازهای نرمال‌شده (قیمت، تجهیزات، گارانتی، رتبه، زمان‌بندی)
+  scores        Json?
+  rank          Int?
+  status        EpcBidStatus @default(SUBMITTED)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  request EpcRequest  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  partner EpcPartner? @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+
+  @@unique([requestId, partnerName])
+  @@index([requestId, rank])
+  @@map("epc_bids")
 }
 
 // ──────────────────── جعبه‌ابزار محاسبات مهندسی ────────────────────

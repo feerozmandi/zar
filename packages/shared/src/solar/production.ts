@@ -180,7 +180,7 @@ export function simulateProduction(input: ProductionInput): ProductionResult {
       energyWeighted += poa;
 
       const hourIndex = Math.min(23, Math.floor(index * step));
-      hourly[hourIndex] = (hourly[hourIndex] ?? 0) + acKw * step / days;
+      hourly[hourIndex] = (hourly[hourIndex] ?? 0) + (acKw * step) / days;
     });
 
     const monthlyEnergy = acDaily * days * staticFactor * access(month);
@@ -189,7 +189,9 @@ export function simulateProduction(input: ProductionInput): ProductionResult {
     monthlyClippingLoss.push(
       Math.round((unclippedDaily > 0 ? Math.max(0, 1 - acDaily / unclippedDaily) : 0) * 1000) / 1000,
     );
-    monthlyCellTempC.push(Math.round((energyWeighted > 0 ? tempWeighted / energyWeighted : ambient) * 10) / 10);
+    monthlyCellTempC.push(
+      Math.round((energyWeighted > 0 ? tempWeighted / energyWeighted : ambient) * 10) / 10,
+    );
     monthlyPerformanceRatio.push(
       poaMonthlyKwh > 0 && input.capacityKwp > 0
         ? Math.round((monthlyEnergy / (poaMonthlyKwh * input.capacityKwp)) * 1000) / 1000
@@ -227,20 +229,20 @@ export type LoadProfileKind = "residential" | "commercial" | "industrial" | "agr
 /** پروفایل‌های نوعیِ بار (۲۴ ساعت) برای بازار ایران — مقادیر خام */
 const RAW_LOAD_PROFILES: Record<LoadProfileKind, readonly number[]> = {
   residential: [
-    0.022, 0.02, 0.019, 0.018, 0.019, 0.024, 0.032, 0.04, 0.043, 0.042, 0.041, 0.042,
-    0.044, 0.043, 0.042, 0.044, 0.05, 0.058, 0.068, 0.072, 0.066, 0.055, 0.042, 0.03,
+    0.022, 0.02, 0.019, 0.018, 0.019, 0.024, 0.032, 0.04, 0.043, 0.042, 0.041, 0.042, 0.044, 0.043, 0.042,
+    0.044, 0.05, 0.058, 0.068, 0.072, 0.066, 0.055, 0.042, 0.03,
   ],
   commercial: [
-    0.018, 0.016, 0.015, 0.015, 0.016, 0.02, 0.032, 0.05, 0.066, 0.072, 0.074, 0.075,
-    0.07, 0.072, 0.074, 0.073, 0.07, 0.065, 0.055, 0.045, 0.035, 0.028, 0.022, 0.019,
+    0.018, 0.016, 0.015, 0.015, 0.016, 0.02, 0.032, 0.05, 0.066, 0.072, 0.074, 0.075, 0.07, 0.072, 0.074,
+    0.073, 0.07, 0.065, 0.055, 0.045, 0.035, 0.028, 0.022, 0.019,
   ],
   industrial: [
-    0.035, 0.034, 0.034, 0.034, 0.035, 0.037, 0.042, 0.048, 0.05, 0.05, 0.05, 0.05,
-    0.049, 0.05, 0.05, 0.049, 0.048, 0.045, 0.042, 0.04, 0.039, 0.038, 0.037, 0.036,
+    0.035, 0.034, 0.034, 0.034, 0.035, 0.037, 0.042, 0.048, 0.05, 0.05, 0.05, 0.05, 0.049, 0.05, 0.05, 0.049,
+    0.048, 0.045, 0.042, 0.04, 0.039, 0.038, 0.037, 0.036,
   ],
   agricultural: [
-    0.015, 0.014, 0.014, 0.014, 0.016, 0.03, 0.052, 0.068, 0.075, 0.078, 0.079, 0.08,
-    0.078, 0.072, 0.062, 0.055, 0.05, 0.045, 0.035, 0.028, 0.022, 0.019, 0.017, 0.015,
+    0.015, 0.014, 0.014, 0.014, 0.016, 0.03, 0.052, 0.068, 0.075, 0.078, 0.079, 0.08, 0.078, 0.072, 0.062,
+    0.055, 0.05, 0.045, 0.035, 0.028, 0.022, 0.019, 0.017, 0.015,
   ],
 };
 
@@ -257,6 +259,31 @@ export const LOAD_PROFILES: Record<LoadProfileKind, readonly number[]> = {
   industrial: normalizeProfile(RAW_LOAD_PROFILES.industrial),
   agricultural: normalizeProfile(RAW_LOAD_PROFILES.agricultural),
 };
+
+/**
+ * وزنِ ماهانه‌ی مصرف به تفکیک نوعِ بار (جمع = ۱، از فروردین).
+ * کاربرد: وقتی کاربر فقط «مصرف سالانه» می‌داند (سناریوی رایج در فرم‌های سریع)،
+ * آن را با این وزن‌ها به ۱۲ ماه می‌شکنیم. الگو بر اساس رفتارِ شبکه‌ی ایران است:
+ * خانگی/تجاری/کشاورزی در تابستان پیک دارد و صنعتی تقریباً یکنواخت است.
+ */
+export const MONTHLY_LOAD_WEIGHTS: Record<LoadProfileKind, readonly number[]> = {
+  industrial: normalizeProfile(new Array(12).fill(1)),
+  residential: normalizeProfile([
+    0.062, 0.068, 0.082, 0.099, 0.112, 0.113, 0.103, 0.085, 0.072, 0.066, 0.069, 0.069,
+  ]),
+  commercial: normalizeProfile([
+    0.055, 0.062, 0.075, 0.095, 0.113, 0.118, 0.11, 0.092, 0.078, 0.068, 0.068, 0.066,
+  ]),
+  agricultural: normalizeProfile([
+    0.03, 0.042, 0.072, 0.105, 0.132, 0.145, 0.14, 0.11, 0.078, 0.052, 0.046, 0.048,
+  ]),
+};
+
+/** تبدیل مصرف سالانه به ۱۲ ماه (از فروردین) با وزنِ نوعِ بار */
+export function monthlyFromAnnual(annualKwh: number, profile: LoadProfileKind = "industrial"): number[] {
+  const weights = MONTHLY_LOAD_WEIGHTS[profile] ?? MONTHLY_LOAD_WEIGHTS.industrial;
+  return weights.map((weight) => annualKwh * weight);
+}
 
 export interface SelfConsumptionInput {
   /** مصرف ماهانه (kWh) */

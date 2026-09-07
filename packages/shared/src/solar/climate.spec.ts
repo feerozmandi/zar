@@ -56,10 +56,8 @@ describe("منبع تابش", () => {
   it("میانگینِ وزنیِ ماهانه با میانگین سالانه هم‌خوان است", () => {
     const resource = resourceForProvince("esfahan");
     const weighted =
-      resource.monthlyGhiKwhM2Day.reduce(
-        (sum, value, index) => sum + value * (MONTH_DAYS[index] ?? 30),
-        0,
-      ) / MONTH_DAYS.reduce((sum, days) => sum + days, 0);
+      resource.monthlyGhiKwhM2Day.reduce((sum, value, index) => sum + value * (MONTH_DAYS[index] ?? 30), 0) /
+      MONTH_DAYS.reduce((sum, days) => sum + days, 0);
     expect(Math.abs(weighted - resource.annualGhiKwhM2Day)).toBeLessThan(0.05);
   });
 

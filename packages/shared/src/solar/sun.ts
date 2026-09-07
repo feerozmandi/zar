@@ -161,7 +161,10 @@ export function clearSkyGhiInstant(zenith: number, dayOfYear: number): number {
   if (zenith >= 90) return 0;
   const am = airMass(zenith);
   if (!Number.isFinite(am)) return 0;
-  return Math.max(0, extraterrestrialNormalIrradiance(dayOfYear) * 0.7 ** (am ** 0.678) * Math.cos(degToRad(zenith)));
+  return Math.max(
+    0,
+    extraterrestrialNormalIrradiance(dayOfYear) * 0.7 ** (am ** 0.678) * Math.cos(degToRad(zenith)),
+  );
 }
 
 /** تابش روزانه‌ی آسمانِ صاف روی سطح افقی (kWh/m²·day) با انتگرال‌گیری ۱۰ دقیقه‌ای */
@@ -257,7 +260,9 @@ export function sunPosition(
   const sinAlt = Math.sin(lat) * Math.sin(decl) + Math.cos(lat) * Math.cos(decl) * Math.cos(h);
   const altitude = radToDeg(Math.asin(Math.min(1, Math.max(-1, sinAlt))));
 
-  const cosAz = (Math.sin(decl) - Math.sin(lat) * sinAlt) / (Math.cos(lat) * Math.cos(Math.asin(Math.min(1, Math.max(-1, sinAlt)))));
+  const cosAz =
+    (Math.sin(decl) - Math.sin(lat) * sinAlt) /
+    (Math.cos(lat) * Math.cos(Math.asin(Math.min(1, Math.max(-1, sinAlt)))));
   let azimuth = radToDeg(Math.acos(Math.min(1, Math.max(-1, cosAz))));
   if (solarHour > 12) azimuth = 360 - azimuth;
   return { altitudeDeg: altitude, azimuthDeg: azimuth };
@@ -277,8 +282,5 @@ export function orientationPenalty(tiltDeg: number, azimuthDeg: number, latDeg: 
   const azimuthFromSouth = Math.abs(((azimuthDeg - 180 + 540) % 360) - 180);
   const tiltGap = Math.abs(tiltDeg - optimal);
   // انحرافِ شیب تا ۱۵ درجه ≈ ۱٫۵٪ افت به ازای هر ۵ درجه؛ انحرافِ سمت تا ۴۵ درجه ≈ ۳٪
-  return Math.min(
-    0.25,
-    (tiltGap / 5) * 0.015 + (Math.min(azimuthFromSouth, 90) / 45) * 0.03,
-  );
+  return Math.min(0.25, (tiltGap / 5) * 0.015 + (Math.min(azimuthFromSouth, 90) / 45) * 0.03);
 }

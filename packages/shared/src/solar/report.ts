@@ -12,7 +12,14 @@ import { estimateSolarResource, type SolarResource } from "./climate.js";
 import { optimalTiltDeg, orientationPenalty } from "./sun.js";
 import { layoutArray, polygonArea, type ArrayLayout, type RoofPlaneInput } from "./roof.js";
 import { designSystem, findModule, selectInverter, type PvModule, type SystemDesign } from "./system.js";
-import { monthlyPoa, selfConsumptionSplit, simulateProduction, type LoadProfileKind, type ProductionResult, type SelfConsumptionResult } from "./production.js";
+import {
+  monthlyPoa,
+  selfConsumptionSplit,
+  simulateProduction,
+  type LoadProfileKind,
+  type ProductionResult,
+  type SelfConsumptionResult,
+} from "./production.js";
 import {
   annualBill,
   guaranteedPurchasePrice,
@@ -25,7 +32,14 @@ import {
   type TariffKind,
 } from "./tariff.js";
 import { estimateCost, type CostEstimate } from "./cost.js";
-import { buildCashflow, sensitivityAnalysis, GRID_EMISSION_FACTOR, type CashflowInput, type CashflowResult, type SensitivityResult } from "./roi.js";
+import {
+  buildCashflow,
+  sensitivityAnalysis,
+  GRID_EMISSION_FACTOR,
+  type CashflowInput,
+  type CashflowResult,
+  type SensitivityResult,
+} from "./roi.js";
 import { PROVINCES, provinceMeta, resolveProvinceCode } from "./provinces.js";
 
 export const SOLAR_ENGINE_VERSION = "2.0.0";
@@ -264,18 +278,14 @@ export function buildFeasibilityReport(input: FeasibilityInput): FeasibilityRepo
       : [rectanglePlane(input.roof.areaM2 ?? 200, defaultTilt, defaultAzimuth)];
 
   const layouts = planes.map((plane) =>
-    layoutArray(
-      { ...plane, setbackM: plane.setbackM ?? input.roof.setbackM ?? 0.5 },
-      module,
-      {
-        latDeg: lat,
-        resource,
-        orientation: input.design?.orientation ?? "portrait",
-        maxPanels: input.design?.maxCapacityKwp
-          ? Math.floor((input.design.maxCapacityKwp * 1000) / module.wattPmp)
-          : undefined,
-      },
-    ),
+    layoutArray({ ...plane, setbackM: plane.setbackM ?? input.roof.setbackM ?? 0.5 }, module, {
+      latDeg: lat,
+      resource,
+      orientation: input.design?.orientation ?? "portrait",
+      maxPanels: input.design?.maxCapacityKwp
+        ? Math.floor((input.design.maxCapacityKwp * 1000) / module.wattPmp)
+        : undefined,
+    }),
   );
 
   const planeSummaries: PlaneSummary[] = planes.map((plane, index) => {
@@ -308,11 +318,9 @@ export function buildFeasibilityReport(input: FeasibilityInput): FeasibilityRepo
   }
 
   const totalPanels = planeSummaries.reduce((sum, plane) => sum + plane.panels, 0);
-  const capacityKwp = Math.round((totalPanels * module.wattPmp) / 1000 * 100) / 100;
+  const capacityKwp = Math.round(((totalPanels * module.wattPmp) / 1000) * 100) / 100;
   const totalAreaM2 = Math.round(planeSummaries.reduce((sum, plane) => sum + plane.areaM2, 0) * 100) / 100;
-  const usableAreaM2 = Math.round(
-    layouts.reduce((sum, layout) => sum + layout.usableAreaM2, 0) * 100,
-  ) / 100;
+  const usableAreaM2 = Math.round(layouts.reduce((sum, layout) => sum + layout.usableAreaM2, 0) * 100) / 100;
 
   if (capacityKwp <= 0) {
     throw new Error("با این مشخصاتِ سقف هیچ پنلی جای نمی‌گیرد؛ مساحت، حریم یا موانع را بازنگری کنید.");
@@ -369,9 +377,7 @@ export function buildFeasibilityReport(input: FeasibilityInput): FeasibilityRepo
     monthlyTempC: resource.monthlyTempC,
   });
 
-  const staticLosses = system.losses.filter(
-    (loss) => !["temperature", "shadingDerating"].includes(loss.key),
-  );
+  const staticLosses = system.losses.filter((loss) => !["temperature", "shadingDerating"].includes(loss.key));
 
   const productionPerPlane = planes.map((plane, index) =>
     simulateProduction({
@@ -455,14 +461,16 @@ export function buildFeasibilityReport(input: FeasibilityInput): FeasibilityRepo
   const scenarioIds = input.scenarios ?? POLICY_SCENARIOS.map((scenario) => scenario.id);
   const annualSelfConsumed = energyBalance.annualSelfConsumedKwh;
   const effectiveOffsetPrice =
-    annualSelfConsumed > 0 ? annualSavingToman / annualSelfConsumed : profile.blocks[0]?.priceTomanPerKwh ?? 3_000;
+    annualSelfConsumed > 0
+      ? annualSavingToman / annualSelfConsumed
+      : (profile.blocks[0]?.priceTomanPerKwh ?? 3_000);
 
   const scenarioResults: ScenarioResult[] = scenarioIds.map((id) => {
     const scenario = policyScenario(id);
     const exportPrice =
       id === "guaranteed-purchase"
         ? guaranteedPurchasePrice(capacityKwp)
-        : scenario.defaultExportPriceTomanPerKwh ?? 0;
+        : (scenario.defaultExportPriceTomanPerKwh ?? 0);
 
     // در سناریوهای صادرات‌محور، کلِ تولید فروخته می‌شود (خودمصرفی صفر)
     const selfShare =
@@ -509,9 +517,10 @@ export function buildFeasibilityReport(input: FeasibilityInput): FeasibilityRepo
     };
   });
 
-  const recommended = scenarioResults.reduce((best, current) =>
-    current.npvToman > best.npvToman ? current : best,
-  scenarioResults[0]!);
+  const recommended = scenarioResults.reduce(
+    (best, current) => (current.npvToman > best.npvToman ? current : best),
+    scenarioResults[0]!,
+  );
   const recommendedReason = buildRecommendationReason(recommended, scenarioResults);
 
   // ── ۸. حساسیت روی سناریوی پیشنهادی ──
@@ -540,7 +549,7 @@ export function buildFeasibilityReport(input: FeasibilityInput): FeasibilityRepo
   const environment: EnvironmentImpact = {
     co2AvoidedTonsLifetime: lifetimeTons,
     co2AvoidedTonsPerYear: Math.round(((production.annualAcKwh * GRID_EMISSION_FACTOR) / 1000) * 10) / 10,
-    treesPlantedEquivalent: Math.round(lifetimeTons * 1000 / (21 * years)),
+    treesPlantedEquivalent: Math.round((lifetimeTons * 1000) / (21 * years)),
     carKmAvoided: Math.round((lifetimeTons * 1000) / 0.2),
     barrelsOfOilAvoided: Math.round(lifetimeTons / 0.43),
     homesPoweredPerYear: Math.round(production.annualAcKwh / 3_000),
@@ -702,7 +711,8 @@ function aggregateProduction(results: readonly ProductionResult[]): ProductionRe
   });
 
   const capacityKwpTotal = results.reduce(
-    (sum, result) => sum + (result.specificYieldKwhPerKwp > 0 ? result.annualAcKwh / result.specificYieldKwhPerKwp : 0),
+    (sum, result) =>
+      sum + (result.specificYieldKwhPerKwp > 0 ? result.annualAcKwh / result.specificYieldKwhPerKwp : 0),
     0,
   );
 

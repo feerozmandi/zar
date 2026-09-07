@@ -95,7 +95,7 @@ export function evaluateBids(
 ): BidEvaluation[] {
   if (bids.length === 0) return [];
 
-  const prices = bids.map((bid) => (bid.totalPriceToman / Math.max(0.001, bid.capacityKwp)) / 1000);
+  const prices = bids.map((bid) => bid.totalPriceToman / Math.max(0.001, bid.capacityKwp) / 1000);
   const minPrice = Math.min(...prices);
   const leadTimes = bids.map((bid) => bid.leadTimeDays ?? 180);
   const maxLead = Math.max(...leadTimes);
@@ -105,7 +105,7 @@ export function evaluateBids(
     weights.price + weights.equipment + weights.warranty + weights.rating + weights.schedule || 1;
 
   const scored = bids.map((bid, index) => {
-    const pricePerWatt = Math.round((bid.totalPriceToman / Math.max(0.001, bid.capacityKwp)) / 1000);
+    const pricePerWatt = Math.round(bid.totalPriceToman / Math.max(0.001, bid.capacityKwp) / 1000);
     const priceScore = minPrice <= 0 ? 1 : Math.min(1, minPrice / Math.max(prices[index] ?? minPrice, 1e-6));
     const equipmentScore = TIER_SCORE[bid.moduleTier ?? 2];
     const warrantyScore =
@@ -126,7 +126,8 @@ export function evaluateBids(
     if ((bid.productWarrantyYears ?? 10) < 10) warnings.push("گارانتی محصول کمتر از ۱۰ سال است");
     if ((bid.rating ?? 3) < 3) warnings.push("امتیاز کارفرمایان پایین است");
     if ((bid.leadTimeDays ?? 180) > 240) warnings.push("زمان تحویل طولانی (بیش از ۸ ماه)");
-    if ((bid.performanceWarrantyPercent ?? 80) < 80) warnings.push("تضمین عملکردِ ضعیف (کمتر از ۸۰٪ در سال ۲۵)");
+    if ((bid.performanceWarrantyPercent ?? 80) < 80)
+      warnings.push("تضمین عملکردِ ضعیف (کمتر از ۸۰٪ در سال ۲۵)");
 
     return {
       bid: { ...bid, id: bid.id ?? `bid-${index + 1}` },
@@ -155,7 +156,9 @@ export function evaluateBids(
     rank: index + 1,
     isBestValue: index === 0,
     priceDeltaVsCheapestPercent:
-      minPrice > 0 ? Math.round(((entry.pricePerWatt * 1000 - minPrice * 1000) / (minPrice * 1000)) * 1000) / 10 : 0,
+      minPrice > 0
+        ? Math.round(((entry.pricePerWatt * 1000 - minPrice * 1000) / (minPrice * 1000)) * 1000) / 10
+        : 0,
     warnings: entry.warnings,
   }));
 }
@@ -198,7 +201,9 @@ export function summarizeLead(lead: {
 }): EpcLeadSummary {
   const nameParts = lead.contactName.trim().split(/\s+/u);
   const maskedName =
-    nameParts.length > 1 ? `${nameParts[0]} ${"•".repeat(Math.max(2, (nameParts[1] ?? "").length))}` : "مشتری ناشناس";
+    nameParts.length > 1
+      ? `${nameParts[0]} ${"•".repeat(Math.max(2, (nameParts[1] ?? "").length))}`
+      : "مشتری ناشناس";
 
   return {
     requestId: lead.requestId,

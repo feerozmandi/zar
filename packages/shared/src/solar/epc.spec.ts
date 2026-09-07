@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  DEFAULT_BID_WEIGHTS,
-  evaluateBids,
-  maskPhone,
-  summarizeLead,
-  type EpcBidInput,
-} from "./epc.js";
+import { DEFAULT_BID_WEIGHTS, evaluateBids, maskPhone, summarizeLead, type EpcBidInput } from "./epc.js";
 
 const BIDS: EpcBidInput[] = [
   {
@@ -84,7 +78,14 @@ describe("نرمال‌سازیِ پیشنهادها", () => {
   });
 
   it("وزنِ بالاترِ قیمت، انتخاب را به سمتِ ارزان‌ترین می‌برد", () => {
-    const priceFirst = evaluateBids(BIDS, { ...DEFAULT_BID_WEIGHTS, price: 0.95, rating: 0.01, equipment: 0.01, warranty: 0.01, schedule: 0.02 });
+    const priceFirst = evaluateBids(BIDS, {
+      ...DEFAULT_BID_WEIGHTS,
+      price: 0.95,
+      rating: 0.01,
+      equipment: 0.01,
+      warranty: 0.01,
+      schedule: 0.02,
+    });
     expect(priceFirst[0]?.partnerName).toBe("ارزان‌سازه");
   });
 

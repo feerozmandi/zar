@@ -12,7 +12,14 @@
  *     خورشیدیِ سالانه محاسبه می‌شود — همان رنگ‌بندیِ پنل‌به‌پنل در Sunroof.
  */
 
-import { buildHorizon, interRowObstacle, mergeHorizons, minimumRowPitchM, solarAccess, type ObstacleBox } from "./shading.js";
+import {
+  buildHorizon,
+  interRowObstacle,
+  mergeHorizons,
+  minimumRowPitchM,
+  solarAccess,
+  type ObstacleBox,
+} from "./shading.js";
 import type { SolarResource } from "./climate.js";
 
 /** نقطه در صفحه‌ی سقف (متر) */
@@ -142,10 +149,7 @@ function distanceToSegment(point: Point2, a: Point2, b: Point2): number {
   const dy = (b[1] ?? 0) - (a[1] ?? 0);
   const lengthSquared = dx * dx + dy * dy;
   if (lengthSquared === 0) return Math.hypot(px - (a[0] ?? 0), py - (a[1] ?? 0));
-  const t = Math.max(
-    0,
-    Math.min(1, ((px - (a[0] ?? 0)) * dx + (py - (a[1] ?? 0)) * dy) / lengthSquared),
-  );
+  const t = Math.max(0, Math.min(1, ((px - (a[0] ?? 0)) * dx + (py - (a[1] ?? 0)) * dy) / lengthSquared));
   return Math.hypot(px - ((a[0] ?? 0) + t * dx), py - ((a[1] ?? 0) + t * dy));
 }
 
@@ -235,9 +239,10 @@ export function layoutArray(plane: RoofPlaneInput, module: ModuleSpec, options: 
   }
 
   // ── ۲. چیدمان ردیفی ──────────────────────────────────────────────
-  const pitch = options.orientation === "landscape"
-    ? minimumRowPitchM({ moduleLengthM: module.widthM, tiltDeg: plane.tiltDeg, latDeg: options.latDeg })
-    : minimumRowPitchM({ moduleLengthM: module.lengthM, tiltDeg: plane.tiltDeg, latDeg: options.latDeg });
+  const pitch =
+    options.orientation === "landscape"
+      ? minimumRowPitchM({ moduleLengthM: module.widthM, tiltDeg: plane.tiltDeg, latDeg: options.latDeg })
+      : minimumRowPitchM({ moduleLengthM: module.lengthM, tiltDeg: plane.tiltDeg, latDeg: options.latDeg });
 
   const panelWidth = options.orientation === "landscape" ? module.lengthM : module.widthM;
   const panelDepth = options.orientation === "landscape" ? module.widthM : module.lengthM;
@@ -316,11 +321,14 @@ export function layoutArray(plane: RoofPlaneInput, module: ModuleSpec, options: 
   const limited = options.maxPanels ? panels.slice(0, options.maxPanels) : panels;
 
   // ── ۳. دسترسی خورشیدیِ هر پنل ────────────────────────────────────
-  const interRow = options.includeInterRowShading === false ? null : interRowObstacle({
-    pitchM: rowPitch,
-    moduleLengthM: panelDepth,
-    tiltDeg: plane.tiltDeg,
-  });
+  const interRow =
+    options.includeInterRowShading === false
+      ? null
+      : interRowObstacle({
+          pitchM: rowPitch,
+          moduleLengthM: panelDepth,
+          tiltDeg: plane.tiltDeg,
+        });
 
   let accessSum = 0;
   for (const panel of limited) {
@@ -335,11 +343,14 @@ export function layoutArray(plane: RoofPlaneInput, module: ModuleSpec, options: 
 
     const horizon = mergeHorizons(
       buildHorizon({ x: 0, y: 0 }, localObstacles),
-      buildHorizon({ x: 0, y: 0 }, (plane.surroundings ?? []).map((box) => ({
-        ...box,
-        x: box.x - panel.x,
-        y: box.y - panel.y,
-      }))),
+      buildHorizon(
+        { x: 0, y: 0 },
+        (plane.surroundings ?? []).map((box) => ({
+          ...box,
+          x: box.x - panel.x,
+          y: box.y - panel.y,
+        })),
+      ),
     );
     const access = solarAccess({
       latDeg: options.latDeg,

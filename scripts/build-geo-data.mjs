@@ -104,7 +104,11 @@ function simplify(points, tolerance) {
     let maxDistance = 0;
     let index = -1;
     for (let i = first + 1; i < last; i += 1) {
-      const distance = perpendicularDistance(points[i] ?? [0, 0], points[first] ?? [0, 0], points[last] ?? [0, 0]);
+      const distance = perpendicularDistance(
+        points[i] ?? [0, 0],
+        points[first] ?? [0, 0],
+        points[last] ?? [0, 0],
+      );
       if (distance > maxDistance) {
         maxDistance = distance;
         index = i;
@@ -247,7 +251,12 @@ for (const feature of provinces) {
     nameFa: PERSIAN_BY_SLUG[slug] ?? sourceName,
     nameEn: sourceName,
     centroid: [round(clon), round(clat)],
-    bbox: [round(Math.min(...lons)), round(Math.min(...lats)), round(Math.max(...lons)), round(Math.max(...lats))],
+    bbox: [
+      round(Math.min(...lons)),
+      round(Math.min(...lats)),
+      round(Math.max(...lons)),
+      round(Math.max(...lats)),
+    ],
     rings: kept,
   });
 }

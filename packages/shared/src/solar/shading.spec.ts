@@ -36,13 +36,10 @@ describe("افق محلی", () => {
   });
 
   it("مانعِ بلند ضریب دید آسمان را کم می‌کند", () => {
-    const horizon = buildHorizon(
-      { x: 0, y: 0 },
-      [
-        { x: 0, y: -2, widthM: 20, depthM: 2, heightM: 8 },
-        { x: 0, y: 2, widthM: 20, depthM: 2, heightM: 8 },
-      ],
-    );
+    const horizon = buildHorizon({ x: 0, y: 0 }, [
+      { x: 0, y: -2, widthM: 20, depthM: 2, heightM: 8 },
+      { x: 0, y: 2, widthM: 20, depthM: 2, heightM: 8 },
+    ]);
     expect(skyViewFactor(horizon)).toBeLessThan(0.85);
   });
 });

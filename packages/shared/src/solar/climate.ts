@@ -8,11 +8,7 @@
  * جایگزین می‌کند — همان الگوی `TariffRate` در ماژول ممیزی.
  */
 
-import {
-  clearSkyDailyGhiKwh,
-  MONTH_DAYS,
-  representativeDayOfYear,
-} from "./sun.js";
+import { clearSkyDailyGhiKwh, MONTH_DAYS, representativeDayOfYear } from "./sun.js";
 import { PROVINCES } from "./provinces.js";
 
 export interface ClimateStation {
@@ -73,8 +69,7 @@ export function haversineKm(lat1: number, lon1: number, lat2: number, lon2: numb
   const dLat = (lat2 - lat1) * toRad;
   const dLon = (lon2 - lon1) * toRad;
   const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * toRad) * Math.cos(lat2 * toRad) * Math.sin(dLon / 2) ** 2;
+    Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * toRad) * Math.cos(lat2 * toRad) * Math.sin(dLon / 2) ** 2;
   return 6371 * 2 * Math.asin(Math.min(1, Math.sqrt(a)));
 }
 
@@ -129,7 +124,13 @@ function interpolateStations(lat: number, lon: number, nearest = 4) {
   if (!head) throw new Error("هیچ ایستگاه اقلیمی تعریف نشده است");
 
   if (head.distance < 1) {
-    return { station: head.station, distance: head.distance, ghi: head.station.annualGhiKwhM2Day, temp: head.station.annualTempC, elevation: head.station.elevationM };
+    return {
+      station: head.station,
+      distance: head.distance,
+      ghi: head.station.annualGhiKwhM2Day,
+      temp: head.station.annualTempC,
+      elevation: head.station.elevationM,
+    };
   }
 
   let weightSum = 0;
@@ -202,13 +203,11 @@ export function estimateSolarResource(query: ResourceQuery): SolarResource {
 
   const annualTempC = query.overrides?.annualTempC ?? Math.round(base.temp * 10) / 10;
   const monthlyGhi = distributeMonthly(annualGhi, query.lat).map((v) => Math.round(v * 100) / 100);
-  const monthlyIrradiation = monthlyGhi.map((value, index) =>
-    Math.round(value * (MONTH_DAYS[index] ?? 30) * 10) / 10,
+  const monthlyIrradiation = monthlyGhi.map(
+    (value, index) => Math.round(value * (MONTH_DAYS[index] ?? 30) * 10) / 10,
   );
 
-  const coastalStation = COASTAL.has(
-    PROVINCES.find((p) => p.capitalFa === base.station.name)?.code ?? "",
-  );
+  const coastalStation = COASTAL.has(PROVINCES.find((p) => p.capitalFa === base.station.name)?.code ?? "");
 
   return {
     annualGhiKwhM2Day: Math.round(annualGhi * 100) / 100,

@@ -367,7 +367,10 @@ export const DEFAULT_SENSITIVITY_AXES: SensitivityAxis[] = [
   {
     label: "تابش سالانه",
     deltas: DEFAULT_DELTAS,
-    apply: (input, delta) => ({ ...input, firstYearProductionKwh: input.firstYearProductionKwh * (1 + delta) }),
+    apply: (input, delta) => ({
+      ...input,
+      firstYearProductionKwh: input.firstYearProductionKwh * (1 + delta),
+    }),
   },
   {
     label: "تعرفه/نرخ فروش",
@@ -381,7 +384,10 @@ export const DEFAULT_SENSITIVITY_AXES: SensitivityAxis[] = [
   {
     label: "نرخ تنزیل",
     deltas: [-0.3, -0.15, 0, 0.15, 0.3],
-    apply: (input, delta) => ({ ...input, discountRate: (input.discountRate ?? DEFAULTS.discountRate) * (1 + delta) }),
+    apply: (input, delta) => ({
+      ...input,
+      discountRate: (input.discountRate ?? DEFAULTS.discountRate) * (1 + delta),
+    }),
   },
   {
     label: "هزینه‌ی بهره‌برداری",
@@ -404,12 +410,13 @@ export function sensitivityAnalysis(
   const capexDeltas = [-0.2, -0.1, 0, 0.1, 0.2];
   const productionDeltas = [-0.15, -0.075, 0, 0.075, 0.15];
   const values = capexDeltas.map((capexDelta) =>
-    productionDeltas.map((productionDelta) =>
-      buildCashflow({
-        ...input,
-        capexToman: input.capexToman * (1 + capexDelta),
-        firstYearProductionKwh: input.firstYearProductionKwh * (1 + productionDelta),
-      }).npvToman,
+    productionDeltas.map(
+      (productionDelta) =>
+        buildCashflow({
+          ...input,
+          capexToman: input.capexToman * (1 + capexDelta),
+          firstYearProductionKwh: input.firstYearProductionKwh * (1 + productionDelta),
+        }).npvToman,
     ),
   );
 

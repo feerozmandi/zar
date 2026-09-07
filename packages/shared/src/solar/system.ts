@@ -147,17 +147,160 @@ export interface InverterSpec {
 }
 
 export const INVERTER_CATALOG: readonly InverterSpec[] = [
-  { model: "string-10kw-3ph", acPowerKw: 10, maxDcVoltageV: 1100, mpptMinV: 200, mpptMaxV: 1000, maxDcKw: 15, mpptCount: 2, peakEfficiency: 0.984, euroEfficiency: 0.976, phases: 3, warrantyYears: 10, tier: 1 },
-  { model: "string-20kw-3ph", acPowerKw: 20, maxDcVoltageV: 1100, mpptMinV: 200, mpptMaxV: 1000, maxDcKw: 30, mpptCount: 2, peakEfficiency: 0.986, euroEfficiency: 0.98, phases: 3, warrantyYears: 10, tier: 1 },
-  { model: "string-25kw-3ph", acPowerKw: 25, maxDcVoltageV: 1100, mpptMinV: 200, mpptMaxV: 1000, maxDcKw: 37, mpptCount: 3, peakEfficiency: 0.986, euroEfficiency: 0.98, phases: 3, warrantyYears: 10, tier: 1 },
-  { model: "string-33kw-3ph", acPowerKw: 33, maxDcVoltageV: 1100, mpptMinV: 250, mpptMaxV: 1000, maxDcKw: 49, mpptCount: 3, peakEfficiency: 0.987, euroEfficiency: 0.981, phases: 3, warrantyYears: 10, tier: 1 },
-  { model: "string-40kw-3ph", acPowerKw: 40, maxDcVoltageV: 1100, mpptMinV: 250, mpptMaxV: 1000, maxDcKw: 60, mpptCount: 4, peakEfficiency: 0.987, euroEfficiency: 0.981, phases: 3, warrantyYears: 10, tier: 1 },
-  { model: "string-50kw-3ph", acPowerKw: 50, maxDcVoltageV: 1100, mpptMinV: 250, mpptMaxV: 1000, maxDcKw: 75, mpptCount: 4, peakEfficiency: 0.988, euroEfficiency: 0.982, phases: 3, warrantyYears: 10, tier: 1 },
-  { model: "string-100kw-3ph", acPowerKw: 100, maxDcVoltageV: 1100, mpptMinV: 250, mpptMaxV: 1000, maxDcKw: 150, mpptCount: 6, peakEfficiency: 0.99, euroEfficiency: 0.984, phases: 3, warrantyYears: 10, tier: 1 },
-  { model: "string-125kw-3ph", acPowerKw: 125, maxDcVoltageV: 1100, mpptMinV: 280, mpptMaxV: 1000, maxDcKw: 187, mpptCount: 8, peakEfficiency: 0.99, euroEfficiency: 0.985, phases: 3, warrantyYears: 10, tier: 1 },
-  { model: "central-500kw-3ph", acPowerKw: 500, maxDcVoltageV: 1500, mpptMinV: 600, mpptMaxV: 1500, maxDcKw: 750, mpptCount: 1, peakEfficiency: 0.991, euroEfficiency: 0.985, phases: 3, warrantyYears: 5, tier: 1 },
-  { model: "central-1000kw-3ph", acPowerKw: 1000, maxDcVoltageV: 1500, mpptMinV: 600, mpptMaxV: 1500, maxDcKw: 1500, mpptCount: 1, peakEfficiency: 0.99, euroEfficiency: 0.984, phases: 3, warrantyYears: 5, tier: 1 },
-  { model: "hybrid-5kw-1ph", acPowerKw: 5, maxDcVoltageV: 600, mpptMinV: 120, mpptMaxV: 550, maxDcKw: 7.5, mpptCount: 2, peakEfficiency: 0.978, euroEfficiency: 0.968, phases: 1, warrantyYears: 5, tier: 2 },
+  {
+    model: "string-10kw-3ph",
+    acPowerKw: 10,
+    maxDcVoltageV: 1100,
+    mpptMinV: 200,
+    mpptMaxV: 1000,
+    maxDcKw: 15,
+    mpptCount: 2,
+    peakEfficiency: 0.984,
+    euroEfficiency: 0.976,
+    phases: 3,
+    warrantyYears: 10,
+    tier: 1,
+  },
+  {
+    model: "string-20kw-3ph",
+    acPowerKw: 20,
+    maxDcVoltageV: 1100,
+    mpptMinV: 200,
+    mpptMaxV: 1000,
+    maxDcKw: 30,
+    mpptCount: 2,
+    peakEfficiency: 0.986,
+    euroEfficiency: 0.98,
+    phases: 3,
+    warrantyYears: 10,
+    tier: 1,
+  },
+  {
+    model: "string-25kw-3ph",
+    acPowerKw: 25,
+    maxDcVoltageV: 1100,
+    mpptMinV: 200,
+    mpptMaxV: 1000,
+    maxDcKw: 37,
+    mpptCount: 3,
+    peakEfficiency: 0.986,
+    euroEfficiency: 0.98,
+    phases: 3,
+    warrantyYears: 10,
+    tier: 1,
+  },
+  {
+    model: "string-33kw-3ph",
+    acPowerKw: 33,
+    maxDcVoltageV: 1100,
+    mpptMinV: 250,
+    mpptMaxV: 1000,
+    maxDcKw: 49,
+    mpptCount: 3,
+    peakEfficiency: 0.987,
+    euroEfficiency: 0.981,
+    phases: 3,
+    warrantyYears: 10,
+    tier: 1,
+  },
+  {
+    model: "string-40kw-3ph",
+    acPowerKw: 40,
+    maxDcVoltageV: 1100,
+    mpptMinV: 250,
+    mpptMaxV: 1000,
+    maxDcKw: 60,
+    mpptCount: 4,
+    peakEfficiency: 0.987,
+    euroEfficiency: 0.981,
+    phases: 3,
+    warrantyYears: 10,
+    tier: 1,
+  },
+  {
+    model: "string-50kw-3ph",
+    acPowerKw: 50,
+    maxDcVoltageV: 1100,
+    mpptMinV: 250,
+    mpptMaxV: 1000,
+    maxDcKw: 75,
+    mpptCount: 4,
+    peakEfficiency: 0.988,
+    euroEfficiency: 0.982,
+    phases: 3,
+    warrantyYears: 10,
+    tier: 1,
+  },
+  {
+    model: "string-100kw-3ph",
+    acPowerKw: 100,
+    maxDcVoltageV: 1100,
+    mpptMinV: 250,
+    mpptMaxV: 1000,
+    maxDcKw: 150,
+    mpptCount: 6,
+    peakEfficiency: 0.99,
+    euroEfficiency: 0.984,
+    phases: 3,
+    warrantyYears: 10,
+    tier: 1,
+  },
+  {
+    model: "string-125kw-3ph",
+    acPowerKw: 125,
+    maxDcVoltageV: 1100,
+    mpptMinV: 280,
+    mpptMaxV: 1000,
+    maxDcKw: 187,
+    mpptCount: 8,
+    peakEfficiency: 0.99,
+    euroEfficiency: 0.985,
+    phases: 3,
+    warrantyYears: 10,
+    tier: 1,
+  },
+  {
+    model: "central-500kw-3ph",
+    acPowerKw: 500,
+    maxDcVoltageV: 1500,
+    mpptMinV: 600,
+    mpptMaxV: 1500,
+    maxDcKw: 750,
+    mpptCount: 1,
+    peakEfficiency: 0.991,
+    euroEfficiency: 0.985,
+    phases: 3,
+    warrantyYears: 5,
+    tier: 1,
+  },
+  {
+    model: "central-1000kw-3ph",
+    acPowerKw: 1000,
+    maxDcVoltageV: 1500,
+    mpptMinV: 600,
+    mpptMaxV: 1500,
+    maxDcKw: 1500,
+    mpptCount: 1,
+    peakEfficiency: 0.99,
+    euroEfficiency: 0.984,
+    phases: 3,
+    warrantyYears: 5,
+    tier: 1,
+  },
+  {
+    model: "hybrid-5kw-1ph",
+    acPowerKw: 5,
+    maxDcVoltageV: 600,
+    mpptMinV: 120,
+    mpptMaxV: 550,
+    maxDcKw: 7.5,
+    mpptCount: 2,
+    peakEfficiency: 0.978,
+    euroEfficiency: 0.968,
+    phases: 1,
+    warrantyYears: 5,
+    tier: 2,
+  },
 ];
 
 export function findModule(model: string): PvModule {
@@ -185,8 +328,7 @@ export function selectInverter(
     for (const count of new Set([Math.max(1, Math.floor(ideal)), Math.max(1, Math.ceil(ideal))])) {
       const ratio = dcKwp / (spec.acPowerKw * count);
       // جریمه: انحراف از نسبت هدف، عبور از توان مجاز DC، و تعداد زیادِ دستگاه
-      const score =
-        Math.abs(ratio - target) + (ratio > spec.maxDcKw / spec.acPowerKw ? 5 : 0) + count * 0.01;
+      const score = Math.abs(ratio - target) + (ratio > spec.maxDcKw / spec.acPowerKw ? 5 : 0) + count * 0.01;
       if (score < bestScore) {
         bestScore = score;
         best = spec;
@@ -287,7 +429,12 @@ export function configureStrings(options: {
 }
 
 /** دمای سلول با مدل NOCT (نصبِ پشت‌بامیِ کم‌تهویه ضریب ۱٫۱ دارد) */
-export function cellTemperatureC(poaWm2: number, ambientC: number, noctC: number, mountingFactor = 1.1): number {
+export function cellTemperatureC(
+  poaWm2: number,
+  ambientC: number,
+  noctC: number,
+  mountingFactor = 1.1,
+): number {
   return ambientC + ((noctC - 20) / 800) * poaWm2 * mountingFactor;
 }
 
@@ -355,7 +502,7 @@ export function designSystem(input: SystemDesignInput): SystemDesign {
   monthlyPoaKwhM2Day.forEach((dailyKwh, index) => {
     const ambient = monthlyTempC[index] ?? 25;
     const daylight = Math.max(6, dayLengthHours(input.latDeg, representativeDayOfYear(index)));
-    const representativeIrradiance = (dailyKwh * 1000 / daylight) * 1.35;
+    const representativeIrradiance = ((dailyKwh * 1000) / daylight) * 1.35;
     const cellTemp = cellTemperatureC(representativeIrradiance, ambient, module.noctC);
     monthlyCellTempC.push(Math.round(cellTemp * 10) / 10);
     temperatureLoss += (weights[index] ?? 0) * Math.max(0, module.tempCoeffPmax * (cellTemp - 25));
@@ -373,7 +520,11 @@ export function designSystem(input: SystemDesignInput): SystemDesign {
       note: `دمای سلول تا ${Math.round(Math.max(...monthlyCellTempC, 25))}°C`,
     },
     { key: "soiling", label: "غبار و آلودگی سطح", lossFraction: input.soilingLoss ?? 0.03 },
-    { key: "mismatch", label: "ناهم‌خوانی و سایه‌اندازیِ جزیی", lossFraction: Math.round(mismatchLoss * 10000) / 10000 },
+    {
+      key: "mismatch",
+      label: "ناهم‌خوانی و سایه‌اندازیِ جزیی",
+      lossFraction: Math.round(mismatchLoss * 10000) / 10000,
+    },
     { key: "iam", label: "ضریب زاویه‌ی تابش و بازتاب", lossFraction: 0.015 },
     { key: "lid", label: "افت نوریِ سال اول (LID)", lossFraction: module.firstYearDegradation },
     { key: "dcWiring", label: "تلفات کابل‌کشی DC", lossFraction: 0.015 },
@@ -385,7 +536,11 @@ export function designSystem(input: SystemDesignInput): SystemDesign {
     },
     { key: "acWiring", label: "تلفات AC و ترانس", lossFraction: 0.01 },
     { key: "availability", label: "خاموشی و تعمیرات", lossFraction: input.availabilityLoss ?? 0.015 },
-    { key: "shadingDerating", label: "کاهشِ سایه (دسترسی خورشیدی)", lossFraction: Math.round(Math.max(0, 1 - weightedSolarAccess) * 10000) / 10000 },
+    {
+      key: "shadingDerating",
+      label: "کاهشِ سایه (دسترسی خورشیدی)",
+      lossFraction: Math.round(Math.max(0, 1 - weightedSolarAccess) * 10000) / 10000,
+    },
   ];
 
   const performanceRatio = losses.reduce((pr, item) => pr * (1 - item.lossFraction), 1);
