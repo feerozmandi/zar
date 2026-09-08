@@ -93,6 +93,33 @@ export const aiJobEnqueuedSchema = z.object({
   status: z.literal("QUEUED"),
 });
 
+/** GET /ai/usage — مصرف روزانه‌ی لایه‌ی SYSTEM کاربر (سهمیه‌بندی نوت ۵ §۱) */
+export const aiUsageSchema = z.object({
+  tier: z.literal("SYSTEM"),
+  /** تعداد فراخوان‌های امروز (به وقت UTC) */
+  used: z.number().int().nonnegative(),
+  limit: z.number().int().positive(),
+  remaining: z.number().int().nonnegative(),
+  /** پایان پنجره‌ی روزانه — شروع روز بعد UTC */
+  resetAt: z.string(),
+});
+
+/** POST /admin/ai-models — ایجاد/ویرایش مدل کاتالوگ توسط ادمین */
+export const aiModelUpsertSchema = z.object({
+  slug: z.string().regex(/^[a-z0-9.-]{2,80}$/u, "اسلاگ فقط حروف کوچک، عدد، نقطه و خط تیره"),
+  provider: z.enum(aiProviderValues),
+  displayName: z.string().min(2).max(120),
+  supportsVision: z.boolean().default(false),
+  inputPrice: z.number().min(0).default(0),
+  outputPrice: z.number().min(0).default(0),
+  maxTokens: z.number().int().min(256).max(2_000_000).default(8192),
+  freeTierOnly: z.boolean().default(false),
+  isActive: z.boolean().default(true),
+});
+
+/** PATCH /admin/ai-models/:slug — تغییر جزئی (مثلاً فعال/غیرفعال) */
+export const aiModelPatchSchema = aiModelUpsertSchema.partial().omit({ slug: true });
+
 /** PUT /user/ai-settings — تنظیمات پیش‌فرض کلید کاربر (بدون تعویض خودِ کلید) */
 export const aiSettingsSchema = z.object({
   provider: z.enum(aiProviderValues).optional(),
@@ -113,6 +140,9 @@ export type AiCompareResult = z.infer<typeof aiCompareResultSchema>;
 export type AiJobStatus = (typeof aiJobStatusValues)[number];
 export type AiJobRow = z.infer<typeof aiJobSchema>;
 export type AiJobEnqueued = z.infer<typeof aiJobEnqueuedSchema>;
+export type AiUsage = z.infer<typeof aiUsageSchema>;
+export type AiModelUpsertInput = z.infer<typeof aiModelUpsertSchema>;
+export type AiModelPatchInput = z.infer<typeof aiModelPatchSchema>;
 
 /** بارِ داده‌ی کار wiki.ask که در صف AI پردازش می‌شود (نوت ۳ §۴ — ask-ai) */
 export interface WikiAskJobPayload {

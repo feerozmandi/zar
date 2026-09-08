@@ -2,6 +2,8 @@ import type { Queue as BullQueue } from "bullmq";
 import { InjectQueue } from "@nestjs/bullmq";
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
@@ -18,6 +20,7 @@ import {
   type AiJobEnqueued,
   type AiModelRow,
   type AiTier,
+  type AiUsage,
 } from "@xennic/shared";
 import { CryptoService } from "../../common/crypto/crypto.service.js";
 import { AppConfigService } from "../../config/app-config.service.js";
@@ -85,8 +88,62 @@ export class AiService {
         }));
   }
 
+  /**
+   * GET /ai/usage — مصرف روزانه‌ی لایه‌ی SYSTEM کاربر.
+   * شمارش از AiRequestLog (پنجره‌ی روز UTC) انجام می‌شود؛ BYOK سهمیه ندارد.
+   */
+  public async usage(userId: string): Promise<AiUsage> {
+    const limit = this.config.aiSystemDailyLimit;
+    const { dayStart, dayEnd } = AiService.utcDayWindow();
+    const used = limit > 0 ? await this.countSystemCallsToday(userId, dayStart) : 0;
+    return {
+      tier: "SYSTEM",
+      used,
+      // برای limit=0 (نامحدود) سقف نمایشی بزرگ برگردانده می‌شود تا قرارداد ثابت بماند
+      limit: limit > 0 ? limit : Number.MAX_SAFE_INTEGER,
+      remaining: limit > 0 ? Math.max(0, limit - used) : Number.MAX_SAFE_INTEGER,
+      resetAt: dayEnd.toISOString(),
+    };
+  }
+
+  /** پنجره‌ی روز جاری UTC — سهمیه‌ی روزانه بر همین اساس صفر می‌شود */
+  private static utcDayWindow(): { dayStart: Date; dayEnd: Date } {
+    const now = new Date();
+    const dayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const dayEnd = new Date(dayStart.getTime() + 24 * 3600 * 1000);
+    return { dayStart, dayEnd };
+  }
+
+  private async countSystemCallsToday(userId: string, dayStart: Date): Promise<number> {
+    // فقط فراخوان‌های موفق/خطادار «واقعی» لایه‌ی SYSTEM شمارش می‌شوند
+    return this.prisma.client.aiRequestLog.count({
+      where: { userId, tier: "SYSTEM", createdAt: { gte: dayStart } },
+    });
+  }
+
+  /**
+   * اجرای سهمیه‌ی روزانه‌ی لایه‌ی SYSTEM (نوت ۵ §۱ — کنترل هزینه‌ی لایه‌ی رایگان).
+   * @param calls تعداد فراخوانی که این درخواست مصرف می‌کند (compare چند مدل = چند فراخوان)
+   */
+  private async enforceSystemQuota(userId: string, calls = 1): Promise<void> {
+    const limit = this.config.aiSystemDailyLimit;
+    if (limit <= 0) return; // نامحدود
+    const { dayStart, dayEnd } = AiService.utcDayWindow();
+    const used = await this.countSystemCallsToday(userId, dayStart);
+    if (used + calls > limit) {
+      throw new HttpException(
+        {
+          message: `سقف روزانه‌ی لایه‌ی رایگان (${limit} فراخوان) پر شده است؛ فردا دوباره تلاش کنید یا کلید اختصاصی (BYOK) ثبت کنید`,
+          usage: { used, limit, remaining: Math.max(0, limit - used), resetAt: dayEnd.toISOString() },
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+  }
+
   /** POST /ai/generate */
   public async generate(userId: string, input: AiGenerateInput): Promise<AiGenerateResult> {
+    if (!input.useOwnKey) await this.enforceSystemQuota(userId);
     const target = await this.resolveTarget(userId, input.useOwnKey);
     const model = input.model ?? PROVIDER_DEFAULT_MODEL[target.provider];
 
@@ -122,6 +179,8 @@ export class AiService {
    */
   public async compare(userId: string, input: AiCompareInput): Promise<AiCompareResult> {
     const uniqueModels = [...new Set(input.models)];
+    // هر مدل یک فراخوان مصرف می‌کند؛ قبل از شروع، کل هزینه‌ی سهمیه بررسی می‌شود
+    if (!input.useOwnKey) await this.enforceSystemQuota(userId, uniqueModels.length);
     const target = await this.resolveTarget(userId, input.useOwnKey);
     const catalog = await this.prisma.client.aiModelCatalog.findMany({
       where: { slug: { in: uniqueModels }, isActive: true },
@@ -183,6 +242,8 @@ export class AiService {
    * سابقه‌ی BullMQ (removeOnComplete) هم نتیجه را برگرداند.
    */
   public async enqueue(userId: string, input: AiGenerateInput): Promise<AiJobEnqueued> {
+    // سهمیه قبل از ثبت در صف بررسی می‌شود تا کار محکوم‌به‌شکست وارد صف نشود
+    if (!input.useOwnKey) await this.enforceSystemQuota(userId);
     const job = await this.prisma.client.aiJob.create({
       data: {
         userId,

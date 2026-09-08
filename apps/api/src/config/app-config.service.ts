@@ -74,6 +74,10 @@ export class AppConfigService {
   public get githubModels(): { baseUrl: string; token?: string } {
     return { baseUrl: this.env.GITHUB_MODELS_BASE_URL, token: this.env.GITHUB_MODELS_TOKEN };
   }
+  /** سقف روزانه‌ی فراخوان لایه‌ی SYSTEM به ازای هر کاربر (۰ = بدون محدودیت) */
+  public get aiSystemDailyLimit(): number {
+    return this.env.AI_SYSTEM_DAILY_LIMIT;
+  }
   public get uploadMaxBytes(): number {
     return this.env.UPLOAD_MAX_MB * 1024 * 1024;
   }

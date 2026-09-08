@@ -31,6 +31,8 @@ export const apiEnvSchema = z.object({
   OCR_SERVICE_URL: z.string().url().default("http://localhost:8000"),
   GITHUB_MODELS_BASE_URL: z.string().url().default("https://models.inference.ai.azure.com"),
   GITHUB_MODELS_TOKEN: z.string().optional(),
+  /** سقف روزانه‌ی فراخوان لایه‌ی SYSTEM به ازای هر کاربر (۰ = بدون محدودیت) */
+  AI_SYSTEM_DAILY_LIMIT: z.coerce.number().int().min(0).default(50),
   UPLOAD_MAX_MB: z.coerce.number().int().min(1).max(100).default(10),
   UPLOAD_DIR: z.string().default("var/uploads"),
   TRUST_PROXY: booleanish.default(true),

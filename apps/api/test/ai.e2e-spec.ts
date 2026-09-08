@@ -18,11 +18,14 @@ import { AiService } from "../src/modules/ai/ai.service.js";
 
 const aiJobs: Array<Record<string, unknown>> = [];
 
+/** شمارنده‌ی قابل تنظیم برای سناریوی سهمیه در تست */
+let systemCallsToday = 0;
+
 const prismaFake = {
   client: {
     aiModelCatalog: { findMany: () => Promise.resolve([]) },
     aiProviderCredential: { findFirst: () => Promise.resolve(null), update: () => Promise.resolve({}) },
-    aiRequestLog: { create: () => Promise.resolve({}) },
+    aiRequestLog: { create: () => Promise.resolve({}), count: () => Promise.resolve(systemCallsToday) },
     aiJob: {
       create: ({ data }: { data: Record<string, unknown> }) => {
         const job = { id: `aij-${aiJobs.length + 1}`, ...data };
@@ -61,6 +64,7 @@ const prismaFake = {
 const configFake = {
   githubModels: { baseUrl: "https://models.example", token: "gh-test-token" },
   encryptionKey: "c".repeat(64),
+  aiSystemDailyLimit: 5,
 };
 
 describe("AI module (e2e)", () => {
@@ -95,6 +99,7 @@ describe("AI module (e2e)", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    systemCallsToday = 0;
   });
 
   it("GET /api/v1/ai/models — فهرست پیش‌فرض در نبود کاتالوگ", async () => {
@@ -191,5 +196,22 @@ describe("AI module (e2e)", () => {
       .post("/api/v1/ai/compare")
       .send({ prompt: "مقایسه کن", models: ["a", "b", "c", "d"] })
       .expect(400);
+  });
+
+  it("GET /api/v1/ai/usage — گزارش سهمیه‌ی روزانه", async () => {
+    systemCallsToday = 2;
+    const response = await request(app.getHttpServer() as Parameters<typeof request>[0])
+      .get("/api/v1/ai/usage")
+      .expect(200);
+    const body = response.body as { data: { used: number; limit: number; remaining: number } };
+    expect(body.data).toMatchObject({ used: 2, limit: 5, remaining: 3 });
+  });
+
+  it("POST /api/v1/ai/generate — سقف پر با 429 رد می‌شود", async () => {
+    systemCallsToday = 5;
+    await request(app.getHttpServer() as Parameters<typeof request>[0])
+      .post("/api/v1/ai/generate")
+      .send({ prompt: "این قبض را تحلیل کن" })
+      .expect(429);
   });
 });

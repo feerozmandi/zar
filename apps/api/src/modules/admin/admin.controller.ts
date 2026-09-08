@@ -1,8 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Delete, Get, Ip, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import {
+  aiModelPatchSchema,
+  aiModelUpsertSchema,
   articleUpsertSchema,
   paginationSchema,
+  type AiModelPatchInput,
+  type AiModelUpsertInput,
   type ArticleUpsertInput,
   type Pagination,
 } from "@xennic/shared";
@@ -47,5 +51,54 @@ export class AdminController {
   @ApiOperation({ summary: "لاگ اقدامات مدیریتی" })
   public auditLogs(@Query("take") take = "100") {
     return this.admin.auditLogs(Number(take) || 100);
+  }
+
+  // ─────────────── مدیریت کاتالوگ مدل‌های AI ───────────────
+
+  @Get("ai-models")
+  @ApiOperation({ summary: "فهرست کامل کاتالوگ مدل‌ها (فعال و غیرفعال)" })
+  public aiModels() {
+    return this.admin.aiModels();
+  }
+
+  @Post("ai-models")
+  @ApiOperation({ summary: "ایجاد/ویرایش مدل کاتالوگ (upsert بر اساس slug)" })
+  @ApiBodyZod(aiModelUpsertSchema)
+  public upsertAiModel(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(aiModelUpsertSchema)) input: AiModelUpsertInput,
+    @Ip() ip: string,
+  ) {
+    return this.admin.upsertAiModel(input, user.id, ip);
+  }
+
+  @Patch("ai-models/:slug")
+  @ApiOperation({ summary: "تغییر جزئی مدل (فعال/غیرفعال، قیمت، سقف توکن)" })
+  @ApiParam({ name: "slug", description: "اسلاگ مدل در کاتالوگ" })
+  @ApiBodyZod(aiModelPatchSchema)
+  public patchAiModel(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param("slug") slug: string,
+    @Body(new ZodValidationPipe(aiModelPatchSchema)) input: AiModelPatchInput,
+    @Ip() ip: string,
+  ) {
+    return this.admin.patchAiModel(slug, input, user.id, ip);
+  }
+
+  @Delete("ai-models/:slug")
+  @ApiOperation({ summary: "حذف مدل از کاتالوگ" })
+  @ApiParam({ name: "slug", description: "اسلاگ مدل در کاتالوگ" })
+  public deleteAiModel(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param("slug") slug: string,
+    @Ip() ip: string,
+  ) {
+    return this.admin.deleteAiModel(slug, user.id, ip);
+  }
+
+  @Get("ai-stats")
+  @ApiOperation({ summary: "آمار مصرف دروازه‌ی AI (فراخوان‌ها، توکن‌ها، وضعیت صف)" })
+  public aiStats() {
+    return this.admin.aiStats();
   }
 }

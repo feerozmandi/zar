@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { aiCompareResultSchema, aiModelListSchema, type AiCompareResult } from "@xennic/shared";
-import { LoaderCircle, Swords, Timer } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  aiCompareResultSchema,
+  aiModelListSchema,
+  aiUsageSchema,
+  type AiCompareResult,
+} from "@xennic/shared";
+import { Gauge, LoaderCircle, Swords, Timer } from "lucide-react";
 import { toast } from "sonner";
 import { Badge, Button, Card, CardContent, Label, Textarea } from "@xennic/ui";
 import { apiFetch, ApiError } from "@/lib/api-client";
@@ -16,10 +21,19 @@ const MAX_MODELS = 3;
  * داده می‌شود؛ خطای یک مدل نتیجه‌ی بقیه را از بین نمی‌برد.
  */
 export function ArenaPlayground() {
+  const queryClient = useQueryClient();
   const models = useQuery({
     queryKey: ["ai", "models"],
     queryFn: () => apiFetch("ai/models", aiModelListSchema),
     staleTime: 5 * 60 * 1000,
+  });
+
+  // سهمیه‌ی روزانه‌ی لایه‌ی رایگان — در نبود لاگین بی‌صدا نادیده گرفته می‌شود
+  const usage = useQuery({
+    queryKey: ["ai", "usage"],
+    queryFn: () => apiFetch("ai/usage", aiUsageSchema),
+    staleTime: 30 * 1000,
+    retry: false,
   });
 
   const [prompt, setPrompt] = useState("");
@@ -34,10 +48,18 @@ export function ArenaPlayground() {
         body: { prompt, models: selected, useOwnKey },
         timeoutMs: 120_000,
       }),
-    onSuccess: (data) => setResult(data),
+    onSuccess: (data) => {
+      setResult(data);
+      void queryClient.invalidateQueries({ queryKey: ["ai", "usage"] });
+    },
     onError: (error) => {
       if (error instanceof ApiError && error.status === 401) {
         toast.error("برای استفاده از AI Arena ابتدا وارد شوید");
+        return;
+      }
+      if (error instanceof ApiError && error.status === 429) {
+        toast.error(error.message);
+        void queryClient.invalidateQueries({ queryKey: ["ai", "usage"] });
         return;
       }
       toast.error(error.message);
@@ -57,10 +79,31 @@ export function ArenaPlayground() {
 
   const canSubmit = prompt.trim().length >= 4 && selected.length > 0 && !compare.isPending;
 
+  // سقف «نامحدود» (MAX_SAFE_INTEGER) نمایش داده نمی‌شود
+  const quota =
+    usage.data && usage.data.limit < Number.MAX_SAFE_INTEGER
+      ? { used: usage.data.used, limit: usage.data.limit, remaining: usage.data.remaining }
+      : null;
+
   return (
     <div className="grid gap-6">
       <Card>
         <CardContent className="grid gap-4 p-6">
+          {quota && !useOwnKey ? (
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/20 px-3 py-2 text-xs">
+              <Gauge className="size-3.5 text-muted-foreground" />
+              <span>
+                سهمیه‌ی رایگان امروز:{" "}
+                <span className="xennic-numeric font-semibold">
+                  {quota.remaining}/{quota.limit}
+                </span>{" "}
+                فراخوان باقی‌مانده
+              </span>
+              {quota.remaining === 0 ? (
+                <span className="text-destructive">— برای ادامه، کلید اختصاصی (BYOK) ثبت کنید</span>
+              ) : null}
+            </div>
+          ) : null}
           <div className="grid gap-1.5">
             <Label htmlFor="arena-prompt">پرامپت / سند انرژی</Label>
             <Textarea

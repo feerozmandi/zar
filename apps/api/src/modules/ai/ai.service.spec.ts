@@ -27,7 +27,7 @@ interface PrismaMock {
   client: {
     aiModelCatalog: { findMany: ReturnType<typeof vi.fn> };
     aiProviderCredential: { findFirst: ReturnType<typeof vi.fn>; update: ReturnType<typeof vi.fn> };
-    aiRequestLog: { create: ReturnType<typeof vi.fn> };
+    aiRequestLog: { create: ReturnType<typeof vi.fn>; count: ReturnType<typeof vi.fn> };
     aiJob: {
       create: ReturnType<typeof vi.fn>;
       findFirst: ReturnType<typeof vi.fn>;
@@ -43,7 +43,7 @@ function makePrisma(): PrismaMock {
     client: {
       aiModelCatalog: { findMany: vi.fn(() => Promise.resolve([])) },
       aiProviderCredential: { findFirst: vi.fn(() => Promise.resolve(null)), update: vi.fn(() => Promise.resolve({})) },
-      aiRequestLog: { create: vi.fn(() => Promise.resolve({})) },
+      aiRequestLog: { create: vi.fn(() => Promise.resolve({})), count: vi.fn(() => Promise.resolve(0)) },
       aiJob: {
         create: vi.fn(() => Promise.resolve({ id: "job-1" })),
         findFirst: vi.fn(() => Promise.resolve(null)),
@@ -55,11 +55,12 @@ function makePrisma(): PrismaMock {
   };
 }
 
-function makeService(options?: { githubToken?: string; prisma?: PrismaMock }) {
+function makeService(options?: { githubToken?: string; prisma?: PrismaMock; dailyLimit?: number }) {
   const prisma = options?.prisma ?? makePrisma();
   const config = {
     githubModels: { baseUrl: "https://models.example", token: options?.githubToken },
     encryptionKey: ENCRYPTION_KEY,
+    aiSystemDailyLimit: options?.dailyLimit ?? 0,
   } as unknown as AppConfigService;
   const queue = { add: vi.fn(() => Promise.resolve({ id: "job-1" })) } as unknown as BullQueue;
   const service = new AiService(prisma as unknown as PrismaService, config, makeCrypto(), queue);
@@ -196,6 +197,84 @@ describe("AiService.compare (AI Arena)", () => {
     const { service } = makeService({ githubToken: "gh" });
     await service.compare("u-1", { prompt: "تست تست", models: ["gpt-4o", "gpt-4o"], useOwnKey: false });
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("AiService — سهمیه‌ی روزانه‌ی SYSTEM", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("زیر سقف: فراخوان عبور می‌کند", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(okResponse())));
+    const prisma = makePrisma();
+    prisma.client.aiRequestLog.count.mockResolvedValue(4);
+    const { service } = makeService({ githubToken: "gh", prisma, dailyLimit: 5 });
+    const result = await service.generate("u-1", { prompt: "تست تست", useOwnKey: false });
+    expect(result.content).toBe("پاسخ مدل");
+  });
+
+  it("سقف پر: خطای 429 با پیام سهمیه", async () => {
+    const prisma = makePrisma();
+    prisma.client.aiRequestLog.count.mockResolvedValue(5);
+    const { service } = makeService({ githubToken: "gh", prisma, dailyLimit: 5 });
+    await expect(service.generate("u-1", { prompt: "تست تست", useOwnKey: false })).rejects.toMatchObject({
+      status: 429,
+    });
+  });
+
+  it("compare هزینه‌ی همه‌ی مدل‌ها را یکجا حساب می‌کند (۲ مدل با ۱ فراخوان باقی‌مانده → رد)", async () => {
+    const prisma = makePrisma();
+    prisma.client.aiRequestLog.count.mockResolvedValue(4); // limit 5 → فقط ۱ باقی
+    const { service } = makeService({ githubToken: "gh", prisma, dailyLimit: 5 });
+    await expect(
+      service.compare("u-1", { prompt: "مقایسه کن", models: ["m1", "m2"], useOwnKey: false }),
+    ).rejects.toMatchObject({ status: 429 });
+  });
+
+  it("BYOK سهمیه ندارد (شمارش اصلاً انجام نمی‌شود)", async () => {
+    const crypto = makeCrypto();
+    const encrypted = crypto.encrypt("sk-user-secret");
+    const prisma = makePrisma();
+    prisma.client.aiRequestLog.count.mockResolvedValue(999);
+    prisma.client.aiProviderCredential.findFirst.mockResolvedValueOnce({
+      id: "cred-1",
+      provider: "OPENAI",
+      encryptedKey: encrypted.ciphertext,
+      iv: encrypted.iv,
+      authTag: encrypted.authTag,
+    });
+    vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(okResponse())));
+    const { service } = makeService({ prisma, dailyLimit: 5 });
+    const result = await service.generate("u-1", { prompt: "تست تست", useOwnKey: true });
+    expect(result.tier).toBe("BYOK");
+  });
+
+  it("enqueue با سقف پر، کار را وارد صف نمی‌کند", async () => {
+    const prisma = makePrisma();
+    prisma.client.aiRequestLog.count.mockResolvedValue(5);
+    const { service, queue } = makeService({ githubToken: "gh", prisma, dailyLimit: 5 });
+    await expect(service.enqueue("u-1", { prompt: "کار سنگین", useOwnKey: false })).rejects.toMatchObject({
+      status: 429,
+    });
+    expect(prisma.client.aiJob.create).not.toHaveBeenCalled();
+    expect((queue.add as unknown as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
+  });
+
+  it("limit=0 یعنی نامحدود", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(okResponse())));
+    const prisma = makePrisma();
+    prisma.client.aiRequestLog.count.mockResolvedValue(100_000);
+    const { service } = makeService({ githubToken: "gh", prisma, dailyLimit: 0 });
+    const result = await service.generate("u-1", { prompt: "تست تست", useOwnKey: false });
+    expect(result.content).toBe("پاسخ مدل");
+  });
+
+  it("usage گزارش مصرف/باقی‌مانده/resetAt می‌دهد", async () => {
+    const prisma = makePrisma();
+    prisma.client.aiRequestLog.count.mockResolvedValue(3);
+    const { service } = makeService({ githubToken: "gh", prisma, dailyLimit: 10 });
+    const usage = await service.usage("u-1");
+    expect(usage).toMatchObject({ tier: "SYSTEM", used: 3, limit: 10, remaining: 7 });
+    expect(new Date(usage.resetAt).getTime()).toBeGreaterThan(Date.now());
   });
 });
 

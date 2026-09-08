@@ -49,6 +49,13 @@ export class AiController {
     return this.ai.compare(user.id, body);
   }
 
+  @Get("usage")
+  @ApiBearerAuth("access-token")
+  @ApiOperation({ summary: "مصرف روزانه‌ی لایه‌ی رایگان SYSTEM (سهمیه‌بندی)" })
+  public usage(@CurrentUser() user: AuthenticatedUser) {
+    return this.ai.usage(user.id);
+  }
+
   @Get("jobs")
   @ApiBearerAuth("access-token")
   @ApiOperation({ summary: "تاریخچه‌ی کارهای ناهم‌زمان کاربر (صفحه‌بندی‌شده)" })
