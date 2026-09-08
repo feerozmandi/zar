@@ -33,12 +33,7 @@ export function EnergyField() {
       host.appendChild(renderer.domElement);
 
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
-        55,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        120,
-      );
+      const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 120);
       camera.position.set(0, 0.5, 26);
 
       const core = new THREE.Group();
@@ -62,18 +57,11 @@ export function EnergyField() {
       const sparkCount = Math.min(460, Math.floor((window.innerWidth * window.innerHeight) / 4200));
       const sparkData: Array<[number, number, number]> = [];
       for (let i = 0; i < sparkCount; i++) {
-        sparkData.push([
-          (Math.random() - 0.5) * 48,
-          (Math.random() - 0.5) * 32,
-          (Math.random() - 0.5) * 28,
-        ]);
+        sparkData.push([(Math.random() - 0.5) * 48, (Math.random() - 0.5) * 32, (Math.random() - 0.5) * 28]);
       }
       const positions = new Float32Array(sparkData.flat());
       const sparks = new THREE.Points(
-        new THREE.BufferGeometry().setAttribute(
-          "position",
-          new THREE.BufferAttribute(positions, 3),
-        ),
+        new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(positions, 3)),
         new THREE.PointsMaterial({
           color: 0xffb224,
           size: 0.22,

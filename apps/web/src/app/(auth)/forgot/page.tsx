@@ -16,8 +16,8 @@ export default function ForgotPage() {
       <div className="mt-8">
         <div className="rounded-lg border border-border bg-card p-6">
           <p className="text-sm text-muted-foreground">
-            عمل تعویض رمز در این مرحله در دسترس نیست؛ لطفاً از حساب خود
-            برای ورود استفاده کنید یا با پشتیبانی تماس بگیرید.
+            عمل تعویض رمز در این مرحله در دسترس نیست؛ لطفاً از حساب خود برای ورود استفاده کنید یا با پشتیبانی
+            تماس بگیرید.
           </p>
           <Link
             href="/login"

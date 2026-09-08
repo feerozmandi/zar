@@ -21,8 +21,7 @@ type AuthFormValues = { email: string; password: string; fullName?: string };
 const SERVER_ERROR_MAP: Record<string, string> = {
   "ایمیل یا رمز عبور نادرست است": "ایمیل یا رمز عبور اشتباه است.",
   "حساب کاربری غیرفعال است": "این حساب کاربری غیرفعال شده است.",
-  "حساب شما هنوز تأیید نشده است":
-    "حساب شما هنوز تأیید نشده است. پس از تأیید ایمیل وارد شوید.",
+  "حساب شما هنوز تأیید نشده است": "حساب شما هنوز تأیید نشده است. پس از تأیید ایمیل وارد شوید.",
   "این ایمیل قبلاً ثبت شده است": "این ایمیل قبلاً ثبت نام کرده است.",
 };
 
@@ -88,9 +87,7 @@ export function LoginForm({ mode }: { mode: "login" | "register" }) {
           method: "POST",
           body: values,
         });
-        toast.success(
-          "حساب کاربری ساخته شد؛ پس از تأیید ایمیل می‌توانید وارد شوید.",
-        );
+        toast.success("حساب کاربری ساخته شد؛ پس از تأیید ایمیل می‌توانید وارد شوید.");
         router.replace("/login");
       }
     } catch (err) {
@@ -100,36 +97,23 @@ export function LoginForm({ mode }: { mode: "login" | "register" }) {
     }
   }
 
-  return (      <div
-      className="rounded-2xl p-6 animate-fade-in-up"
-    >
+  return (
+    <div className="rounded-2xl p-6 animate-fade-in-up">
       <form
         className="grid gap-4"
         onSubmit={(event) => {
           void handleSubmit(onSubmit)(event);
         }}
       >
-        <Field
-          error={formState.errors.email?.message}
-          htmlFor="email"
-          label="ایمیل"
-        >
+        <Field error={formState.errors.email?.message} htmlFor="email" label="ایمیل">
           <Input dir="ltr" id="email" type="email" {...register("email")} />
         </Field>
         {!isLogin && (
-          <Field
-            error={formState.errors.fullName?.message}
-            htmlFor="fullName"
-            label="نام کامل"
-          >
+          <Field error={formState.errors.fullName?.message} htmlFor="fullName" label="نام کامل">
             <Input id="fullName" {...register("fullName")} />
           </Field>
         )}
-        <Field
-          error={formState.errors.password?.message}
-          htmlFor="password"
-          label="رمز عبور"
-        >
+        <Field error={formState.errors.password?.message} htmlFor="password" label="رمز عبور">
           <div className="relative">
             <Input
               dir="ltr"
@@ -145,11 +129,7 @@ export function LoginForm({ mode }: { mode: "login" | "register" }) {
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? "پنهان‌سازی رمز" : "نمایش رمز"}
             >
-              {pending ? null : showPassword ? (
-                <EyeOff size={18} />
-              ) : (
-                <Eye size={18} />
-              )}
+              {pending ? null : showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
         </Field>
@@ -225,9 +205,7 @@ function Field({
         {label}
       </Label>
       {children}
-      {error ? (
-        <p className="text-xs text-destructive animate-fade-in">{error}</p>
-      ) : null}
+      {error ? <p className="text-xs text-destructive animate-fade-in">{error}</p> : null}
     </div>
   );
 }

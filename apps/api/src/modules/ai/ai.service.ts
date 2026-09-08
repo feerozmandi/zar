@@ -245,7 +245,12 @@ export class AiService {
       content?: Array<{ text?: string }>;
       choices?: Array<{ message?: { content?: string } }>;
       candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-      usage?: { prompt_tokens?: number; completion_tokens?: number; input_tokens?: number; output_tokens?: number };
+      usage?: {
+        prompt_tokens?: number;
+        completion_tokens?: number;
+        input_tokens?: number;
+        output_tokens?: number;
+      };
       usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
     };
 

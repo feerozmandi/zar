@@ -21,16 +21,14 @@ function AuthPortal({ children }: { children: React.ReactNode }) {
         <div
           className="absolute left-1/2 top-1/3 h-96 w-96 origin-center rounded-full opacity-25 blur-3xl"
           style={{
-            background:
-              "radial-gradient(circle at 50% 50%, var(--xennic-primary) 0%, transparent 70%)",
+            background: "radial-gradient(circle at 50% 50%, var(--xennic-primary) 0%, transparent 70%)",
             transform: "translate(-50%, -50%)",
           }}
         />
         <div
           className="absolute bottom-0 right-0 h-72 w-72 origin-center rounded-full opacity-20 blur-3xl"
           style={{
-            background:
-              "radial-gradient(circle at 50% 50%, var(--xennic-secondary) 0%, transparent 70%)",
+            background: "radial-gradient(circle at 50% 50%, var(--xennic-secondary) 0%, transparent 70%)",
           }}
         />
       </div>
@@ -42,11 +40,7 @@ function AuthPortal({ children }: { children: React.ReactNode }) {
           <div className="flex items-center justify-between px-6 pb-4 pt-6">
             <div>
               <h1 className="text-lg font-bold text-foreground tracking-tight">
-                {isLoginPage
-                  ? "خوش آمدید به Xennic"
-                  : isRegisterPage
-                    ? "ساخت حساب کاربری"
-                    : "احراز هویت"}
+                {isLoginPage ? "خوش آمدید به Xennic" : isRegisterPage ? "ساخت حساب کاربری" : "احراز هویت"}
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 {isLoginPage
@@ -97,10 +91,6 @@ function AuthPortal({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return <AuthPortal>{children}</AuthPortal>;
 }

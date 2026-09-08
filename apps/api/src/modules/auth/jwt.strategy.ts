@@ -16,7 +16,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
     config: AppConfigService,
     private readonly auth: AuthService,
   ) {
-    const secretProvider: SecretOrKeyProvider = (_request, _rawJwtToken, done) => done(null, config.jwtSecret);
+    const secretProvider: SecretOrKeyProvider = (_request, _rawJwtToken, done) =>
+      done(null, config.jwtSecret);
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,

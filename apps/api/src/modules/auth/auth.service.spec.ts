@@ -71,17 +71,16 @@ describe("AuthService (refresh rotation)", () => {
     expect(tokens.accessToken).toBe("signed.access.token");
     expect(tokens.refreshToken).toHaveLength(96); // 48 random bytes as hex
     const stored = prisma.client.session.create.mock.calls[0]?.[0]?.data as
-      | { refreshToken: string }
-      | undefined;
+      { refreshToken: string } | undefined;
     expect(stored?.refreshToken).not.toBe(tokens.refreshToken); // hash، نه مقدار خام
     expect(stored?.refreshToken).toHaveLength(64); // sha256 hex
   });
 
   it("blocks PENDING_VERIFICATION accounts", async () => {
     const { auth } = makeService();
-    await expect(
-      auth.login({ email: "pending@xennic.ir", password: "Xennic@2026!" }),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
+    await expect(auth.login({ email: "pending@xennic.ir", password: "Xennic@2026!" })).rejects.toBeInstanceOf(
+      UnauthorizedException,
+    );
   });
 
   it("rotates the session on refresh: old revoked + fresh token issued", async () => {
