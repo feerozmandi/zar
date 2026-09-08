@@ -24,5 +24,6 @@ export * from "./schemas/contact.js";
 export * from "./schemas/engineering.js";
 export * from "./schemas/solar.js";
 export * from "./schemas/wiki.js";
+export * from "./schemas/bill-analysis.js";
 export * from "./solar/irradiance.js";
 export * from "./solar/roi.js";

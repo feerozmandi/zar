@@ -13,6 +13,7 @@ import { WikiModule } from "./modules/wiki/wiki.module.js";
 import { AiModule } from "./modules/ai/ai.module.js";
 import { AdminModule } from "./modules/admin/admin.module.js";
 import { ContactModule } from "./modules/contact/contact.module.js";
+import { BillModule } from "./modules/bill/bill.module.js";
 import { PrismaModule } from "./infra/prisma/prisma.module.js";
 import { QueueModule } from "./infra/queue/queue.module.js";
 
@@ -35,6 +36,7 @@ import { QueueModule } from "./infra/queue/queue.module.js";
     AiModule,
     AdminModule,
     ContactModule,
+    BillModule,
   ],
   providers: [
     // ترتیب ثبت اهمیت دارد: اول احراز هویت، سپس بررسی نقش‌ها.
