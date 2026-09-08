@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <section className="mx-auto w-full max-w-2xl px-4 py-16 lg:px-8">
+    <section className="mx-auto w-full max-w-2xl px-4 pt-28 pb-16 lg:px-8">
       <h1 className="text-3xl font-black">ارتباط با ما و درخواست مشاوره</h1>
       <p className="mt-3 leading-8 text-muted-foreground">
         موضوع و شرح نیاز خود را بنویسید؛ کارشناسان{" "}

@@ -115,6 +115,42 @@
 @layer base {
   html {
     color-scheme: dark light;
+    /* اسکرول نرم برای پرش به بخش‌های لندینگ (#services و …) */
+    scroll-behavior: smooth;
+  }
+
+  /* با ترجیح کاهش حرکت، اسکرول نرم و انیمیشن‌ها غیرفعال می‌شود */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    .reveal {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .animate-ping {
+      animation: none !important;
+    }
+  }
+
+  /* بخش‌های لایه‌بندی‌شده‌ی لندینگ زیر هدر ثابت گیر نمی‌افتند */
+  section[id] {
+    scroll-margin-top: 5.5rem;
+  }
+
+  /* انیمیشن ظهور هنگام اسکرول (Reveal) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   body {

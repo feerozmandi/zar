@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 /** «درباره ما» — بخش اعتبار تجاری نوت ۴ §۴ */
 export default function AboutPage() {
   return (
-    <section className="mx-auto w-full max-w-4xl px-4 py-16 lg:px-8">
+    <section className="mx-auto w-full max-w-4xl px-4 pt-28 pb-16 lg:px-8">
       <h1 className="text-3xl font-black">پشتوانه فنی و تجربی</h1>
       <p className="mt-5 text-lg leading-9 text-muted-foreground">
         {XENNIC_BRAND.legalName} ({XENNIC_BRAND.legalNameLatin}) با تلفیق دانش مهندسی برق و هوش مصنوعی، پلتفرم{" "}

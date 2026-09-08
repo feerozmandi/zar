@@ -1,65 +1,93 @@
 import { routes } from "@xennic/design-tokens";
-import { ArrowLeft, Sparkles, Zap } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Calculator, Sun } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@xennic/ui";
+import { Reveal } from "./reveal";
 
-/** هیرو لندینگ — تیتر، زیرتیتر و دو CTA با تم «هسته انرژی × بلوپرینت» */
+const trustChips = [
+  { icon: BadgeCheck, label: "مطابق استانداردهای IEC و نشریه ۱۱۰" },
+  { icon: Sun, label: "مصوبات ماده ۱۲ و ۱۶ بورس انرژی" },
+  { icon: Calculator, label: "ابزارهای تخصصی رایگان برای مهندسان" },
+];
+
+/**
+ * هیرو تمام‌عرض لندینگ — نمای سینمایی نیروگاه خورشیدی با لایه‌های گرادیانی
+ * هم‌رنگ پس‌زمینه، بج «مشاور، طراح، مجری»، H1 برند و دو CTA تبدیل.
+ */
 export function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-border/60">
-      <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-20 lg:grid-cols-[1.15fr_1fr] lg:px-8 lg:py-28">
-        <div>
-          <p className="pulse-spark mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground">
-            <Zap className="size-3.5 text-primary" />
-            موتور تحلیل اسناد انرژی با هوش مصنوعی
+    <section className="relative isolate overflow-hidden">
+      {/* پس‌زمینه‌ی تصویری + لایه‌های محو هم‌رنگ تم */}
+      <div className="absolute inset-0 -z-10" aria-hidden>
+        <Image
+          src="/images/hero-solar-plant.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[70%_center] md:object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/60 to-background" />
+        <div className="absolute inset-0 hidden bg-gradient-to-l from-background via-background/55 to-background/10 md:block" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
+      </div>
+
+      <div className="mx-auto flex w-full max-w-7xl flex-col px-4 pt-32 pb-16 sm:pt-36 lg:px-8 lg:pt-44 lg:pb-24">
+        <Reveal>
+          <p className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-md">
+            <span aria-hidden className="relative flex size-2">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
+              <span className="relative inline-flex size-2 rounded-full bg-primary" />
+            </span>
+            مشاور، طراح و مجری خدمات مهندسی برق و انرژی‌های نو
           </p>
-          <h1 className="text-3xl leading-tight font-black sm:text-4xl lg:text-5xl lg:leading-[1.2]">
-            مهندسی، نوآوری برای{" "}
-            <span className="energy-text">آینده‌ی انرژی</span> با قدرت هوش
-            مصنوعی
+        </Reveal>
+
+        <Reveal delay={100}>
+          <h1 className="mt-6 max-w-3xl text-[2rem] leading-[1.35] font-black sm:text-4xl sm:leading-[1.35] lg:text-[3.25rem] lg:leading-[1.3]">
+            مهندسی، نوآوری برای <span className="energy-text">آینده‌ی انرژی</span> با قدرت هوش مصنوعی
           </h1>
-          <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
-            پلتفرم جامع <strong className="text-foreground">Xennic</strong> (محصول شرکت زر نور نیرو یکتا)؛
-            بستر تخصصی ممیزی خودکار قبوض صنعتی، امکان‌سنجی نیروگاه خورشیدی، جعبه‌ابزار محاسبات مهندسی برق و
-            دانشنامه قوانین انرژی.
+        </Reveal>
+
+        <Reveal delay={180}>
+          <p className="mt-6 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg sm:leading-9">
+            <strong className="font-bold text-foreground">زر نور نیرو یکتا</strong> با بیش از سه دهه تجربه‌ی
+            مهندسی برق، بستر هوشمند <strong className="font-bold text-foreground">Xennic</strong> را ارائه
+            می‌کند؛ از ممیزی خودکار قبوض صنعتی و امکان‌سنجی نیروگاه خورشیدی تا جعبه‌ابزار محاسبات مهندسی و
+            دانشنامه‌ی قوانین انرژی.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild size="lg" variant="action">
+        </Reveal>
+
+        <Reveal delay={260}>
+          <div className="mt-9 flex flex-wrap items-center gap-3">
+            <Button asChild size="lg" variant="action" className="shadow-lg shadow-destructive/25">
               <Link href={routes.audit}>
                 تحلیل آنلاین قبض برق (رایگان)
                 <ArrowLeft className="size-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-border/80 bg-card/40 backdrop-blur-sm hover:bg-card/70"
+            >
               <Link href={routes.solar}>محاسبه‌گر نیروگاه خورشیدی</Link>
             </Button>
           </div>
-        </div>
+        </Reveal>
 
-        <aside
-          className="bp-inlay bp-corner rounded-(--radius-card) bg-card/60 p-6 backdrop-blur-md"
-          aria-label="مراحل کار پلتفرم"
-        >
-          <div className="mb-4 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-            <Sparkles className="size-3.5 text-primary" />
-            گردش‌کار پلتفرم — XN-01
-          </div>
-          <ol className="space-y-4 text-sm">
-            {[
-              "آپلود تصویر یا PDF قبض برق",
-              "استخراج داده‌ها با موتور OCR",
-              "تحلیل خطای تعرفه‌ای، دیماند و راکتیو",
-              "صدور توصیه‌نامه مدیریتی و گزارش PDF",
-            ].map((step, index) => (
-              <li key={step} className="flex gap-3">
-                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/15 text-xs font-bold text-primary">
-                  {index + 1}
-                </span>
-                <span className="pt-1 leading-6">{step}</span>
+        <Reveal delay={340}>
+          <ul className="mt-10 flex flex-wrap gap-x-6 gap-y-3">
+            {trustChips.map((chip) => (
+              <li key={chip.label} className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                <chip.icon className="size-4 text-primary" aria-hidden />
+                {chip.label}
               </li>
             ))}
-          </ol>
-        </aside>
+          </ul>
+        </Reveal>
       </div>
     </section>
   );
