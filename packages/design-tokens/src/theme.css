@@ -113,3 +113,94 @@
     -webkit-font-smoothing: antialiased;
   }
 }
+
+/*
+ * هویت وب‌سایت سازمانی — کاغذ گرم، سبز جنگلی و جوانه‌ی لیمویی.
+ * اسکوپ مستقل، بدون تغییر پالت اختصاصی پنل‌های مهندسی.
+ * site-chrome برای پورتال‌های منوی موبایل و حساب کاربری نیز استفاده می‌شود.
+ */
+.marketing-shell,
+.site-chrome {
+  --marketing-bg: #fafbf8;
+  --marketing-surface: #ffffff;
+  --marketing-soft: #f0f3ed;
+  --marketing-text: #1c342b;
+  --marketing-muted: #627068;
+  --marketing-line: #e0e6dd;
+  --marketing-accent: #285b41;
+  --marketing-accent-contrast: #ffffff;
+  --marketing-tint: #eaf1e4;
+  --marketing-lime: #d5ed9f;
+  --marketing-deep: #183d30;
+  --marketing-on-deep: #f7faf1;
+  --marketing-on-deep-muted: #bdcdc1;
+  --marketing-deep-card: #234738;
+  --marketing-deep-line: #456453;
+  --marketing-overlay: rgb(12 27 20 / 0.42);
+  --marketing-shadow: 0 14px 40px -22px rgb(22 45 30 / 0.2);
+  --marketing-hero-shade: linear-gradient(
+    180deg,
+    rgb(12 29 24 / 0.12),
+    transparent 40%,
+    rgb(12 29 24 / 0.72)
+  );
+  --marketing-focus: #397b49;
+  --marketing-warning: #f0d38a;
+  --marketing-error: #b02c35;
+}
+
+.dark .marketing-shell,
+.dark .site-chrome {
+  --marketing-bg: #101d17;
+  --marketing-surface: #17271f;
+  --marketing-soft: #1c2e24;
+  --marketing-text: #edf3e9;
+  --marketing-muted: #aab9ad;
+  --marketing-line: #314437;
+  --marketing-accent: #c9e69d;
+  --marketing-accent-contrast: #193526;
+  --marketing-tint: #263e2d;
+  --marketing-shadow: 0 14px 40px -22px rgb(0 0 0 / 0.45);
+  --marketing-focus: #d5ed9f;
+  --marketing-error: #ff9299;
+}
+
+.marketing-shell {
+  --xennic-background: var(--marketing-bg);
+  --xennic-foreground: var(--marketing-text);
+  --xennic-card: var(--marketing-surface);
+  --xennic-card-foreground: var(--marketing-text);
+  --xennic-muted: var(--marketing-muted);
+  --xennic-muted-foreground: var(--marketing-muted);
+  --xennic-primary: var(--marketing-accent);
+  --xennic-primary-foreground: var(--marketing-accent-contrast);
+  --xennic-border: var(--marketing-line);
+  --xennic-input: var(--marketing-line);
+  --xennic-ring: var(--marketing-focus);
+  --xennic-destructive: var(--marketing-error);
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  background: var(--marketing-bg);
+  color: var(--marketing-text);
+}
+
+.marketing-shell main {
+  flex: 1;
+}
+
+.marketing-shell :where(section[id]) {
+  scroll-margin-top: 7rem;
+}
+
+.marketing-shell :where(a, button, input, textarea, select, summary):focus-visible,
+.site-chrome :where(a, button):focus-visible {
+  outline: 2px solid var(--marketing-focus);
+  outline-offset: 5px;
+}
+
+.marketing-shell ::selection,
+.site-chrome ::selection {
+  color: var(--marketing-deep);
+  background: var(--marketing-lime);
+}

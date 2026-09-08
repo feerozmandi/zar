@@ -1,54 +1,89 @@
-import { modules } from "@xennic/design-tokens";
-import { ArrowLeft } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { ArrowUpLeft, BookOpen, Calculator, FileChartColumn, LockKeyhole, Sun } from "lucide-react";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardFooter, CardTitle } from "@xennic/ui";
+import { filterTools, type ToolFilter } from "@/lib/marketing-content";
+import styles from "./marketing.module.css";
 
-const descriptions: Record<string, string> = {
-  audit: "کشف خطاهای تعرفه‌ای، محاسبه جریمه‌های دیماند و راکتیو، و صدور راهکار کاهش هزینه.",
-  solar: "ارزیابی پتانسیل تابش سقف، برآورد هزینه احداث و بازگشت سرمایه بر اساس مصوبات ماده ۱۲ و ۱۶.",
-  engineering: "محاسبه آنلاین افت ولتاژ، سایزینگ کابل، بانک خازنی و ژنراتور مطابق IEC با خروجی PDF قابل چاپ.",
-  wiki: "دسترسی و جستجوی هوشمند در مقررات ملی ساختمان (مبحث ۱۳)، نشریه ۱۱۰ و آیین‌نامه‌های توانیر.",
-};
+const icons = { audit: FileChartColumn, solar: Sun, engineering: Calculator, wiki: BookOpen };
+const filters: { id: ToolFilter; label: string }[] = [
+  { id: "all", label: "همه ابزارها" },
+  { id: "available", label: "قابل استفاده و آزمایشی" },
+  { id: "development", label: "در حال توسعه" },
+];
 
-const ctas: Record<string, string> = {
-  audit: "ورود به پنل ممیزی",
-  solar: "محاسبه طرح توجیهی",
-  engineering: "استفاده از ابزارهای مهندسی",
-  wiki: "ورود به دانشنامه",
-};
-
-/** شبکه‌ی ابزارها و ماژول‌ها — «Interactive Workspaces Grid» نوت ۴ §۳ */
+/** تنها بخش تعاملی محتوای لندینگ؛ فیلتر بدون درخواست شبکه یا جابه‌جایی مسیر کار می‌کند. */
 export function ModuleCards() {
-  return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-16 lg:px-8">
-      <h2 className="text-2xl font-black sm:text-3xl">ماژول‌های پلتفرم</h2>
-      <p className="mt-2 max-w-2xl text-muted-foreground">
-        چهار پنل مستقل که از یک لایه‌ی یکپارچه‌ی احراز هویت، کیف‌پول و دروازه‌ی هوش مصنوعی استفاده می‌کنند.
-      </p>
+  const [filter, setFilter] = useState<ToolFilter>("all");
+  const tools = filterTools(filter);
 
-      <div className="mt-8 grid gap-5 md:grid-cols-2">
-        {modules.map((module) => (
-          <Card key={module.key} className="group transition-[transform,box-shadow] hover:-translate-y-0.5">
-            <CardContent className="p-6">
-              <span
-                aria-hidden
-                className="mb-4 block size-8 rounded-lg"
-                style={{ backgroundColor: module.accent }}
-              />
-              <CardTitle>{module.title}</CardTitle>
-              <CardDescription className="mt-2 leading-7">{descriptions[module.key]}</CardDescription>
-            </CardContent>
-            <CardFooter className="border-t border-border/60 px-6 py-4">
-              <Link
-                className="inline-flex items-center gap-2 text-sm font-semibold text-primary"
-                href={module.route}
+  return (
+    <section className={styles.toolsSection} id="tools" aria-labelledby="tools-title">
+      <div className={styles.container}>
+        <div className={styles.sectionHeader}>
+          <div>
+            <p className={styles.eyebrow}>
+              <span className={styles.eyebrowDot} aria-hidden="true" />
+              جعبه‌ابزار دیجیتال Xennic
+            </p>
+            <h2 className={styles.sectionTitle} id="tools-title">
+              دانش مهندسی،
+              <br />
+              این بار در دسترس شما.
+            </h2>
+          </div>
+          <p className={styles.sectionIntro}>
+            ابزارهایی که توسعه می‌دهیم تا پیچیدگی محاسبات کمتر و تصمیم‌های شما دقیق‌تر شود. یک نقطه شروع
+            هوشمند، در کنار مشاوره تخصصی.
+          </p>
+        </div>
+        <div className={styles.toolToolbar}>
+          <div className={styles.toolFilters} role="group" aria-label="فیلتر وضعیت ابزارها">
+            {filters.map((item) => (
+              <button
+                type="button"
+                aria-pressed={filter === item.id}
+                aria-controls="tool-results"
+                className={styles.filterButton}
+                key={item.id}
+                onClick={() => setFilter(item.id)}
               >
-                {ctas[module.key]}
-                <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" />
-              </Link>
-            </CardFooter>
-          </Card>
-        ))}
+                {item.label}
+              </button>
+            ))}
+          </div>
+          <span className={styles.toolCount} role="status" aria-live="polite" aria-atomic="true">
+            {tools.length.toLocaleString("fa-IR")} ابزار تخصصی
+          </span>
+        </div>
+        <div className={styles.toolGrid} id="tool-results">
+          {tools.map((tool) => {
+            const Icon = icons[tool.id];
+            return (
+              <article className={styles.toolCard} key={tool.id}>
+                <div className={styles.toolCardTop}>
+                  <Icon size={27} strokeWidth={1.4} aria-hidden="true" />
+                  <span className={styles.toolStatus} data-status={tool.status}>
+                    <span aria-hidden="true" />
+                    {tool.statusLabel}
+                  </span>
+                </div>
+                <h3>{tool.title}</h3>
+                <p>{tool.description}</p>
+                <Link className={styles.toolLink} href={tool.href} prefetch={false}>
+                  {tool.cta}
+                  <ArrowUpLeft size={18} aria-hidden="true" />
+                  {tool.requiresAccount && <span className="sr-only"> (نیازمند ورود به حساب)</span>}
+                </Link>
+              </article>
+            );
+          })}
+        </div>
+        <p className={styles.toolsFootnote}>
+          <LockKeyhole size={15} aria-hidden="true" />
+          ابزارهای محاسباتی به حساب کاربری نیاز دارند. نتایج اولیه، جایگزین بررسی تخصصی پروژه نیستند.
+        </p>
       </div>
     </section>
   );

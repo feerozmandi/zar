@@ -1,49 +1,92 @@
-import { modules, routes, XENNIC_BRAND } from "@xennic/design-tokens";
+import { ArrowUp, ArrowUpLeft, Leaf } from "lucide-react";
 import Link from "next/link";
+import { company } from "@/lib/marketing-content";
+import { BrandLogo } from "./brand-logo";
+import styles from "./site-chrome.module.css";
 
-/** فوتر سازمانی با لینک‌های سریع و اطلاعات تماس (نوت ۴ §۶) */
 export function SiteFooter() {
   return (
-    <footer className="mt-24 border-t border-border/60 bg-card/40">
-      <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-12 md:grid-cols-4 lg:px-8">
-        <div className="md:col-span-2">
-          <p className="text-lg font-bold">{XENNIC_BRAND.name}</p>
-          <p className="mt-2 max-w-md text-sm leading-7 text-muted-foreground">
-            {XENNIC_BRAND.legalName} — {XENNIC_BRAND.tagline}
-          </p>
-        </div>
-
-        <nav aria-label="پنل‌ها">
-          <p className="mb-3 text-sm font-bold">پنل‌های پلتفرم</p>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            {modules.map((module) => (
-              <li key={module.key}>
-                <Link className="hover:text-primary" href={module.route}>
-                  {module.title}
+    <footer className={`site-chrome ${styles.footer}`}>
+      <div className={styles.footerInner}>
+        <div className={styles.footerGrid}>
+          <div className={styles.footerAbout}>
+            <Link prefetch={false} href="/" aria-label={`xennic. ${company.name} — صفحه اصلی`}>
+              <BrandLogo />
+            </Link>
+            <p>
+              مشاور، طراح و مجری خدمات مهندسی برق و انرژی‌های نو؛ همراه شما برای ساختن آینده‌ای روشن و پایدار.
+            </p>
+            <span className={styles.footerTag}>
+              <Leaf size={14} aria-hidden="true" /> مهندسی مسئولانه، انرژی پایدار
+            </span>
+          </div>
+          <nav aria-label="لینک‌های شرکت">
+            <h2 className={styles.footerHeading}>شرکت ما</h2>
+            <ul className={styles.footerLinks}>
+              <li>
+                <Link prefetch={false} href="/about">
+                  درباره زر نور نیرو یکتا
                 </Link>
               </li>
-            ))}
-          </ul>
-        </nav>
-
-        <nav aria-label="شرکت">
-          <p className="mb-3 text-sm font-bold">شرکت</p>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>
-              <Link href={routes.about}>درباره ما</Link>
-            </li>
-            <li>
-              <Link href={routes.contact}>درخواست مشاوره</Link>
-            </li>
-            <li>
-              <Link href={routes.ai}>مقایسه مدل‌های هوش مصنوعی</Link>
-            </li>
-          </ul>
-        </nav>
-      </div>
-
-      <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
-        کلیه حقوق مادی و معنوی این پلتفرم متعلق به {XENNIC_BRAND.legalName} ({XENNIC_BRAND.name}) می‌باشد.
+              <li>
+                <Link prefetch={false} href="/#services">
+                  خدمات مهندسی
+                </Link>
+              </li>
+              <li>
+                <Link prefetch={false} href="/contact?topic=partnership">
+                  همکاری با ما
+                </Link>
+              </li>
+              <li>
+                <Link prefetch={false} href="/#faq">
+                  پرسش‌های متداول
+                </Link>
+              </li>
+            </ul>
+          </nav>
+          <nav aria-label="ابزارهای Xennic">
+            <h2 className={styles.footerHeading}>ابزارهای Xennic</h2>
+            <ul className={styles.footerLinks}>
+              <li>
+                <Link href="/audit" prefetch={false}>
+                  تحلیل قبض برق
+                </Link>
+              </li>
+              <li>
+                <Link href="/solar" prefetch={false}>
+                  امکان‌سنجی خورشیدی
+                </Link>
+              </li>
+              <li>
+                <Link href="/engineering" prefetch={false}>
+                  محاسبات مهندسی
+                </Link>
+              </li>
+              <li>
+                <Link href="/wiki" prefetch={false}>
+                  دانشنامه برق و انرژی
+                </Link>
+              </li>
+            </ul>
+          </nav>
+          <div className={styles.footerContact}>
+            <h2 className={styles.footerHeading}>در ارتباط باشیم</h2>
+            <p>پروژه‌ای در ذهن دارید؟ از چالش‌ها و ایده‌های خود برای ما بنویسید.</p>
+            <Link prefetch={false} className={styles.footerContactLink} href="/contact">
+              شروع گفت‌وگو <ArrowUpLeft size={17} aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+        <div className={styles.footerBottom}>
+          <p>تمامی حقوق این وب‌سایت متعلق به شرکت {company.name} است.</p>
+          <span className={styles.footerMotto} dir="ltr" lang="en">
+            <span aria-hidden="true" /> ENGINEERING A BRIGHTER TOMORROW
+          </span>
+          <a className={styles.backToTop} href="#top">
+            بازگشت به بالا <ArrowUp size={14} aria-hidden="true" />
+          </a>
+        </div>
       </div>
     </footer>
   );

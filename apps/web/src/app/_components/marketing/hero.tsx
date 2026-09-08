@@ -1,65 +1,82 @@
-import { routes } from "@xennic/design-tokens";
-import { ArrowLeft, Sparkles, Zap } from "lucide-react";
+import { ArrowDown, ArrowUpLeft, Check, Leaf, Sun } from "lucide-react";
+import { MarketingImage } from "./marketing-image";
 import Link from "next/link";
-import { Button } from "@xennic/ui";
+import styles from "./marketing.module.css";
 
-/** هیرو لندینگ — تیتر، زیرتیتر و دو CTA با تم «هسته انرژی × بلوپرینت» */
+/** هیرو استاتیک؛ تصویر اصلی preload می‌شود و به اجرای جاوااسکریپت وابسته نیست. */
 export function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-border/60">
-      <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-20 lg:grid-cols-[1.15fr_1fr] lg:px-8 lg:py-28">
-        <div>
-          <p className="pulse-spark mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground">
-            <Zap className="size-3.5 text-primary" />
-            موتور تحلیل اسناد انرژی با هوش مصنوعی
-          </p>
-          <h1 className="text-3xl leading-tight font-black sm:text-4xl lg:text-5xl lg:leading-[1.2]">
-            مهندسی، نوآوری برای{" "}
-            <span className="energy-text">آینده‌ی انرژی</span> با قدرت هوش
-            مصنوعی
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
-            پلتفرم جامع <strong className="text-foreground">Xennic</strong> (محصول شرکت زر نور نیرو یکتا)؛
-            بستر تخصصی ممیزی خودکار قبوض صنعتی، امکان‌سنجی نیروگاه خورشیدی، جعبه‌ابزار محاسبات مهندسی برق و
-            دانشنامه قوانین انرژی.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild size="lg" variant="action">
-              <Link href={routes.audit}>
-                تحلیل آنلاین قبض برق (رایگان)
-                <ArrowLeft className="size-4" />
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href={routes.solar}>محاسبه‌گر نیروگاه خورشیدی</Link>
-            </Button>
+    <section className={`${styles.container} ${styles.hero}`} aria-labelledby="hero-title">
+      <div className={styles.heroCopy}>
+        <p className={styles.eyebrow}>
+          <span className={styles.eyebrowDot} aria-hidden="true" />
+          زر نور نیرو یکتا؛ مهندسی برق و انرژی‌های نو
+        </p>
+        <h1 className={styles.heroTitle} id="hero-title">
+          انرژیِ فردا،
+          <br />
+          <span>مهندسیِ امروز.</span>
+        </h1>
+        <p className={styles.heroDescription}>
+          از طراحی شبکه‌های برق تا احداث نیروگاه‌های خورشیدی؛
+          <br className={styles.desktopBreak} />
+          <strong> زر نور نیرو یکتا</strong>، همراه شما در مسیر انرژی پایدار.
+        </p>
+        <div className={styles.heroActions}>
+          <Link prefetch={false} className={styles.primaryButton} href="/contact">
+            شروع یک همکاری
+            <ArrowUpLeft size={19} aria-hidden="true" />
+          </Link>
+          <a className={styles.secondaryButton} href="#tools">
+            ابزارهای هوشمند ما
+            <ArrowDown size={17} aria-hidden="true" />
+          </a>
+        </div>
+        <ul className={styles.heroPromises} aria-label="خدمات یکپارچه شرکت">
+          {["مشاوره تخصصی", "طراحی مهندسی", "اجرای یکپارچه"].map((item) => (
+            <li key={item}>
+              <Check size={15} aria-hidden="true" />
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className={styles.heroVisual}>
+        <figure className={styles.heroImage}>
+          <MarketingImage
+            src="/images/landing/solar-farm.webp"
+            alt="تصویر مفهومی نیروگاه خورشیدی با ردیف‌های پنل آبی در نور طلایی و چشم‌انداز کوهستان"
+            preload
+            sizes="(max-width: 700px) calc(100vw - 40px), (max-width: 1023px) 48vw, 590px"
+            className={styles.coverImage}
+          />
+          <div className={styles.imageShade} aria-hidden="true" />
+          <span className={styles.imageLabel}>
+            <Sun size={16} aria-hidden="true" />
+            به سوی آینده‌ای پایدار
+          </span>
+          <figcaption className={styles.imageCaption} dir="ltr" lang="en">
+            CLEAN ENERGY.
+            <br />
+            CLEAR VISION.
+          </figcaption>
+          <a className={styles.imageExplore} href="#services" aria-label="آشنایی با خدمات مهندسی">
+            <ArrowDown size={22} aria-hidden="true" />
+          </a>
+        </figure>
+        <div className={styles.heroNote}>
+          <span className={styles.heroNoteIcon}>
+            <Leaf size={25} strokeWidth={1.5} aria-hidden="true" />
+          </span>
+          <div>
+            <p>انرژی پاک، انتخاب هوشمند</p>
+            <span>از اولین ایده تا بهره‌برداری</span>
           </div>
         </div>
-
-        <aside
-          className="bp-inlay bp-corner rounded-(--radius-card) bg-card/60 p-6 backdrop-blur-md"
-          aria-label="مراحل کار پلتفرم"
-        >
-          <div className="mb-4 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-            <Sparkles className="size-3.5 text-primary" />
-            گردش‌کار پلتفرم — XN-01
-          </div>
-          <ol className="space-y-4 text-sm">
-            {[
-              "آپلود تصویر یا PDF قبض برق",
-              "استخراج داده‌ها با موتور OCR",
-              "تحلیل خطای تعرفه‌ای، دیماند و راکتیو",
-              "صدور توصیه‌نامه مدیریتی و گزارش PDF",
-            ].map((step, index) => (
-              <li key={step} className="flex gap-3">
-                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/15 text-xs font-bold text-primary">
-                  {index + 1}
-                </span>
-                <span className="pt-1 leading-6">{step}</span>
-              </li>
-            ))}
-          </ol>
-        </aside>
+        <span className={styles.visualFootnote} dir="ltr" lang="en" aria-hidden="true">
+          ENGINEERED FOR A BETTER TOMORROW — 01
+        </span>
       </div>
     </section>
   );

@@ -1,28 +1,20 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { ThemeProvider } from "next-themes";
-import { useState, type ReactNode } from "react";
-import { Toaster } from "sonner";
+import type { ReactNode } from "react";
 
-/** لایه‌ی مشترک همه‌ی پنل‌ها: React Query (کَش سرور) + next-themes (تم تیره/روشن نوت ۴) */
+const WorkspaceProviders = dynamic(() => import("./workspace-providers"));
+
+/** پوسته عمومی سبک؛ React Query و اعلان‌های پنل جداگانه بارگذاری می‌شوند. */
 export function Providers({ children }: { children: ReactNode }) {
-  const [client] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: { staleTime: 60_000, retry: 1, refetchOnWindowFocus: false },
-          mutations: { retry: 0 },
-        },
-      }),
-  );
+  const pathname = usePathname();
+  const isMarketing = ["/", "/about", "/contact"].includes(pathname);
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-      <QueryClientProvider client={client}>
-        {children}
-        <Toaster position="bottom-right" richColors />
-      </QueryClientProvider>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+      {isMarketing ? children : <WorkspaceProviders>{children}</WorkspaceProviders>}
     </ThemeProvider>
   );
 }

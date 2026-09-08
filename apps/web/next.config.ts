@@ -3,25 +3,21 @@ import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-
 const isDev = process.env.NODE_ENV !== "production";
+const isArenaPreview = process.env.ARENA_PREVIEW === "true";
 
 const nextConfig: NextConfig = {
-  // بیلد در محیط کانتینری/CI فقط به خروجی build نیاز دارد
   outputFileTracingRoot: repositoryRoot,
-  // خروجی standalone: سرور تولیدی فقط به .next/standalone (+ static/public) نیاز دارد
-  // و از کپی کامل node_modules مونورپو در ایمیج جلوگیری می‌شود (رجوع: apps/web/Dockerfile)
   output: "standalone",
-  // بسته‌های داخلی مونورپو باید توسط Next ترنسپایل شوند (منبع TS دارند)
   transpilePackages: ["@xennic/ui", "@xennic/design-tokens", "@xennic/shared"],
   reactStrictMode: true,
   poweredByHeader: false,
+  allowedDevOrigins: ["*.e2b.app"],
   images: {
     formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 60 * 60,
+    minimumCacheTTL: 60 * 60 * 24,
   },
   experimental: {
-    // در Next 16 حالت بیلد پایدار است؛ فقط optimizePackageImports برای درخت‌چینی لازم است
     optimizePackageImports: ["lucide-react", "recharts", "@xennic/ui"],
   },
   headers() {
@@ -31,16 +27,31 @@ const nextConfig: NextConfig = {
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          // اجازه‌ی iframe فقط با opt-in محیط پیش‌نمایش؛ تولید همچنان SAMEORIGIN است.
+          ...(!isArenaPreview ? [{ key: "X-Frame-Options", value: "SAMEORIGIN" }] : []),
           {
             key: "Content-Security-Policy",
-            // در حالت توسعه Next.js اسکریپت/استایل‌های inline (بوت‌استرپ webpack، React Refresh و گزارش‌های dev) تزریق می‌کند.
-            // بدون 'unsafe-inline' در dev، هیدریشن ریکت انجام نمی‌شود و فرم‌ها بی‌عکس‌العمل می‌مانند.
-            value: isDev
-              ? "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://localhost:4000 ws://localhost:4000; font-src 'self'; object-src 'none';"
-              : "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://localhost:4000 ws://localhost:4000; font-src 'self'; object-src 'none';",
+            // صفحات SSG به bootstrap درون‌خطی Next/next-themes نیاز دارند.
+            // nonce به رندر پویا نیاز دارد؛ eval فقط در توسعه مجاز است.
+            // ارتباط مرورگر با API فقط از مسیر هم‌ریشه /api/proxy انجام می‌شود.
+            value: [
+              "default-src 'self'",
+              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob:",
+              `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
+              "font-src 'self'",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              ...(!isArenaPreview ? ["frame-ancestors 'self'"] : []),
+            ].join("; "),
           },
         ],
+      },
+      {
+        source: "/images/landing/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
       },
     ];
   },

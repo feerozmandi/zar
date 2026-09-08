@@ -1,19 +1,11 @@
-import { modules, routes } from "@xennic/design-tokens";
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/env";
 
-/** نقشه‌ی سایت سئومحور (نوت ۴ — لندینگ + پنل‌ها) */
+/** فقط صفحات عمومی واقعی؛ مسیرهای نیازمند ورود و ابزارهای شخصی در sitemap نیستند. */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
-  const marketing = [routes.home, routes.about, routes.contact];
-  const panels = [...modules.map((module) => module.route), routes.ai, routes.login, routes.register];
-
-  return [...marketing, ...panels]
-    .filter((path, index, list) => list.indexOf(path) === index)
-    .map((path) => ({
-      url: `${siteUrl}${path}`,
-      lastModified: now,
-      changeFrequency: path === "/" ? "weekly" : "monthly",
-      priority: path === "/" ? 1 : 0.7,
-    }));
+  return ["/", "/about", "/contact"].map((path) => ({
+    url: new URL(path, siteUrl).href,
+    changeFrequency: path === "/" ? "monthly" : "yearly",
+    priority: path === "/" ? 1 : 0.7,
+  }));
 }

@@ -16,7 +16,11 @@
       "types": "./dist/security/password.d.ts",
       "import": "./dist/security/password.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./constants": {
+      "types": "./dist/constants.d.ts",
+      "import": "./dist/constants.js"
+    }
   },
   "files": [
     "dist",

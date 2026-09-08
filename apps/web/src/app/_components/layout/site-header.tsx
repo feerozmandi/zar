@@ -1,198 +1,189 @@
 "use client";
 
-import { useAuthStore } from "@/store/auth-store";
+import * as Dialog from "@radix-ui/react-dialog";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { ArrowUpLeft, ChevronDown, LayoutDashboard, LogIn, LogOut, Menu, UserRound, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { modules, routes } from "@xennic/design-tokens";
-import { ThemeToggle } from "@/app/_components/layout/theme-toggle";
-import { ROLES } from "@xennic/shared";
-import { useCallback, useEffect, useState } from "react";
-import {
-  LogIn,
-  UserCheck,
-  ChevronDown,
-  X,
-  Shield,
-  Sun,
-  BarChart3,
-  Zap,
-} from "lucide-react";
+import { useSyncExternalStore } from "react";
+import { company, marketingNavigation } from "@/lib/marketing-content";
+import { defaultRedirectForRole, useAuthStore } from "@/store/auth-store";
+import { BrandLogo } from "./brand-logo";
+import { ThemeToggle } from "./theme-toggle";
+import styles from "./site-chrome.module.css";
 
-const ROLE_ICONS: Record<string, React.ElementType> = {
-  [ROLES.superAdmin]: Shield,
-  [ROLES.proEngineer]: Zap,
-  [ROLES.epcPartner]: Sun,
-  [ROLES.user]: BarChart3,
-};
+// نشست ذخیره‌شده فقط بعد از hydration نمایش داده می‌شود تا SSR با مرورگر یکسان باشد.
+const subscribe = () => () => undefined;
+const clientSnapshot = () => true;
+const serverSnapshot = () => false;
 
-const ROLE_LABELS: Record<string, string> = {
-  [ROLES.superAdmin]: "مدیر ارشد",
-  [ROLES.proEngineer]: "مهندس",
-  [ROLES.epcPartner]: "مجری EPC",
-  [ROLES.user]: "کاربر",
-};
+function AccountMenu() {
+  const user = useAuthStore((state) => state.user);
+  const status = useAuthStore((state) => state.status);
+  const mounted = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
 
-function UserPill() {
-  const user = useAuthStore((s) => s.user);
-  const [showMenu, setShowMenu] = useState(false);
-  const role = user?.role ?? ROLES.user;
-
-  const handleClose = useCallback(() => setShowMenu(false), []);
-
-  useEffect(() => {
-    if (!showMenu) return;
-    const onDoc = (e: MouseEvent) => {
-      if (!(e.target instanceof Element)) return;
-      if (!e.target.closest("[data-user-pill]")) setShowMenu(false);
-    };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
-  }, [showMenu]);
-
-  if (!user) return null;
-
-  const Icon = ROLE_ICONS[role] ?? BarChart3;
-  const label = ROLE_LABELS[role] ?? "کاربر";
+  if (!mounted || !user || status !== "authenticated") {
+    return (
+      <Link className={styles.accountLink} href="/login" prefetch={false} aria-label="ورود به حساب Xennic">
+        <LogIn size={16} aria-hidden="true" />
+        <span className={styles.accountLabel}>ورود به حساب</span>
+        <span className="sr-only"> Xennic</span>
+      </Link>
+    );
+  }
 
   return (
-    <div className="relative" data-user-pill>
-      <button
-        type="button"
-        className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 hover:bg-secondary/10 hover:scale-[1.02] active:scale-[0.98]"
-        onClick={() => setShowMenu((v) => !v)}
-        aria-expanded={showMenu}
-      >
-        <Icon size={16} className="text-primary" />
-        <span className="text-muted-foreground">{label}</span>
-        <span className="text-foreground font-semibold">{user.email.split("@")[0]}</span>
-        <ChevronDown
-          size={14}
-          className={`transition-transform duration-200 ${showMenu ? "rotate-180" : ""}`}
-        />
-      </button>
-
-      {showMenu && (
-        <div
-          role="menu"
-          className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl p-2 shadow-xl animate-scale-in z-50"
-        >
-          <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            حساب کاربری
-          </div>
-          <div className="grid gap-1">
-            <Link
-              href="/profile"
-              className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-foreground transition-colors hover:bg-secondary/5"
-              onClick={handleClose}
-            >
-              <UserCheck size={16} />
-              پروفایل و تنظیمات
+    <DropdownMenu.Root dir="rtl">
+      <DropdownMenu.Trigger asChild>
+        <button type="button" className={styles.accountButton} aria-label="منوی حساب کاربری">
+          <UserRound size={17} aria-hidden="true" />
+          <span className={styles.accountLabel}>حساب کاربری</span>
+          <ChevronDown size={12} aria-hidden="true" />
+        </button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className={`site-chrome ${styles.dropdown}`} align="end" sideOffset={12}>
+          <DropdownMenu.Label className={styles.dropdownLabel} dir="ltr">
+            {user.email}
+          </DropdownMenu.Label>
+          <DropdownMenu.Item asChild className={styles.dropdownItem}>
+            <Link href={defaultRedirectForRole(user.role)} prefetch={false}>
+              <LayoutDashboard size={16} aria-hidden="true" />
+              ورود به پنل من
             </Link>
-            <Link
-              href="/settings"
-              className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground hover:bg-secondary/5"
-              onClick={handleClose}
-            >
-              <Shield size={16} />
-              تنظیمات کاربر
-            </Link>
-          </div>
-          <div className="my-2 border-t border-border/60" />
-          <button
-            type="button"
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-destructive hover:bg-destructive/10"
-            onClick={() => {
-              void useAuthStore.getState().signOut();
-              setShowMenu(false);
-            }}
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator className={styles.dropdownSeparator} />
+          <DropdownMenu.Item
+            className={styles.dropdownItem}
+            onSelect={() => void useAuthStore.getState().signOut()}
           >
-            <X size={16} />
+            <LogOut size={16} aria-hidden="true" />
             خروج از حساب
-          </button>
-        </div>
-      )}
-    </div>
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }
 
+function MobileNavigation() {
+  const user = useAuthStore((state) => state.user);
+  const status = useAuthStore((state) => state.status);
+  const mounted = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
+  const authenticated = mounted && user && status === "authenticated";
+
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger asChild>
+        <button
+          type="button"
+          className={`${styles.iconButton} ${styles.mobileTrigger}`}
+          aria-label="باز کردن منوی اصلی"
+        >
+          <Menu size={23} aria-hidden="true" />
+        </button>
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className={`site-chrome ${styles.mobileOverlay}`} />
+        <Dialog.Content className={`site-chrome ${styles.mobileDrawer}`} dir="rtl">
+          <div className={styles.drawerHeading}>
+            <Dialog.Title>
+              <span className="sr-only">منوی اصلی </span>
+              <BrandLogo />
+            </Dialog.Title>
+            <Dialog.Close asChild>
+              <button type="button" className={styles.iconButton} aria-label="بستن منوی اصلی">
+                <X size={22} aria-hidden="true" />
+              </button>
+            </Dialog.Close>
+          </div>
+          <Dialog.Description className={styles.drawerDescription}>
+            مشاوره، طراحی و اجرای برق و انرژی‌های نو
+          </Dialog.Description>
+          <nav className={styles.mobileNav} aria-label="ناوبری موبایل">
+            {marketingNavigation.map((item, index) => (
+              <Dialog.Close asChild key={item.href}>
+                <Link prefetch={false} href={item.href}>
+                  {item.label}
+                  <span aria-hidden="true">
+                    {(index + 1).toLocaleString("fa-IR", { minimumIntegerDigits: 2 })}
+                  </span>
+                </Link>
+              </Dialog.Close>
+            ))}
+          </nav>
+          <div className={styles.drawerActions}>
+            <Dialog.Close asChild>
+              <Link prefetch={false} href="/contact" className={styles.consultLink}>
+                درخواست مشاوره <ArrowUpLeft size={18} aria-hidden="true" />
+              </Link>
+            </Dialog.Close>
+            <Dialog.Close asChild>
+              <Link
+                href={authenticated ? defaultRedirectForRole(user.role) : "/login"}
+                prefetch={false}
+                className={styles.accountLink}
+              >
+                <UserRound size={17} aria-hidden="true" />
+                {authenticated ? "ورود به پنل من" : "ورود به حساب Xennic"}
+              </Link>
+            </Dialog.Close>
+            {authenticated && (
+              <Dialog.Close asChild>
+                <button
+                  type="button"
+                  className={styles.accountLink}
+                  onClick={() => void useAuthStore.getState().signOut()}
+                >
+                  <LogOut size={17} aria-hidden="true" />
+                  خروج از حساب
+                </button>
+              </Dialog.Close>
+            )}
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+/** ناوبری عمومی با منوی موبایل focus-trapped و دسترسی واقعی به حساب کاربری. */
 export function SiteHeader() {
-  const user = useAuthStore((s) => s.user);
-  const isAuthenticated = useAuthStore((s) => s.status === "authenticated");
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/75 backdrop-blur-xl">
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-l from-transparent via-primary/70 to-transparent"
-        aria-hidden
-      />
-      <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6 px-4 lg:px-8">
-        {/* برند */}
-        <Link href={routes.home} className="group flex items-center gap-3">
-          <span
-            className="pulse-spark grid size-9 place-items-center rounded-xl bg-gradient-to-br from-primary via-primary/80 to-accent font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-transform duration-300 group-hover:scale-105"
-            aria-hidden
-          >
-            X
-          </span>
-          <span className="flex flex-col leading-tight">
-            <span className="text-base font-bold tracking-tight text-foreground">
-              Xennic
-            </span>
-            <span className="text-[11px] text-muted-foreground">
-              زر نور نیرو یکتا
-            </span>
-          </span>
-        </Link>
-
-        {/* ناوبری ماژول‌ها */}
-        <nav
-          aria-label="ناوبری اصلی"
-          className="hidden flex-wrap items-center gap-1.5 lg:flex"
+    <header className={`site-chrome ${styles.header}`}>
+      <div className={styles.headerInner}>
+        <Link
+          prefetch={false}
+          className={styles.brandLink}
+          href="/"
+          aria-label={`xennic. ${company.name} — صفحه اصلی`}
         >
-          {modules.map((module) => {
-            const active = pathname === module.route || pathname.startsWith(`${module.route}/`);
-            return (
-              <Link
-                key={module.key}
-                href={module.route}
-                className="relative rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200 hover:bg-secondary/10 hover:text-foreground"
-              >
-                {module.title}
-                <span
-                  aria-hidden
-                  className={`absolute inset-x-3 -bottom-px h-px bg-gradient-to-l from-transparent via-primary to-transparent transition-opacity duration-300 ${
-                    active ? "opacity-100" : "opacity-0"
-                  }`}
-                />
-              </Link>
-            );
-          })}
+          <BrandLogo />
+        </Link>
+        <nav aria-label="ناوبری اصلی" className={styles.desktopNav}>
+          {marketingNavigation.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={styles.navLink}
+              aria-current={pathname === item.href ? "page" : undefined}
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
-
-        {/* کنترل‌های سمت راست: تم + ورود/ثبت‌نام / پروفایل */}
-        <div className="flex items-center gap-1.5">
+        <div className={styles.headerActions}>
           <ThemeToggle />
-
-          {isAuthenticated && user ? (
-            <UserPill />
-          ) : (
-            <>
-              <Link
-                href={routes.login}
-                className="hidden rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:text-foreground hover:bg-secondary/10 sm:inline-flex"
-              >
-                ورود
-              </Link>
-              <Link
-                href={routes.register}
-                className="inline-flex h-8 items-center gap-1.5 rounded-full bg-gradient-to-br from-primary to-accent px-4 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all duration-200 hover:shadow-lg hover:shadow-primary/30 active:scale-[0.97]"
-              >
-                <LogIn size={14} />
-                شروع رایگان
-              </Link>
-            </>
-          )}
+          <div className={styles.headerAccount}>
+            <AccountMenu />
+          </div>
+          <Link prefetch={false} href="/contact" className={styles.consultLink}>
+            درخواست مشاوره
+            <ArrowUpLeft size={16} aria-hidden="true" />
+          </Link>
+          <MobileNavigation />
         </div>
       </div>
     </header>

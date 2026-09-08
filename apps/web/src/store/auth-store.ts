@@ -1,10 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { z } from "zod";
 import { apiFetch } from "@/lib/api-client";
 import { accessTokenStore } from "@/lib/token-store";
-import { authTokensSchema, type AuthenticatedUser } from "@/lib/auth-types";
-import { ROLES } from "@xennic/shared";
+import type { AuthenticatedUser } from "@/lib/auth-types";
+import { ROLES } from "@xennic/shared/constants";
 
 /**
  * وضعیت احراز هویت سراسری (SSO بین پنل‌ها) — نوت ۳ §۲-ب
@@ -40,11 +39,8 @@ export const useAuthStore = create<AuthState>()(
       },
       signOut: async () => {
         try {
-          await apiFetch(
-            "auth/logout",
-            zRevoked,
-            { method: "POST", body: {}, timeoutMs: 8_000 },
-          );
+          const { revokedSchema } = await import("@/lib/auth-types");
+          await apiFetch("auth/logout", revokedSchema, { method: "POST", body: {}, timeoutMs: 8_000 });
         } catch {
           // حتی اگر API در دسترس نباشد، نشست محلی باید پاک شود
         }
@@ -56,6 +52,7 @@ export const useAuthStore = create<AuthState>()(
         if (get().restoring) return get().status === "authenticated";
         set({ restoring: true });
         try {
+          const { authTokensSchema } = await import("@/lib/auth-types");
           const result = await apiFetch("auth/refresh", authTokensSchema, {
             method: "POST",
             timeoutMs: 10_000,
@@ -83,8 +80,6 @@ export const useAuthStore = create<AuthState>()(
     },
   ),
 );
-
-const zRevoked = z.object({ revoked: z.boolean() });
 
 /** مسیر پیش‌فرض پس از ورود بر اساس نقش کاربر */
 export function defaultRedirectForRole(role: AuthenticatedUser["role"]): string {

@@ -7,11 +7,20 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // پنل‌های شخصی و ادمین ایندکس نمی‌شوند
-        disallow: ["/audit/", "/solar/", "/engineering/", "/admin/", "/api/"],
+        disallow: [
+          "/audit",
+          "/solar",
+          "/engineering",
+          "/admin",
+          "/ai",
+          "/api/",
+          "/login",
+          "/register",
+          "/forgot",
+        ],
       },
     ],
-    sitemap: `${siteUrl}/sitemap.xml`,
-    host: siteUrl,
+    sitemap: new URL("/sitemap.xml", siteUrl).href,
+    host: new URL(siteUrl).origin,
   };
 }

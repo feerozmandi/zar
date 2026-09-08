@@ -17,3 +17,5 @@ export const authTokensSchema = z.object({
 });
 
 export type AuthTokens = z.infer<typeof authTokensSchema>;
+/** قرارداد خروج؛ فقط هنگام نیاز به بازیابی/خروج نشست بارگذاری می‌شود. */
+export const revokedSchema = z.object({ revoked: z.boolean() });

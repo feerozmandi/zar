@@ -1,20 +1,22 @@
 "use client";
 
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Button } from "@xennic/ui";
+import styles from "./site-chrome.module.css";
 
-/** سوییچ تم تیره/روشن — تم تیره مطابق نوت ۴ پیش‌فرض است */
+/** آیکون‌ها با CSS پوسته عوض می‌شوند؛ اختلاف HTML سرور و مرورگر نداریم. */
 export function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme();
-  const next = resolvedTheme === "light" ? "dark" : "light";
 
   return (
-    <Button aria-label="تغییر تم" onClick={() => setTheme(next)} size="icon" variant="ghost">
-      {resolvedTheme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
-      <span className="sr-only">
-        <Monitor />
-      </span>
-    </Button>
+    <button
+      type="button"
+      className={styles.iconButton}
+      aria-label="تغییر پوسته روشن و تیره"
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+    >
+      <Moon size={18} strokeWidth={1.6} className={styles.lightIcon} aria-hidden="true" />
+      <Sun size={19} strokeWidth={1.6} className={styles.darkIcon} aria-hidden="true" />
+    </button>
   );
 }

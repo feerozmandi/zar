@@ -316,3 +316,10 @@
     animation-name: slide-in-left;
   }
 }
+
+/* حرکت نرم فقط با اجازه تنظیمات دسترس‌پذیری سیستم. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
