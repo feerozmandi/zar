@@ -92,10 +92,10 @@ export function SolarWizard() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-      <Card>
-        <CardContent className="grid gap-5 p-6">
-          <section className="grid gap-3">
+    <div className="grid items-start gap-6 2xl:grid-cols-[1fr_1fr]">
+      <Card className="rounded-2xl border-border/70 shadow-sm">
+        <CardContent className="grid gap-5 p-4 sm:p-6">
+          <section className="grid gap-4 rounded-2xl border border-border/60 bg-muted/20 p-4 sm:p-5">
             <h3 className="text-sm font-bold">۱. موقعیت پروژه</h3>
             <div className="grid gap-1.5">
               <Label htmlFor="province">استان</Label>
@@ -134,9 +134,9 @@ export function SolarWizard() {
             </p>
           </section>
 
-          <section className="grid gap-3">
+          <section className="grid gap-4 rounded-2xl border border-border/60 bg-muted/20 p-4 sm:p-5">
             <h3 className="text-sm font-bold">۲. سقف یا زمین</h3>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-4">
               <NumberField
                 id="area"
                 label="مساحت در دسترس (m²)"
@@ -186,28 +186,35 @@ export function SolarWizard() {
             )}
           </section>
 
-          <section className="grid gap-3">
+          <section className="grid gap-4 rounded-2xl border border-border/60 bg-muted/20 p-4 sm:p-5">
             <h3 className="text-sm font-bold">۳. اشتراک و مصرف</h3>
-            <div className="grid gap-1.5">
-              <Label htmlFor="tariff">نوع اشتراک</Label>
-              <select
-                className="h-10 rounded-lg border border-border bg-background px-3 text-sm"
-                id="tariff"
-                onChange={(event) =>
-                  setDraft({
-                    ...draft,
-                    consumption: { ...draft.consumption, tariffKind: event.target.value as TariffKind },
-                  })
-                }
-                value={tariffKind}
-              >
-                {TARIFFS.map((tariff) => (
-                  <option key={tariff.id} value={tariff.id}>
-                    {tariff.label} — {tariff.hint}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <fieldset className="grid gap-2.5">
+              <legend className="mb-3 text-sm font-medium">نوع اشتراک</legend>
+              {TARIFFS.map((tariff) => (
+                <label
+                  key={tariff.id}
+                  className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3.5 transition-colors focus-within:ring-2 focus-within:ring-amber-500 ${tariffKind === tariff.id ? "border-amber-500/50 bg-amber-500/10" : "border-border/70 bg-background/50 hover:border-amber-500/30 hover:bg-muted/40"}`}
+                >
+                  <input
+                    type="radio"
+                    name="solar-tariff"
+                    value={tariff.id}
+                    checked={tariffKind === tariff.id}
+                    className="size-4 shrink-0 accent-amber-500"
+                    onChange={() =>
+                      setDraft({
+                        ...draft,
+                        consumption: { ...draft.consumption, tariffKind: tariff.id },
+                      })
+                    }
+                  />
+                  <span>
+                    <span className="block text-sm font-semibold">{tariff.label}</span>
+                    <span className="mt-1 block text-xs text-muted-foreground">{tariff.hint}</span>
+                  </span>
+                </label>
+              ))}
+            </fieldset>
             <NumberField
               id="annual"
               label="مصرف سالانه (kWh)"
@@ -231,7 +238,7 @@ export function SolarWizard() {
             </div>
           </section>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-1 gap-3">
             <Button onClick={() => void persist()} type="button" variant="outline">
               {saveState === "saving" ? "در حال ذخیره…" : "ذخیره در حساب من"}
             </Button>
@@ -253,7 +260,7 @@ export function SolarWizard() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-4">
+      <div className="grid content-start gap-4">
         {!result.ok ? (
           <Card className="border-destructive/40">
             <CardContent className="p-6 text-sm text-destructive">{result.error}</CardContent>
@@ -264,7 +271,7 @@ export function SolarWizard() {
           <>
             <Card className="bg-gradient-to-b from-amber-50/60 to-transparent dark:from-amber-950/20">
               <CardContent className="grid gap-3 p-6">
-                <div className="flex items-baseline justify-between gap-3">
+                <div className="flex flex-wrap items-baseline justify-between gap-3">
                   <span className="text-sm text-muted-foreground">
                     {provinceLabel(report.site.provinceCode)} — {report.design.module.model}
                   </span>
@@ -272,7 +279,7 @@ export function SolarWizard() {
                     نسخه موتور {report.meta.engineVersion}
                   </span>
                 </div>
-                <div className="flex items-end justify-between gap-4">
+                <div className="flex flex-wrap items-end justify-between gap-4">
                   <div>
                     <p className="text-xs text-muted-foreground">ظرفیت پیشنهادی</p>
                     <p className="xennic-numeric text-3xl font-black text-primary">
