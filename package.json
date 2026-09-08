@@ -59,5 +59,8 @@
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
     "vitest": "catalog:"
+  },
+  "dependencies": {
+    "pdf-parse": "^2.4.5"
   }
 }
