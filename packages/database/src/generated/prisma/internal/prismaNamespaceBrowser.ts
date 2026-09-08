@@ -58,6 +58,7 @@ export const ModelName = {
   Transaction: 'Transaction',
   AiProviderCredential: 'AiProviderCredential',
   AiRequestLog: 'AiRequestLog',
+  AiJob: 'AiJob',
   AiModelCatalog: 'AiModelCatalog',
   Bill: 'Bill',
   BillFile: 'BillFile',
@@ -216,6 +217,29 @@ export const AiRequestLogScalarFieldEnum = {
 } as const
 
 export type AiRequestLogScalarFieldEnum = (typeof AiRequestLogScalarFieldEnum)[keyof typeof AiRequestLogScalarFieldEnum]
+
+
+export const AiJobScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  purpose: 'purpose',
+  status: 'status',
+  tier: 'tier',
+  provider: 'provider',
+  model: 'model',
+  inputJson: 'inputJson',
+  resultText: 'resultText',
+  resultJson: 'resultJson',
+  promptTokens: 'promptTokens',
+  completionTokens: 'completionTokens',
+  latencyMs: 'latencyMs',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt'
+} as const
+
+export type AiJobScalarFieldEnum = (typeof AiJobScalarFieldEnum)[keyof typeof AiJobScalarFieldEnum]
 
 
 export const AiModelCatalogScalarFieldEnum = {

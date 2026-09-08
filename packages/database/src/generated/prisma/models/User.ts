@@ -325,6 +325,7 @@ export type UserWhereInput = {
   transactions?: Prisma.TransactionListRelationFilter
   aiCredentials?: Prisma.AiProviderCredentialListRelationFilter
   aiLogs?: Prisma.AiRequestLogListRelationFilter
+  aiJobs?: Prisma.AiJobListRelationFilter
   bills?: Prisma.BillListRelationFilter
   solarSites?: Prisma.SolarSiteListRelationFilter
   calculations?: Prisma.EngineeringCalculationListRelationFilter
@@ -361,6 +362,7 @@ export type UserOrderByWithRelationInput = {
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
   aiCredentials?: Prisma.AiProviderCredentialOrderByRelationAggregateInput
   aiLogs?: Prisma.AiRequestLogOrderByRelationAggregateInput
+  aiJobs?: Prisma.AiJobOrderByRelationAggregateInput
   bills?: Prisma.BillOrderByRelationAggregateInput
   solarSites?: Prisma.SolarSiteOrderByRelationAggregateInput
   calculations?: Prisma.EngineeringCalculationOrderByRelationAggregateInput
@@ -400,6 +402,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   transactions?: Prisma.TransactionListRelationFilter
   aiCredentials?: Prisma.AiProviderCredentialListRelationFilter
   aiLogs?: Prisma.AiRequestLogListRelationFilter
+  aiJobs?: Prisma.AiJobListRelationFilter
   bills?: Prisma.BillListRelationFilter
   solarSites?: Prisma.SolarSiteListRelationFilter
   calculations?: Prisma.EngineeringCalculationListRelationFilter
@@ -486,6 +489,7 @@ export type UserCreateInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
@@ -522,6 +526,7 @@ export type UserUncheckedCreateInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
@@ -558,6 +563,7 @@ export type UserUpdateInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
@@ -594,6 +600,7 @@ export type UserUncheckedUpdateInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
@@ -854,6 +861,20 @@ export type UserUpdateOneWithoutAiLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAiLogsInput, Prisma.UserUpdateWithoutAiLogsInput>, Prisma.UserUncheckedUpdateWithoutAiLogsInput>
 }
 
+export type UserCreateNestedOneWithoutAiJobsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAiJobsInput, Prisma.UserUncheckedCreateWithoutAiJobsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAiJobsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutAiJobsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAiJobsInput, Prisma.UserUncheckedCreateWithoutAiJobsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAiJobsInput
+  upsert?: Prisma.UserUpsertWithoutAiJobsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAiJobsInput, Prisma.UserUpdateWithoutAiJobsInput>, Prisma.UserUncheckedUpdateWithoutAiJobsInput>
+}
+
 export type UserCreateNestedOneWithoutBillsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutBillsInput, Prisma.UserUncheckedCreateWithoutBillsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutBillsInput
@@ -1029,6 +1050,7 @@ export type UserCreateWithoutSessionsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
@@ -1064,6 +1086,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
@@ -1115,6 +1138,7 @@ export type UserUpdateWithoutSessionsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
@@ -1150,6 +1174,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
@@ -1185,6 +1210,7 @@ export type UserCreateWithoutWalletsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
@@ -1220,6 +1246,7 @@ export type UserUncheckedCreateWithoutWalletsInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
@@ -1271,6 +1298,7 @@ export type UserUpdateWithoutWalletsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
@@ -1306,6 +1334,7 @@ export type UserUncheckedUpdateWithoutWalletsInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
@@ -1341,6 +1370,7 @@ export type UserCreateWithoutTransactionsInput = {
   wallets?: Prisma.WalletCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
@@ -1376,6 +1406,7 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   wallets?: Prisma.WalletUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
@@ -1427,6 +1458,7 @@ export type UserUpdateWithoutTransactionsInput = {
   wallets?: Prisma.WalletUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
@@ -1462,6 +1494,7 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   wallets?: Prisma.WalletUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
@@ -1497,6 +1530,7 @@ export type UserCreateWithoutAiCredentialsInput = {
   wallets?: Prisma.WalletCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
@@ -1532,6 +1566,7 @@ export type UserUncheckedCreateWithoutAiCredentialsInput = {
   wallets?: Prisma.WalletUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
@@ -1583,6 +1618,7 @@ export type UserUpdateWithoutAiCredentialsInput = {
   wallets?: Prisma.WalletUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
@@ -1618,6 +1654,7 @@ export type UserUncheckedUpdateWithoutAiCredentialsInput = {
   wallets?: Prisma.WalletUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
@@ -1653,6 +1690,7 @@ export type UserCreateWithoutAiLogsInput = {
   wallets?: Prisma.WalletCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
@@ -1688,6 +1726,7 @@ export type UserUncheckedCreateWithoutAiLogsInput = {
   wallets?: Prisma.WalletUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
@@ -1739,6 +1778,7 @@ export type UserUpdateWithoutAiLogsInput = {
   wallets?: Prisma.WalletUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
@@ -1774,6 +1814,167 @@ export type UserUncheckedUpdateWithoutAiLogsInput = {
   wallets?: Prisma.WalletUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
+  solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
+  calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
+  pdfExports?: Prisma.EngineeringPdfExportUncheckedUpdateManyWithoutUserNestedInput
+  contactRequests?: Prisma.ContactRequestUncheckedUpdateManyWithoutUserNestedInput
+  telegramLinks?: Prisma.TelegramAccountUncheckedUpdateManyWithoutUserNestedInput
+  authoredArticles?: Prisma.WikiArticleUncheckedUpdateManyWithoutAuthorNestedInput
+  articleRevisions?: Prisma.WikiArticleRevisionUncheckedUpdateManyWithoutEditorNestedInput
+  adminLogs?: Prisma.AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+  settingsEdits?: Prisma.SiteSettingUncheckedUpdateManyWithoutEditedByNestedInput
+}
+
+export type UserCreateWithoutAiJobsInput = {
+  id?: string
+  email: string
+  emailVerifiedAt?: Date | string | null
+  passwordHash: string
+  fullName: string
+  nationalId?: string | null
+  phone?: string | null
+  company?: string | null
+  avatarUrl?: string | null
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  preferredTheme?: string
+  locale?: string
+  lastLoginAt?: Date | string | null
+  failedLoginCount?: number
+  lockedUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  wallets?: Prisma.WalletCreateNestedManyWithoutUserInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
+  aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillCreateNestedManyWithoutUserInput
+  solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
+  calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
+  pdfExports?: Prisma.EngineeringPdfExportCreateNestedManyWithoutUserInput
+  contactRequests?: Prisma.ContactRequestCreateNestedManyWithoutUserInput
+  telegramLinks?: Prisma.TelegramAccountCreateNestedManyWithoutUserInput
+  authoredArticles?: Prisma.WikiArticleCreateNestedManyWithoutAuthorInput
+  articleRevisions?: Prisma.WikiArticleRevisionCreateNestedManyWithoutEditorInput
+  adminLogs?: Prisma.AdminAuditLogCreateNestedManyWithoutActorInput
+  settingsEdits?: Prisma.SiteSettingCreateNestedManyWithoutEditedByInput
+}
+
+export type UserUncheckedCreateWithoutAiJobsInput = {
+  id?: string
+  email: string
+  emailVerifiedAt?: Date | string | null
+  passwordHash: string
+  fullName: string
+  nationalId?: string | null
+  phone?: string | null
+  company?: string | null
+  avatarUrl?: string | null
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  preferredTheme?: string
+  locale?: string
+  lastLoginAt?: Date | string | null
+  failedLoginCount?: number
+  lockedUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  wallets?: Prisma.WalletUncheckedCreateNestedManyWithoutUserInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
+  aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
+  solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
+  calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
+  pdfExports?: Prisma.EngineeringPdfExportUncheckedCreateNestedManyWithoutUserInput
+  contactRequests?: Prisma.ContactRequestUncheckedCreateNestedManyWithoutUserInput
+  telegramLinks?: Prisma.TelegramAccountUncheckedCreateNestedManyWithoutUserInput
+  authoredArticles?: Prisma.WikiArticleUncheckedCreateNestedManyWithoutAuthorInput
+  articleRevisions?: Prisma.WikiArticleRevisionUncheckedCreateNestedManyWithoutEditorInput
+  adminLogs?: Prisma.AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+  settingsEdits?: Prisma.SiteSettingUncheckedCreateNestedManyWithoutEditedByInput
+}
+
+export type UserCreateOrConnectWithoutAiJobsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAiJobsInput, Prisma.UserUncheckedCreateWithoutAiJobsInput>
+}
+
+export type UserUpsertWithoutAiJobsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAiJobsInput, Prisma.UserUncheckedUpdateWithoutAiJobsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAiJobsInput, Prisma.UserUncheckedCreateWithoutAiJobsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAiJobsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAiJobsInput, Prisma.UserUncheckedUpdateWithoutAiJobsInput>
+}
+
+export type UserUpdateWithoutAiJobsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nationalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  preferredTheme?: Prisma.StringFieldUpdateOperationsInput | string
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  wallets?: Prisma.WalletUpdateManyWithoutUserNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
+  aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUpdateManyWithoutUserNestedInput
+  solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
+  calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
+  pdfExports?: Prisma.EngineeringPdfExportUpdateManyWithoutUserNestedInput
+  contactRequests?: Prisma.ContactRequestUpdateManyWithoutUserNestedInput
+  telegramLinks?: Prisma.TelegramAccountUpdateManyWithoutUserNestedInput
+  authoredArticles?: Prisma.WikiArticleUpdateManyWithoutAuthorNestedInput
+  articleRevisions?: Prisma.WikiArticleRevisionUpdateManyWithoutEditorNestedInput
+  adminLogs?: Prisma.AdminAuditLogUpdateManyWithoutActorNestedInput
+  settingsEdits?: Prisma.SiteSettingUpdateManyWithoutEditedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAiJobsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nationalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  preferredTheme?: Prisma.StringFieldUpdateOperationsInput | string
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  wallets?: Prisma.WalletUncheckedUpdateManyWithoutUserNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
+  aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
@@ -1810,6 +2011,7 @@ export type UserCreateWithoutBillsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
   pdfExports?: Prisma.EngineeringPdfExportCreateNestedManyWithoutUserInput
@@ -1845,6 +2047,7 @@ export type UserUncheckedCreateWithoutBillsInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
   pdfExports?: Prisma.EngineeringPdfExportUncheckedCreateNestedManyWithoutUserInput
@@ -1896,6 +2099,7 @@ export type UserUpdateWithoutBillsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
   pdfExports?: Prisma.EngineeringPdfExportUpdateManyWithoutUserNestedInput
@@ -1931,6 +2135,7 @@ export type UserUncheckedUpdateWithoutBillsInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
   pdfExports?: Prisma.EngineeringPdfExportUncheckedUpdateManyWithoutUserNestedInput
@@ -1966,6 +2171,7 @@ export type UserCreateWithoutSolarSitesInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
   pdfExports?: Prisma.EngineeringPdfExportCreateNestedManyWithoutUserInput
@@ -2001,6 +2207,7 @@ export type UserUncheckedCreateWithoutSolarSitesInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
   pdfExports?: Prisma.EngineeringPdfExportUncheckedCreateNestedManyWithoutUserInput
@@ -2052,6 +2259,7 @@ export type UserUpdateWithoutSolarSitesInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
   pdfExports?: Prisma.EngineeringPdfExportUpdateManyWithoutUserNestedInput
@@ -2087,6 +2295,7 @@ export type UserUncheckedUpdateWithoutSolarSitesInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
   pdfExports?: Prisma.EngineeringPdfExportUncheckedUpdateManyWithoutUserNestedInput
@@ -2122,6 +2331,7 @@ export type UserCreateWithoutCalculationsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   pdfExports?: Prisma.EngineeringPdfExportCreateNestedManyWithoutUserInput
@@ -2157,6 +2367,7 @@ export type UserUncheckedCreateWithoutCalculationsInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   pdfExports?: Prisma.EngineeringPdfExportUncheckedCreateNestedManyWithoutUserInput
@@ -2208,6 +2419,7 @@ export type UserUpdateWithoutCalculationsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   pdfExports?: Prisma.EngineeringPdfExportUpdateManyWithoutUserNestedInput
@@ -2243,6 +2455,7 @@ export type UserUncheckedUpdateWithoutCalculationsInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   pdfExports?: Prisma.EngineeringPdfExportUncheckedUpdateManyWithoutUserNestedInput
@@ -2278,6 +2491,7 @@ export type UserCreateWithoutPdfExportsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
@@ -2313,6 +2527,7 @@ export type UserUncheckedCreateWithoutPdfExportsInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
@@ -2364,6 +2579,7 @@ export type UserUpdateWithoutPdfExportsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
@@ -2399,6 +2615,7 @@ export type UserUncheckedUpdateWithoutPdfExportsInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
@@ -2434,6 +2651,7 @@ export type UserCreateWithoutAuthoredArticlesInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
@@ -2469,6 +2687,7 @@ export type UserUncheckedCreateWithoutAuthoredArticlesInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
@@ -2520,6 +2739,7 @@ export type UserUpdateWithoutAuthoredArticlesInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
@@ -2555,6 +2775,7 @@ export type UserUncheckedUpdateWithoutAuthoredArticlesInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
@@ -2590,6 +2811,7 @@ export type UserCreateWithoutArticleRevisionsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
@@ -2625,6 +2847,7 @@ export type UserUncheckedCreateWithoutArticleRevisionsInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
@@ -2676,6 +2899,7 @@ export type UserUpdateWithoutArticleRevisionsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
@@ -2711,6 +2935,7 @@ export type UserUncheckedUpdateWithoutArticleRevisionsInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
@@ -2746,6 +2971,7 @@ export type UserCreateWithoutAdminLogsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
@@ -2781,6 +3007,7 @@ export type UserUncheckedCreateWithoutAdminLogsInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
@@ -2832,6 +3059,7 @@ export type UserUpdateWithoutAdminLogsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
@@ -2867,6 +3095,7 @@ export type UserUncheckedUpdateWithoutAdminLogsInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
@@ -2902,6 +3131,7 @@ export type UserCreateWithoutSettingsEditsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
@@ -2937,6 +3167,7 @@ export type UserUncheckedCreateWithoutSettingsEditsInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
@@ -2988,6 +3219,7 @@ export type UserUpdateWithoutSettingsEditsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
@@ -3023,6 +3255,7 @@ export type UserUncheckedUpdateWithoutSettingsEditsInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
@@ -3058,6 +3291,7 @@ export type UserCreateWithoutContactRequestsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
@@ -3093,6 +3327,7 @@ export type UserUncheckedCreateWithoutContactRequestsInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
@@ -3144,6 +3379,7 @@ export type UserUpdateWithoutContactRequestsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
@@ -3179,6 +3415,7 @@ export type UserUncheckedUpdateWithoutContactRequestsInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
@@ -3214,6 +3451,7 @@ export type UserCreateWithoutTelegramLinksInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobCreateNestedManyWithoutUserInput
   bills?: Prisma.BillCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationCreateNestedManyWithoutUserInput
@@ -3249,6 +3487,7 @@ export type UserUncheckedCreateWithoutTelegramLinksInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedCreateNestedManyWithoutUserInput
   aiLogs?: Prisma.AiRequestLogUncheckedCreateNestedManyWithoutUserInput
+  aiJobs?: Prisma.AiJobUncheckedCreateNestedManyWithoutUserInput
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
   solarSites?: Prisma.SolarSiteUncheckedCreateNestedManyWithoutUserInput
   calculations?: Prisma.EngineeringCalculationUncheckedCreateNestedManyWithoutUserInput
@@ -3300,6 +3539,7 @@ export type UserUpdateWithoutTelegramLinksInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUpdateManyWithoutUserNestedInput
@@ -3335,6 +3575,7 @@ export type UserUncheckedUpdateWithoutTelegramLinksInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   aiCredentials?: Prisma.AiProviderCredentialUncheckedUpdateManyWithoutUserNestedInput
   aiLogs?: Prisma.AiRequestLogUncheckedUpdateManyWithoutUserNestedInput
+  aiJobs?: Prisma.AiJobUncheckedUpdateManyWithoutUserNestedInput
   bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
   solarSites?: Prisma.SolarSiteUncheckedUpdateManyWithoutUserNestedInput
   calculations?: Prisma.EngineeringCalculationUncheckedUpdateManyWithoutUserNestedInput
@@ -3357,6 +3598,7 @@ export type UserCountOutputType = {
   transactions: number
   aiCredentials: number
   aiLogs: number
+  aiJobs: number
   bills: number
   solarSites: number
   calculations: number
@@ -3375,6 +3617,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   transactions?: boolean | UserCountOutputTypeCountTransactionsArgs
   aiCredentials?: boolean | UserCountOutputTypeCountAiCredentialsArgs
   aiLogs?: boolean | UserCountOutputTypeCountAiLogsArgs
+  aiJobs?: boolean | UserCountOutputTypeCountAiJobsArgs
   bills?: boolean | UserCountOutputTypeCountBillsArgs
   solarSites?: boolean | UserCountOutputTypeCountSolarSitesArgs
   calculations?: boolean | UserCountOutputTypeCountCalculationsArgs
@@ -3430,6 +3673,13 @@ export type UserCountOutputTypeCountAiCredentialsArgs<ExtArgs extends runtime.Ty
  */
 export type UserCountOutputTypeCountAiLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AiRequestLogWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAiJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AiJobWhereInput
 }
 
 /**
@@ -3527,6 +3777,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
   aiCredentials?: boolean | Prisma.User$aiCredentialsArgs<ExtArgs>
   aiLogs?: boolean | Prisma.User$aiLogsArgs<ExtArgs>
+  aiJobs?: boolean | Prisma.User$aiJobsArgs<ExtArgs>
   bills?: boolean | Prisma.User$billsArgs<ExtArgs>
   solarSites?: boolean | Prisma.User$solarSitesArgs<ExtArgs>
   calculations?: boolean | Prisma.User$calculationsArgs<ExtArgs>
@@ -3610,6 +3861,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
   aiCredentials?: boolean | Prisma.User$aiCredentialsArgs<ExtArgs>
   aiLogs?: boolean | Prisma.User$aiLogsArgs<ExtArgs>
+  aiJobs?: boolean | Prisma.User$aiJobsArgs<ExtArgs>
   bills?: boolean | Prisma.User$billsArgs<ExtArgs>
   solarSites?: boolean | Prisma.User$solarSitesArgs<ExtArgs>
   calculations?: boolean | Prisma.User$calculationsArgs<ExtArgs>
@@ -3633,6 +3885,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     transactions: Prisma.$TransactionPayload<ExtArgs>[]
     aiCredentials: Prisma.$AiProviderCredentialPayload<ExtArgs>[]
     aiLogs: Prisma.$AiRequestLogPayload<ExtArgs>[]
+    aiJobs: Prisma.$AiJobPayload<ExtArgs>[]
     bills: Prisma.$BillPayload<ExtArgs>[]
     solarSites: Prisma.$SolarSitePayload<ExtArgs>[]
     calculations: Prisma.$EngineeringCalculationPayload<ExtArgs>[]
@@ -4062,6 +4315,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   transactions<T extends Prisma.User$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   aiCredentials<T extends Prisma.User$aiCredentialsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$aiCredentialsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AiProviderCredentialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   aiLogs<T extends Prisma.User$aiLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$aiLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AiRequestLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  aiJobs<T extends Prisma.User$aiJobsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$aiJobsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AiJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bills<T extends Prisma.User$billsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$billsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   solarSites<T extends Prisma.User$solarSitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$solarSitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SolarSitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   calculations<T extends Prisma.User$calculationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$calculationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EngineeringCalculationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4629,6 +4883,30 @@ export type User$aiLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.AiRequestLogScalarFieldEnum | Prisma.AiRequestLogScalarFieldEnum[]
+}
+
+/**
+ * User.aiJobs
+ */
+export type User$aiJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AiJob
+   */
+  select?: Prisma.AiJobSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AiJob
+   */
+  omit?: Prisma.AiJobOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AiJobInclude<ExtArgs> | null
+  where?: Prisma.AiJobWhereInput
+  orderBy?: Prisma.AiJobOrderByWithRelationInput | Prisma.AiJobOrderByWithRelationInput[]
+  cursor?: Prisma.AiJobWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AiJobScalarFieldEnum | Prisma.AiJobScalarFieldEnum[]
 }
 
 /**

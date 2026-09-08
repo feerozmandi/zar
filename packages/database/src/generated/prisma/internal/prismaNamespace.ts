@@ -404,6 +404,7 @@ export const ModelName = {
   Transaction: 'Transaction',
   AiProviderCredential: 'AiProviderCredential',
   AiRequestLog: 'AiRequestLog',
+  AiJob: 'AiJob',
   AiModelCatalog: 'AiModelCatalog',
   Bill: 'Bill',
   BillFile: 'BillFile',
@@ -439,7 +440,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "verificationToken" | "wallet" | "transaction" | "aiProviderCredential" | "aiRequestLog" | "aiModelCatalog" | "bill" | "billFile" | "billAnalysis" | "billFinding" | "tariffRate" | "solarSite" | "solarAssessment" | "solarRoiResult" | "epcPartner" | "epcRequest" | "engineeringCalculation" | "engineeringPdfExport" | "wikiCategory" | "wikiArticle" | "wikiArticleRevision" | "adminAuditLog" | "siteSetting" | "contactRequest" | "telegramAccount"
+    modelProps: "user" | "session" | "verificationToken" | "wallet" | "transaction" | "aiProviderCredential" | "aiRequestLog" | "aiJob" | "aiModelCatalog" | "bill" | "billFile" | "billAnalysis" | "billFinding" | "tariffRate" | "solarSite" | "solarAssessment" | "solarRoiResult" | "epcPartner" | "epcRequest" | "engineeringCalculation" | "engineeringPdfExport" | "wikiCategory" | "wikiArticle" | "wikiArticleRevision" | "adminAuditLog" | "siteSetting" | "contactRequest" | "telegramAccount"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -958,6 +959,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.AiRequestLogCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.AiRequestLogCountAggregateOutputType> | number
+        }
+      }
+    }
+    AiJob: {
+      payload: Prisma.$AiJobPayload<ExtArgs>
+      fields: Prisma.AiJobFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AiJobFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiJobPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AiJobFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiJobPayload>
+        }
+        findFirst: {
+          args: Prisma.AiJobFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiJobPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AiJobFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiJobPayload>
+        }
+        findMany: {
+          args: Prisma.AiJobFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiJobPayload>[]
+        }
+        create: {
+          args: Prisma.AiJobCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiJobPayload>
+        }
+        createMany: {
+          args: Prisma.AiJobCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AiJobCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiJobPayload>[]
+        }
+        delete: {
+          args: Prisma.AiJobDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiJobPayload>
+        }
+        update: {
+          args: Prisma.AiJobUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiJobPayload>
+        }
+        deleteMany: {
+          args: Prisma.AiJobDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AiJobUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AiJobUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiJobPayload>[]
+        }
+        upsert: {
+          args: Prisma.AiJobUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiJobPayload>
+        }
+        aggregate: {
+          args: Prisma.AiJobAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAiJob>
+        }
+        groupBy: {
+          args: Prisma.AiJobGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AiJobGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AiJobCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AiJobCountAggregateOutputType> | number
         }
       }
     }
@@ -2602,6 +2677,29 @@ export const AiRequestLogScalarFieldEnum = {
 export type AiRequestLogScalarFieldEnum = (typeof AiRequestLogScalarFieldEnum)[keyof typeof AiRequestLogScalarFieldEnum]
 
 
+export const AiJobScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  purpose: 'purpose',
+  status: 'status',
+  tier: 'tier',
+  provider: 'provider',
+  model: 'model',
+  inputJson: 'inputJson',
+  resultText: 'resultText',
+  resultJson: 'resultJson',
+  promptTokens: 'promptTokens',
+  completionTokens: 'completionTokens',
+  latencyMs: 'latencyMs',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt'
+} as const
+
+export type AiJobScalarFieldEnum = (typeof AiJobScalarFieldEnum)[keyof typeof AiJobScalarFieldEnum]
+
+
 export const AiModelCatalogScalarFieldEnum = {
   id: 'id',
   slug: 'slug',
@@ -3191,6 +3289,20 @@ export type ListEnumAiCallStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'JobStatus'
+ */
+export type EnumJobStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'JobStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'JobStatus[]'
+ */
+export type ListEnumJobStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'JobStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'TariffType'
  */
 export type EnumTariffTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TariffType'>
@@ -3215,20 +3327,6 @@ export type EnumOcrEngineFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
  * Reference to a field of type 'OcrEngine[]'
  */
 export type ListEnumOcrEngineFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OcrEngine[]'>
-    
-
-
-/**
- * Reference to a field of type 'JobStatus'
- */
-export type EnumJobStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'JobStatus'>
-    
-
-
-/**
- * Reference to a field of type 'JobStatus[]'
- */
-export type ListEnumJobStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'JobStatus[]'>
     
 
 
@@ -3487,6 +3585,7 @@ export type GlobalOmitConfig = {
   transaction?: Prisma.TransactionOmit
   aiProviderCredential?: Prisma.AiProviderCredentialOmit
   aiRequestLog?: Prisma.AiRequestLogOmit
+  aiJob?: Prisma.AiJobOmit
   aiModelCatalog?: Prisma.AiModelCatalogOmit
   bill?: Prisma.BillOmit
   billFile?: Prisma.BillFileOmit

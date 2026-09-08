@@ -185,6 +185,7 @@ model User {
   transactions      Transaction[]        @relation("UserTransactions")
   aiCredentials     AiProviderCredential[]
   aiLogs            AiRequestLog[]
+  aiJobs            AiJob[]
   bills             Bill[]
   solarSites        SolarSite[]
   calculations      EngineeringCalculation[]
@@ -324,6 +325,36 @@ model AiRequestLog {
   @@index([userId, purpose])
   @@index([billId])
   @@map("ai_request_logs")
+}
+
+/// کار ناهم‌زمان دروازه‌ی AI — ماندگاری وضعیت و نتیجه‌ی پردازش‌های صفی (generate / wiki-ask)
+/// تا endpoint وضعیت (GET /ai/jobs/:id) بتواند پس از اتمام worker نتیجه را برگرداند.
+model AiJob {
+  id               String      @id @default(uuid(4))
+  userId           String
+  /// نوع پردازش: api.generate | wiki.ask
+  purpose          String
+  status           JobStatus   @default(QUEUED)
+  tier             AiTier      @default(SYSTEM)
+  provider         AiProvider?
+  model            String?
+  /// ورودی کامل درخواست (بدون کلید یا داده‌ی حساس)
+  inputJson        Json
+  resultText       String?     @db.Text
+  resultJson       Json?
+  promptTokens     Int         @default(0)
+  completionTokens Int         @default(0)
+  latencyMs        Int         @default(0)
+  errorMessage     String?
+  createdAt        DateTime    @default(now())
+  startedAt        DateTime?
+  finishedAt       DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([createdAt])
+  @@map("ai_jobs")
 }
 
 /// مدل‌های فعال در دروازه (مدیریت از پنل ادمین)

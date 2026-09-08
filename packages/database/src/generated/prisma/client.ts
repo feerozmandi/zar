@@ -77,6 +77,12 @@ export type AiProviderCredential = Prisma.AiProviderCredentialModel
  */
 export type AiRequestLog = Prisma.AiRequestLogModel
 /**
+ * Model AiJob
+ * کار ناهم‌زمان دروازه‌ی AI — ماندگاری وضعیت و نتیجه‌ی پردازش‌های صفی (generate / wiki-ask)
+ * تا endpoint وضعیت (GET /ai/jobs/:id) بتواند پس از اتمام worker نتیجه را برگرداند.
+ */
+export type AiJob = Prisma.AiJobModel
+/**
  * Model AiModelCatalog
  * مدل‌های فعال در دروازه (مدیریت از پنل ادمین)
  */

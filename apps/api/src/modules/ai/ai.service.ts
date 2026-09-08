@@ -1,52 +1,52 @@
 import type { Queue as BullQueue } from "bullmq";
 import { InjectQueue } from "@nestjs/bullmq";
-import { BadRequestException, Injectable, Logger, ServiceUnavailableException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  ServiceUnavailableException,
+} from "@nestjs/common";
 import {
   DEFAULT_AI_MODELS,
   QUEUES,
+  type AiCompareEntry,
+  type AiCompareInput,
+  type AiCompareResult,
   type AiGenerateInput,
+  type AiGenerateResult,
+  type AiJobEnqueued,
   type AiModelRow,
   type AiTier,
 } from "@xennic/shared";
 import { CryptoService } from "../../common/crypto/crypto.service.js";
 import { AppConfigService } from "../../config/app-config.service.js";
 import { PrismaService } from "../../infra/prisma/prisma.service.js";
+import {
+  AiProviderError,
+  callProvider,
+  PROVIDER_BASE_URL,
+  PROVIDER_DEFAULT_MODEL,
+  type AiProviderName,
+  type GatewayCallTarget,
+} from "./ai-gateway.js";
 
 // نوع ورودی از @xennic/shared می‌آید (اسکیمای aiGenerateSchema) تا قرارداد API در دو جا تعریف نشود
-export interface AiGenerateResult {
-  model: string;
+
+interface ResolvedTarget extends Partial<GatewayCallTarget> {
+  provider: AiProviderName;
+  baseUrl: string;
+  apiKey?: string;
   tier: AiTier;
-  content: string;
-  usage: { promptTokens: number; completionTokens: number };
-}
-
-type AiProviderName = "GITHUB_MODELS" | "OPENAI" | "ANTHROPIC" | "GEMINI";
-
-/** آدرس پایه و مدل پیش‌فرض هر ارائه‌دهنده — برای BYOK (نوت ۳ §۲-ج) */
-const PROVIDER_BASE_URL: Record<AiProviderName, string> = {
-  GITHUB_MODELS: "https://models.inference.ai.azure.com",
-  OPENAI: "https://api.openai.com/v1",
-  ANTHROPIC: "https://api.anthropic.com",
-  GEMINI: "https://generativelanguage.googleapis.com/v1beta",
-};
-
-const PROVIDER_DEFAULT_MODEL: Record<AiProviderName, string> = {
-  GITHUB_MODELS: "gpt-4o",
-  OPENAI: "gpt-4o",
-  ANTHROPIC: "claude-3-5-sonnet",
-  GEMINI: "gemini-1.5-pro",
-};
-
-interface RawReply {
-  content: string;
-  promptTokens: number;
-  completionTokens: number;
+  credentialId?: string;
 }
 
 /**
  * Multi-Model AI Gateway (نوت ۳ §۲-ج):
  *  • SYSTEM: اتصال رایگان از طریق GitHub Models
  *  • BYOK  : کلید رمزنگاری‌شده‌ی خود کاربر (فقط لحظه‌ی فراخوان رمزگشایی می‌شود)
+ *
+ * قرارداد HTTP ارائه‌دهنده‌ها در ai-gateway.ts است تا worker صف نیز از همان استفاده کند.
  */
 @Injectable()
 export class AiService {
@@ -87,60 +87,198 @@ export class AiService {
 
   /** POST /ai/generate */
   public async generate(userId: string, input: AiGenerateInput): Promise<AiGenerateResult> {
-    const { endpoint, apiKey, provider, tier } = await this.resolveTarget(userId, input);
-    if (!apiKey) {
-      throw new ServiceUnavailableException(
-        "برای سطح SYSTEM باید GITHUB_MODELS_TOKEN تنظیم شود؛ یا کلید اختصاصی خود را در /user/ai-settings ثبت کنید",
-      );
-    }
+    const target = await this.resolveTarget(userId, input.useOwnKey);
+    const model = input.model ?? PROVIDER_DEFAULT_MODEL[target.provider];
 
-    const { url, init } = this.buildRequest(provider, endpoint, apiKey, input);
-    const started = Date.now();
-    let raw = "";
-    let status = 0;
     try {
-      const response = await fetch(url, init);
-      status = response.status;
-      raw = await response.text();
-
-      if (!response.ok) {
-        this.logger.error(`فراخوان AI ناموفق (${status}) برای ${provider}`);
-        throw new BadRequestException(
-          `پاسخ ناموفق از ارائه‌دهنده: ${status}${raw ? ` — ${raw.slice(0, 200)}` : ""}`,
-        );
-      }
-      const reply = this.parseRawReply(provider, raw);
+      const result = await callProvider(
+        { provider: target.provider, baseUrl: target.baseUrl, apiKey: target.apiKey ?? "" },
+        input,
+      );
+      await this.logCall(userId, target, model, "api.generate", result.status, result.latencyMs, null, {
+        promptTokens: result.promptTokens,
+        completionTokens: result.completionTokens,
+      });
       return {
-        model: input.model ?? PROVIDER_DEFAULT_MODEL[provider],
-        tier,
-        content: reply.content,
-        usage: {
-          promptTokens: reply.promptTokens,
-          completionTokens: reply.completionTokens,
-        },
+        model: result.model,
+        tier: target.tier,
+        content: result.content,
+        usage: { promptTokens: result.promptTokens, completionTokens: result.completionTokens },
       };
-    } finally {
-      if (status > 0) {
-        await this.logCall(userId, provider, input, status, Date.now() - started, raw);
+    } catch (error) {
+      if (error instanceof AiProviderError) {
+        this.logger.error(`فراخوان AI ناموفق (${error.status}) برای ${target.provider}`);
+        await this.logCall(userId, target, model, "api.generate", error.status, error.latencyMs, error.message);
+        throw new BadRequestException(error.message);
       }
+      throw error;
     }
   }
 
-  /** ارجاع درخواست‌های سنگین به صف (جلوگیری از بالا رفتن بار سرور اصلی — نوت ۵ §۱) */
-  public async enqueue(userId: string, input: AiGenerateInput) {
-    const job = await this.aiQueue.add("generate", { userId, ...input });
+  /**
+   * POST /ai/compare — هسته‌ی AI Arena (نوت ۵ — گام چهارم):
+   * یک پرامپت به چند مدل هم‌زمان ارسال و نتایج کنار هم برگردانده می‌شود.
+   * خطای یک مدل، پاسخ مدل‌های دیگر را از بین نمی‌برد.
+   */
+  public async compare(userId: string, input: AiCompareInput): Promise<AiCompareResult> {
+    const uniqueModels = [...new Set(input.models)];
+    const target = await this.resolveTarget(userId, input.useOwnKey);
+    const catalog = await this.prisma.client.aiModelCatalog.findMany({
+      where: { slug: { in: uniqueModels }, isActive: true },
+      select: { slug: true, provider: true },
+    });
+
+    const results = await Promise.all(
+      uniqueModels.map(async (model): Promise<AiCompareEntry> => {
+        // در حالت SYSTEM همه از GitHub Models عبور می‌کنند؛ در BYOK ارائه‌دهنده‌ی کلید کاربر ملاک است
+        const generateInput: AiGenerateInput = {
+          prompt: input.prompt,
+          model,
+          system: input.system,
+          maxTokens: input.maxTokens,
+          temperature: input.temperature,
+          useOwnKey: input.useOwnKey,
+        };
+        try {
+          const reply = await callProvider(
+            { provider: target.provider, baseUrl: target.baseUrl, apiKey: target.apiKey ?? "" },
+            generateInput,
+          );
+          await this.logCall(userId, target, model, "api.compare", reply.status, reply.latencyMs, null, {
+            promptTokens: reply.promptTokens,
+            completionTokens: reply.completionTokens,
+          });
+          return {
+            model,
+            ok: true,
+            content: reply.content,
+            latencyMs: reply.latencyMs,
+            usage: { promptTokens: reply.promptTokens, completionTokens: reply.completionTokens },
+          };
+        } catch (error) {
+          const message = error instanceof AiProviderError ? error.message : String(error);
+          const status = error instanceof AiProviderError ? error.status : 0;
+          const latencyMs = error instanceof AiProviderError ? error.latencyMs : 0;
+          await this.logCall(userId, target, model, "api.compare", status, latencyMs, message);
+          return { model, ok: false, errorMessage: message, latencyMs };
+        }
+      }),
+    );
+
+    // مدل‌هایی که در کاتالوگ نیستند هشدار نرم می‌گیرند (بدون شکست کل درخواست)
+    const known = new Set(catalog.map((row) => row.slug));
+    for (const entry of results) {
+      if (entry.ok || known.size === 0) continue;
+      if (!known.has(entry.model) && entry.errorMessage) {
+        entry.errorMessage = `${entry.errorMessage} (مدل در کاتالوگ فعال یافت نشد)`;
+      }
+    }
+
+    return { tier: target.tier, results };
+  }
+
+  /**
+   * ارجاع درخواست‌های سنگین به صف (نوت ۵ §۱).
+   * رکورد AiJob در Postgres ماندگار می‌شود تا GET /ai/jobs/:id پس از پاک شدن
+   * سابقه‌ی BullMQ (removeOnComplete) هم نتیجه را برگرداند.
+   */
+  public async enqueue(userId: string, input: AiGenerateInput): Promise<AiJobEnqueued> {
+    const job = await this.prisma.client.aiJob.create({
+      data: {
+        userId,
+        purpose: "api.generate",
+        tier: input.useOwnKey ? "BYOK" : "SYSTEM",
+        model: input.model ?? null,
+        inputJson: {
+          prompt: input.prompt,
+          model: input.model,
+          system: input.system,
+          maxTokens: input.maxTokens,
+          temperature: input.temperature,
+          useOwnKey: input.useOwnKey,
+        },
+      },
+      select: { id: true },
+    });
+    await this.aiQueue.add("generate", { aiJobId: job.id, userId, ...input }, { jobId: job.id });
     return { jobId: job.id, status: "QUEUED" as const };
   }
 
-  private async resolveTarget(
-    userId: string,
-    input: AiGenerateInput,
-  ): Promise<{ endpoint: string; apiKey?: string; provider: AiProviderName; tier: AiTier }> {
+  /** GET /ai/jobs/:id — وضعیت/نتیجه‌ی کار ناهم‌زمان (فقط برای صاحب آن) */
+  public async job(userId: string, id: string) {
+    const job = await this.prisma.client.aiJob.findFirst({
+      where: { id, userId },
+      select: {
+        id: true,
+        purpose: true,
+        status: true,
+        tier: true,
+        provider: true,
+        model: true,
+        resultText: true,
+        promptTokens: true,
+        completionTokens: true,
+        latencyMs: true,
+        errorMessage: true,
+        createdAt: true,
+        finishedAt: true,
+      },
+    });
+    if (!job) throw new NotFoundException("کار موردنظر یافت نشد");
+    return {
+      ...job,
+      createdAt: job.createdAt.toISOString(),
+      finishedAt: job.finishedAt?.toISOString() ?? null,
+    };
+  }
+
+  /** GET /ai/jobs — تاریخچه‌ی کارهای کاربر (صفحه‌بندی‌شده) */
+  public async jobs(userId: string, page: number, pageSize: number) {
+    const [items, total] = await this.prisma.client.$transaction([
+      this.prisma.client.aiJob.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        select: {
+          id: true,
+          purpose: true,
+          status: true,
+          tier: true,
+          provider: true,
+          model: true,
+          resultText: true,
+          promptTokens: true,
+          completionTokens: true,
+          latencyMs: true,
+          errorMessage: true,
+          createdAt: true,
+          finishedAt: true,
+        },
+      }),
+      this.prisma.client.aiJob.count({ where: { userId } }),
+    ]);
+    return {
+      items: items.map((job) => ({
+        ...job,
+        createdAt: job.createdAt.toISOString(),
+        finishedAt: job.finishedAt?.toISOString() ?? null,
+      })),
+      meta: { page, pageSize, total },
+    };
+  }
+
+  private async resolveTarget(userId: string, useOwnKey: boolean): Promise<ResolvedTarget> {
     const github = this.config.githubModels;
 
-    if (!input.useOwnKey) {
+    if (!useOwnKey) {
+      if (!github.token) {
+        throw new ServiceUnavailableException(
+          "برای سطح SYSTEM باید GITHUB_MODELS_TOKEN تنظیم شود؛ یا کلید اختصاصی خود را در /user/ai-settings ثبت کنید",
+        );
+      }
       return {
-        endpoint: github.baseUrl,
+        baseUrl: github.baseUrl,
         apiKey: github.token,
         provider: "GITHUB_MODELS",
         tier: "SYSTEM" as AiTier,
@@ -160,7 +298,7 @@ export class AiService {
     });
     // هر ارائه‌دهنده آدرس و فرمت درخواست خودش را دارد؛ فقط نشناختن این تفاوت
     // باعث می‌شد کلید Anthropic/Gemini به سرور GitHub Models ارسال شود.
-    const endpoint =
+    const baseUrl =
       credential.provider === "GITHUB_MODELS" ? github.baseUrl : PROVIDER_BASE_URL[credential.provider];
 
     await this.prisma.client.aiProviderCredential.update({
@@ -168,127 +306,44 @@ export class AiService {
       data: { lastUsedAt: new Date() },
     });
 
-    return { endpoint, apiKey, provider: credential.provider, tier: "BYOK" as AiTier };
-  }
-
-  /** ساخت درخواست مطابق قرارداد هر ارائه‌دهنده */
-  private buildRequest(
-    provider: AiProviderName,
-    baseUrl: string,
-    apiKey: string,
-    input: AiGenerateInput,
-  ): { url: string; init: RequestInit } {
-    const model = input.model ?? PROVIDER_DEFAULT_MODEL[provider];
-    const maxTokens = input.maxTokens ?? 1024;
-    const temperature = input.temperature ?? 0.2;
-
-    switch (provider) {
-      case "ANTHROPIC": {
-        return {
-          url: `${baseUrl.replace(/\/$/, "")}/v1/messages`,
-          init: {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-              "x-api-key": apiKey,
-              "anthropic-version": "2023-06-01",
-            },
-            body: JSON.stringify({
-              model,
-              max_tokens: maxTokens,
-              system: input.system ?? "",
-              temperature,
-              messages: [{ role: "user", content: input.prompt }],
-            }),
-          },
-        };
-      }
-      case "GEMINI": {
-        return {
-          url: `${baseUrl.replace(/\/$/, "")}/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
-          init: {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({
-              system_instruction: input.system ? { parts: [{ text: input.system }] } : undefined,
-              contents: [{ role: "user", parts: [{ text: input.prompt }] }],
-              generationConfig: { maxOutputTokens: maxTokens, temperature },
-            }),
-          },
-        };
-      }
-      default: {
-        // GITHUB_MODELS و OPENAI — هر دو سازگار با قرارداد chat/completions
-        return {
-          url: `${baseUrl.replace(/\/$/, "")}/chat/completions`,
-          init: {
-            method: "POST",
-            headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
-            body: JSON.stringify({
-              model,
-              max_tokens: maxTokens,
-              temperature,
-              messages: [
-                ...(input.system ? [{ role: "system", content: input.system }] : []),
-                { role: "user", content: input.prompt },
-              ],
-            }),
-          },
-        };
-      }
-    }
-  }
-
-  /** استخراج پاسخ مطابق ساختار هر ارائه‌دهنده */
-  private parseRawReply(provider: AiProviderName, raw: string): RawReply {
-    const parsed = JSON.parse(raw) as {
-      content?: Array<{ text?: string }>;
-      choices?: Array<{ message?: { content?: string } }>;
-      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-      usage?: { prompt_tokens?: number; completion_tokens?: number; input_tokens?: number; output_tokens?: number };
-      usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
-    };
-
-    if (provider === "ANTHROPIC") {
-      return {
-        content: (parsed.content ?? []).map((block) => block.text ?? "").join(""),
-        promptTokens: parsed.usage?.input_tokens ?? 0,
-        completionTokens: parsed.usage?.output_tokens ?? 0,
-      };
-    }
-    if (provider === "GEMINI") {
-      return {
-        content: parsed.candidates?.[0]?.content?.parts?.map((part) => part.text ?? "").join("") ?? "",
-        promptTokens: parsed.usageMetadata?.promptTokenCount ?? 0,
-        completionTokens: parsed.usageMetadata?.candidatesTokenCount ?? 0,
-      };
-    }
     return {
-      content: parsed.choices?.[0]?.message?.content ?? "",
-      promptTokens: parsed.usage?.prompt_tokens ?? 0,
-      completionTokens: parsed.usage?.completion_tokens ?? 0,
+      baseUrl,
+      apiKey,
+      provider: credential.provider,
+      tier: "BYOK" as AiTier,
+      credentialId: credential.id,
     };
   }
 
   private async logCall(
     userId: string,
-    provider: "GITHUB_MODELS" | "OPENAI" | "ANTHROPIC" | "GEMINI",
-    input: AiGenerateInput,
+    target: ResolvedTarget,
+    model: string,
+    purpose: "api.generate" | "api.compare",
     status: number,
     latencyMs: number,
-    raw: string,
+    errorMessage: string | null,
+    usage?: { promptTokens: number; completionTokens: number },
   ): Promise<void> {
-    await this.prisma.client.aiRequestLog.create({
-      data: {
-        userId,
-        tier: input.useOwnKey ? "BYOK" : "SYSTEM",
-        provider,
-        model: input.model ?? "gpt-4o",
-        purpose: "api.generate",
-        status: status < 400 ? "OK" : "ERROR",
-        latencyMs,
-        errorMessage: status < 400 ? null : raw.slice(0, 500),
-      },
-    });
+    try {
+      await this.prisma.client.aiRequestLog.create({
+        data: {
+          userId,
+          credentialId: target.credentialId ?? null,
+          tier: target.tier,
+          provider: target.provider,
+          model,
+          purpose,
+          status: status > 0 && status < 400 ? "OK" : status === 408 ? "TIMEOUT" : status === 429 ? "RATE_LIMITED" : "ERROR",
+          promptTokens: usage?.promptTokens ?? 0,
+          completionTokens: usage?.completionTokens ?? 0,
+          latencyMs,
+          errorMessage: errorMessage ? errorMessage.slice(0, 500) : null,
+        },
+      });
+    } catch (error) {
+      // شکست لاگ نباید پاسخ کاربر را خراب کند
+      this.logger.warn(`ثبت AiRequestLog ناموفق: ${String(error)}`);
+    }
   }
 }

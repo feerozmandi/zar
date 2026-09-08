@@ -1,0 +1,164 @@
+"use client";
+
+import { useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { aiCompareResultSchema, aiModelListSchema, type AiCompareResult } from "@xennic/shared";
+import { LoaderCircle, Swords, Timer } from "lucide-react";
+import { toast } from "sonner";
+import { Badge, Button, Card, CardContent, Label, Textarea } from "@xennic/ui";
+import { apiFetch, ApiError } from "@/lib/api-client";
+
+const MAX_MODELS = 3;
+
+/**
+ * AI Arena Playground — مقایسه‌ی هم‌زمان یک پرامپت روی چند مدل (نوت ۵ — گام چهارم).
+ * پرامپت به POST /ai/compare می‌رود و پاسخ هر مدل با تأخیر و مصرف توکن کنار هم نمایش
+ * داده می‌شود؛ خطای یک مدل نتیجه‌ی بقیه را از بین نمی‌برد.
+ */
+export function ArenaPlayground() {
+  const models = useQuery({
+    queryKey: ["ai", "models"],
+    queryFn: () => apiFetch("ai/models", aiModelListSchema),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const [prompt, setPrompt] = useState("");
+  const [selected, setSelected] = useState<string[]>([]);
+  const [useOwnKey, setUseOwnKey] = useState(false);
+  const [result, setResult] = useState<AiCompareResult | null>(null);
+
+  const compare = useMutation({
+    mutationFn: () =>
+      apiFetch("ai/compare", aiCompareResultSchema, {
+        method: "POST",
+        body: { prompt, models: selected, useOwnKey },
+        timeoutMs: 120_000,
+      }),
+    onSuccess: (data) => setResult(data),
+    onError: (error) => {
+      if (error instanceof ApiError && error.status === 401) {
+        toast.error("برای استفاده از AI Arena ابتدا وارد شوید");
+        return;
+      }
+      toast.error(error.message);
+    },
+  });
+
+  const toggleModel = (slug: string) => {
+    setSelected((current) => {
+      if (current.includes(slug)) return current.filter((entry) => entry !== slug);
+      if (current.length >= MAX_MODELS) {
+        toast.warning(`حداکثر ${MAX_MODELS} مدل هم‌زمان قابل انتخاب است`);
+        return current;
+      }
+      return [...current, slug];
+    });
+  };
+
+  const canSubmit = prompt.trim().length >= 4 && selected.length > 0 && !compare.isPending;
+
+  return (
+    <div className="grid gap-6">
+      <Card>
+        <CardContent className="grid gap-4 p-6">
+          <div className="grid gap-1.5">
+            <Label htmlFor="arena-prompt">پرامپت / سند انرژی</Label>
+            <Textarea
+              id="arena-prompt"
+              className="min-h-32"
+              placeholder="مثال: این پروفیل مصرف را تحلیل کن و راهکار کاهش جریمه‌ی راکتیو پیشنهاد بده…"
+              value={prompt}
+              onChange={(event) => setPrompt(event.target.value)}
+            />
+          </div>
+
+          <div className="grid gap-1.5">
+            <Label>مدل‌ها (حداکثر {MAX_MODELS} مورد)</Label>
+            <div className="flex flex-wrap gap-2">
+              {models.isPending ? (
+                <span className="text-xs text-muted-foreground">در حال بارگذاری مدل‌ها…</span>
+              ) : null}
+              {models.data?.map((row) => {
+                const active = selected.includes(row.slug);
+                return (
+                  <button
+                    key={row.slug}
+                    type="button"
+                    onClick={() => toggleModel(row.slug)}
+                    aria-pressed={active}
+                    className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                      active
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border text-muted-foreground hover:border-primary/50"
+                    }`}
+                  >
+                    {row.displayName}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <label className="flex items-center gap-2 text-xs text-muted-foreground">
+            <input
+              checked={useOwnKey}
+              className="size-3.5 accent-primary"
+              onChange={(event) => setUseOwnKey(event.target.checked)}
+              type="checkbox"
+            />
+            استفاده از کلید اختصاصی من (BYOK) به‌جای لایه‌ی رایگان سیستم
+          </label>
+
+          <div className="flex items-center gap-3">
+            <Button disabled={!canSubmit} onClick={() => compare.mutate()} type="button">
+              {compare.isPending ? (
+                <LoaderCircle className="size-4 animate-spin" />
+              ) : (
+                <Swords className="size-4" />
+              )}
+              مقایسه‌ی مدل‌ها
+            </Button>
+            {compare.isPending ? (
+              <span className="text-xs text-muted-foreground">
+                در حال دریافت پاسخ {selected.length} مدل — بسته به مدل ممکن است تا یک دقیقه طول بکشد…
+              </span>
+            ) : null}
+          </div>
+        </CardContent>
+      </Card>
+
+      {result ? (
+        <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+          {result.results.map((entry) => (
+            <Card key={entry.model} className={entry.ok ? "" : "border-destructive/40"}>
+              <CardContent className="grid gap-3 p-5">
+                <div className="flex items-center gap-2">
+                  <span className="xennic-numeric text-sm font-semibold">{entry.model}</span>
+                  <Badge variant={entry.ok ? "success" : "danger"}>
+                    {entry.ok ? "موفق" : "خطا"}
+                  </Badge>
+                  <span className="mr-auto flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <Timer className="size-3" />
+                    <span className="xennic-numeric">{entry.latencyMs}</span> ms
+                  </span>
+                </div>
+                {entry.ok ? (
+                  <>
+                    <p className="text-sm leading-7 whitespace-pre-wrap">{entry.content}</p>
+                    {entry.usage ? (
+                      <p className="xennic-numeric text-[11px] text-muted-foreground">
+                        توکن ورودی: {entry.usage.promptTokens} — توکن خروجی: {entry.usage.completionTokens}
+                      </p>
+                    ) : null}
+                  </>
+                ) : (
+                  <p className="text-xs leading-6 text-destructive">{entry.errorMessage}</p>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
