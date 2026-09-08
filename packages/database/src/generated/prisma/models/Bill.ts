@@ -716,10 +716,6 @@ export type EnumOcrEngineFieldUpdateOperationsInput = {
   set?: $Enums.OcrEngine
 }
 
-export type EnumJobStatusFieldUpdateOperationsInput = {
-  set?: $Enums.JobStatus
-}
-
 export type BillCreateNestedOneWithoutFilesInput = {
   create?: Prisma.XOR<Prisma.BillCreateWithoutFilesInput, Prisma.BillUncheckedCreateWithoutFilesInput>
   connectOrCreate?: Prisma.BillCreateOrConnectWithoutFilesInput

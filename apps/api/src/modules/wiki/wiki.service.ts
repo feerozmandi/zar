@@ -71,7 +71,11 @@ export class WikiService {
     });
   }
 
-  /** POST /wiki/ask-ai — پرسش تخصصی روی قوانین (پاسخ در صف AI تولید می‌شود) */
+  /**
+   * POST /wiki/ask-ai — پرسش تخصصی روی قوانین (پاسخ در صف AI تولید می‌شود).
+   * رکورد AiJob در Postgres ماندگار می‌شود تا نتیجه پس از پردازش worker از
+   * GET /ai/jobs/:id قابل خواندن باشد (حتی بعد از پاک شدن سابقه‌ی BullMQ).
+   */
   public async askAi(
     userId: string,
     question: string,
@@ -79,14 +83,21 @@ export class WikiService {
     model?: string,
     temperature = 0.2,
   ) {
-    const job = await this.aiQueue.add("wiki-ask", {
-      userId,
-      question,
-      articleIds,
-      model,
-      temperature,
-      retrieval: "wiki",
+    const job = await this.prisma.client.aiJob.create({
+      data: {
+        userId,
+        purpose: "wiki.ask",
+        tier: "SYSTEM",
+        model: model ?? null,
+        inputJson: { question, articleIds, model, temperature },
+      },
+      select: { id: true },
     });
+    await this.aiQueue.add(
+      "wiki-ask",
+      { aiJobId: job.id, userId, question, articleIds, model, temperature, retrieval: "wiki" },
+      { jobId: job.id },
+    );
     await this.indexQueue.add("touch", { articleIds });
     return { jobId: job.id, status: "QUEUED" as const, queue: QUEUES.aiRequest };
   }
